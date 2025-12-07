@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Result - Dept. of Modern Education</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body{font-family:'Poppins',sans-serif;background:#f3f7ff;margin:0}
+  header{background:#0b61d6;color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+  .container{max-width:1200px;margin:20px auto;padding:20px}
+  .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .btn{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+  .btn-primary{background:#0b61d6;color:#fff}
+  .btn-secondary{background:#f3f4f6}
+  .btn-danger{background:#e11d48;color:#fff}
+  .input{padding:8px;border-radius:8px;border:1px solid #ccc}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  th,td{border:1px solid #e6eef8;padding:8px;text-align:center}
+  th{background:#eef6ff;color:#0b61d6}
+  td input{width:100%;border:none;text-align:center;padding:4px}
+  .readonly{background:#f9fafb}
+  .summary{text-align:right;margin-top:8px;font-weight:600}
+  @media print {
+    header, .controls, .summary {display:none}
+    body{background:#fff}
+    table{font-size:16px}
+    th{background:#dceeff;color:#000}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>Dept. of Modern Education — Result Management</div>
+  <a href="dashboard.html" style="color:#fff;text-decoration:none">← Back</a>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <button id="addStudent" class="btn btn-primary">+ Add Student</button>
+      <button id="addBook" class="btn btn-primary">+ Add Book</button>
+      <button id="saveAll" class="btn btn-primary">💾 Save All</button>
+      <button id="deleteAll" class="btn btn-danger">🗑 Delete All</button>
+      <button id="importCsv" class="btn btn-secondary">📥 Import CSV</button>
+      <input type="file" id="csvFile" accept=".csv" style="display:none">
+      <button id="exportCsv" class="btn btn-secondary">📤 Export CSV</button>
+      <button id="print" class="btn btn-secondary">🖨 Print</button>
+      <button id="clearSearch" class="btn btn-secondary">❌ Clear Search</button>
+      <input id="search" class="input" placeholder="Search..." style="margin-left:auto;min-width:200px">
+    </div>
+
+    <div style="overflow:auto">
+      <table id="resultTable">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="summary" id="summary">Class Average: 0%</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY="results_vFinal";
+const BOOK_KEY="books_vFinal";
+let rows=JSON.parse(localStorage.getItem(STORAGE_KEY))||[];
+let books=JSON.parse(localStorage.getItem(BOOK_KEY))||["Book 1"];
+
+const thead=document.getElementById("thead");
+const tbody=document.getElementById("tbody");
+const search=document.getElementById("search");
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(rows));
+  localStorage.setItem(BOOK_KEY,JSON.stringify(books));
+}
+
+function compute(r){
+  let t=0;books.forEach(b=>t+=Number(r[b])||0);
+  r.total=t; r.percent=books.length?(t/books.length).toFixed(2):0;
+}
+
+function render(){
+  const hdr=`<tr><th>Sr</th><th>Roll No</th><th>Name</th><th>Class</th>${books.map((b,i)=>`<th>${b} <button data-delbook="${i}" class="btn btn-secondary" style="padding:2px 5px">✖</button></th>`).join("")}<th>Total</th><th>%</th><th>Action</th></tr>`;
+  thead.innerHTML=hdr; tbody.innerHTML="";
+  const q=search.value.toLowerCase();
+  rows.forEach((r,i)=>{
+    if(q && !(`${r.roll} ${r.name} ${r.class}`.toLowerCase().includes(q)))return;
+    const edit=r.editing===true;
+    let row=`<tr><td>${i+1}</td>`;
+    ["roll","name","class"].forEach(f=>{
+      row+=edit?`<td><input type="text" data-field="${f}" data-index="${i}" value="${r[f]||''}"></td>`:`<td class="readonly">${r[f]||''}</td>`;
+    });
+    books.forEach(b=>{
+      row+=`<td><input type="number" data-field="${b}" data-index="${i}" value="${r[b]||''}" min="0" max="100"></td>`;
+    });
+    row+=`<td>${r.total||0}</td><td>${r.percent||0}%</td>`;
+    row+=`<td>${edit?`<button class="btn btn-primary" data-save="${i}">Save</button>`:`<button class="btn btn-secondary" data-edit="${i}">Edit</button>`}
+          <button class="btn btn-danger" data-del="${i}">Del</button></td></tr>`;
+    tbody.insertAdjacentHTML("beforeend",row);
+  });
+  attachEvents();
+  updateAvg();
+}
+
+function attachEvents(){
+  tbody.querySelectorAll("button[data-edit]").forEach(b=>b.onclick=()=>{rows[b.dataset.edit].editing=true;render();});
+  tbody.querySelectorAll("button[data-save]").forEach(b=>b.onclick=()=>{
+    const i=b.dataset.save;rows[i].editing=false;compute(rows[i]);saveData();render();
+  });
+  tbody.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{rows.splice(b.dataset.del,1);saveData();render();});
+  thead.querySelectorAll("button[data-delbook]").forEach(b=>b.onclick=()=>{books.splice(b.dataset.delbook,1);rows.forEach(r=>delete r[books[b.dataset.delbook]]);saveData();render();});
+  tbody.querySelectorAll("input").forEach(inp=>{
+    inp.onkeydown=e=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        const inputs=Array.from(tbody.querySelectorAll("input"));
+        const idx=inputs.indexOf(inp);
+        if(idx>-1 && idx<inputs.length-1)inputs[idx+1].focus();
+      }
+    };
+    inp.onchange=()=>{const i=inp.dataset.index,f=inp.dataset.field;rows[i][f]=inp.value;compute(rows[i]);saveData();render();}
+  });
+}
+
+function updateAvg(){
+  const avg=rows.length?(rows.reduce((a,r)=>a+Number(r.percent||0),0)/rows.length).toFixed(2):0;
+  document.getElementById("summary").textContent=`Class Average: ${avg}%`;
+}
+
+document.getElementById("addStudent").onclick=()=>{rows.push({roll:"",name:"",class:"",editing:true});render();};
+document.getElementById("addBook").onclick=()=>{
+  const nm=prompt("Book name:");if(nm&&!books.includes(nm)){books.push(nm);rows.forEach(r=>r[nm]="");saveData();render();}
+};
+document.getElementById("saveAll").onclick=()=>{rows.forEach(r=>{r.editing=false;compute(r);});saveData();render();};
+document.getElementById("deleteAll").onclick=()=>{if(confirm("Delete all data?")){rows=[];books=["Book 1"];saveData();render();}};
+document.getElementById("exportCsv").onclick=()=>{
+  if(!rows.length)return alert("No data!");
+  const hdr=["Sr","Roll","Name","Class",...books,"Total","Percent"];
+  const lines=[hdr.join(",")];
+  rows.forEach((r,i)=>lines.push([i+1,r.roll,r.name,r.class,...books.map(b=>r[b]||0),r.total,r.percent].join(",")));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Result.csv";a.click();
+};
+document.getElementById("importCsv").onclick=()=>document.getElementById("csvFile").click();
+document.getElementById("csvFile").onchange=e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const lines=ev.target.result.split(/\r?\n/).filter(Boolean);
+    const heads=lines.shift().split(",");
+    books=heads.slice(4,-2); // Extract book names
+    rows=lines.map(l=>{
+      const parts=l.split(",");
+      const obj={roll:parts[1],name:parts[2],class:parts[3]};
+      books.forEach((b,j)=>obj[b]=parts[4+j]);
+      compute(obj);
+      return obj;
+    });
+    saveData();render();
+  };
+  reader.readAsText(file);
+};
+document.getElementById("print").onclick=()=>{
+  const tableHTML=document.getElementById("resultTable").outerHTML;
+  const win=window.open("","","width=900,height=700");
+  win.document.write("<html><head><title>Print Result</title><style>table{width:100%;border-collapse:collapse;font-family:sans-serif}th,td{border:1px solid #ddd;padding:6px;text-align:center}th{background:#e0ecff}</style></head><body>");
+  win.document.write("<h2 style='text-align:center'>Dept. of Modern Education - Result Sheet</h2>");
+  win.document.write(tableHTML);
+  win.document.write("</body></html>");
+  win.document.close();
+  win.print();
+};
+document.getElementById("clearSearch").onclick=()=>{search.value="";render();};
+search.oninput=()=>render();
+
+render();
+</script>
+</body>
+</html>

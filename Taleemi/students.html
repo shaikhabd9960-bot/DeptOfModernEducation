@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Students Attendance - Dept. of Modern Education</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  :root{--blue:#0b61d6;--muted:#6b7280;--danger:#e11d48;--card:#fff}
+  body{font-family:"Poppins",sans-serif;background:#f3f7ff;margin:0;color:#0f172a}
+  header{background:var(--blue);color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+  .container{max-width:1200px;margin:20px auto;padding:18px}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:14px}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-secondary{background:#f3f4f6;color:#111}
+  .btn-danger{background:#e11d48;color:#fff}
+  .input-search{padding:8px;border-radius:8px;border:1px solid #e6eef8;min-width:200px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  th,td{border:1px solid #e6eef8;padding:6px;text-align:center;vertical-align:middle}
+  th{background:#eef6ff;color:var(--blue);font-weight:600}
+  td .ap-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
+  td .present{background:#16a34a;color:#fff}
+  td .absent{background:#ef4444;color:#fff}
+  td .na{background:#f3f4f6;color:#333}
+  .small{padding:6px 8px;border-radius:6px}
+  .summary{margin-top:12px;text-align:right;font-weight:600}
+  @media (max-width:900px){ table{font-size:12px} .controls { gap:6px } }
+  @media print { header, .controls, .summary { display:none !important } body{background:#fff} table{font-size:14px} th{background:#dceeff;color:#000} button{display:none} }
+</style>
+</head>
+<body>
+<header>
+  <div>Dept. of Modern Education — Students Attendance</div>
+  <div><a href="dashboard.html" style="color:#fff;text-decoration:none">← Back</a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <button id="addDayBtn" class="btn btn-primary">➕ Add Attendance Day</button>
+      <button id="showHiddenBtn" class="btn btn-secondary">👁 Show Hidden Days</button>
+      <button id="saveAllBtn" class="btn btn-primary">💾 Save All</button>
+      <button id="deleteAllBtn" class="btn btn-danger">🗑 Delete All</button>
+
+      <button id="importBtn" class="btn btn-secondary">📥 Import CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+
+      <button id="exportBtn" class="btn btn-secondary">📤 Export CSV</button>
+      <button id="printBtn" class="btn btn-secondary">🖨 Print</button>
+
+      <button id="clearSearchBtn" class="btn btn-secondary">❌ Clear Search</button>
+      <input id="searchInput" class="input-search" placeholder="Search by roll, name, class..." style="margin-left:auto">
+    </div>
+
+    <div id="dateInfo" style="text-align:center;color:var(--blue);margin-bottom:8px;font-weight:600"></div>
+
+    <div style="overflow:auto">
+      <table id="attendanceTable" aria-label="Attendance table">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="summary" id="summary"></div>
+  </div>
+</div>
+
+<!-- hidden date input for picking date -->
+<input type="date" id="hiddenDatePicker" style="display:none">
+
+<script>
+/*
+  Final integrated students.html
+  - Calendar-based Add Day (uses hiddenDatePicker.showPicker() if available)
+  - Hide/Unhide full day (columns/cells) behavior
+  - Delete Day (🗑) — removes day from days[] and from each student's attendance
+  - Import CSV / Export CSV
+  - Print (only visible days)
+  - Save / Delete All / Search / Edit student / Delete student
+  - A/P toggle for each period
+*/
+
+const STUD_KEY = "dme_students_final";
+const DAYS_KEY = "dme_days_final";
+const PERIODS = 10;
+
+// sample initial students (will be replaced if localStorage exists)
+let students = JSON.parse(localStorage.getItem(STUD_KEY)) || [
+  { roll: "101", name: "Ahmad", class: "8A", attendance: {} },
+  { roll: "102", name: "Bilal", class: "8A", attendance: {} },
+  { roll: "103", name: "Sadia", class: "8A", attendance: {} }
+];
+let days = JSON.parse(localStorage.getItem(DAYS_KEY)) || []; // each: {date:"YYYY-MM-DD", hidden:false}
+
+// DOM refs
+const tableHead = document.getElementById("tableHead");
+const tableBody = document.getElementById("tableBody");
+const addDayBtn = document.getElementById("addDayBtn");
+const hiddenDatePicker = document.getElementById("hiddenDatePicker");
+const showHiddenBtn = document.getElementById("showHiddenBtn");
+const saveAllBtn = document.getElementById("saveAllBtn");
+const deleteAllBtn = document.getElementById("deleteAllBtn");
+const importBtn = document.getElementById("importBtn");
+const fileInput = document.getElementById("fileInput");
+const exportBtn = document.getElementById("exportBtn");
+const printBtn = document.getElementById("printBtn");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+const searchInput = document.getElementById("searchInput");
+const dateInfo = document.getElementById("dateInfo");
+const summary = document.getElementById("summary");
+
+// helpers
+function saveAll(){
+  localStorage.setItem(STUD_KEY, JSON.stringify(students));
+  localStorage.setItem(DAYS_KEY, JSON.stringify(days));
+}
+function ensureAttendanceArray(obj, date){
+  if(!obj.attendance) obj.attendance = {};
+  if(!Array.isArray(obj.attendance[date])) obj.attendance[date] = Array(PERIODS).fill("");
+}
+function formatDisplayDate(d){
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+}
+function weekdayName(d){
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString(undefined, { weekday: "long" });
+}
+
+// Build header and second row (P1..P10)
+function buildHeader(){
+  let headerHtml = "<tr><th>Sr No</th><th>Roll No</th><th>Name</th><th>Class</th>";
+  days.forEach((d, idx) => {
+    headerHtml += `<th colspan="${PERIODS}" data-day="${d.date}">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div style="font-weight:700">${formatDisplayDate(d.date)}</div>
+        <div style="font-size:12px;color:#555">${weekdayName(d.date)}</div>
+        <div style="margin-top:6px;display:flex;gap:6px">
+          <button class="btn btn-secondary small" data-toggle-day="${idx}" style="padding:4px 6px">${d.hidden ? 'Unhide' : 'Hide'}</button>
+          <button class="btn btn-danger small" data-del-day="${idx}" style="padding:4px 6px">🗑</button>
+        </div>
+      </div>
+    </th>`;
+  });
+  headerHtml += `<th>Total P</th><th>Percent</th><th>Action</th></tr>`;
+
+  // second header row
+  headerHtml += "<tr><th></th><th></th><th></th><th></th>";
+  days.forEach(d => {
+    for(let p=1;p<=PERIODS;p++){
+      headerHtml += `<th data-date="${d.date}" style="${d.hidden ? 'display:none' : ''}">P${p}</th>`;
+    }
+  });
+  headerHtml += "<th></th><th></th><th></th></tr>";
+
+  tableHead.innerHTML = headerHtml;
+}
+
+// Build body rows
+function buildBody(){
+  tableBody.innerHTML = "";
+  const q = (searchInput.value || "").toLowerCase();
+  students.forEach((s, idx) => {
+    const rowText = `${s.roll} ${s.name} ${s.class}`.toLowerCase();
+    if(q && !rowText.includes(q)) return;
+    days.forEach(d => ensureAttendanceArray(s, d.date));
+    let html = `<tr><td>${idx+1}</td><td>${escapeHtml(s.roll)}</td><td style="text-align:left;padding-left:8px">${escapeHtml(s.name)}</td><td>${escapeHtml(s.class)}</td>`;
+    days.forEach(d => {
+      const date = d.date;
+      for(let p=0;p<PERIODS;p++){
+        const val = (s.attendance[date] && s.attendance[date][p]) ? s.attendance[date][p] : "";
+        const display = val || "-";
+        const btnClass = val === "P" ? "present" : val === "A" ? "absent" : "na";
+        html += `<td data-date="${date}" style="${d.hidden ? 'display:none' : ''}"><button class="ap-btn ${btnClass}" data-roll="${escapeAttr(s.roll)}" data-date="${date}" data-period="${p}">${display}</button></td>`;
+      }
+    });
+    const totals = computeTotalsForStudent(s);
+    html += `<td>${totals.present}</td><td>${totals.percent}%</td>`;
+    html += `<td><button class="btn btn-secondary" data-edit="${idx}">Edit</button> <button class="btn btn-danger" data-del="${idx}">Delete</button></td></tr>`;
+    tableBody.insertAdjacentHTML("beforeend", html);
+  });
+}
+
+function escapeHtml(s){ if(s==null) return ""; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+function computeTotalsForStudent(s){
+  let present = 0, totalSlots = 0;
+  days.forEach(d => {
+    if(d.hidden) return;
+    ensureAttendanceArray(s, d.date);
+    for(let p=0;p<PERIODS;p++){
+      if(s.attendance[d.date][p] === "P") present++;
+      if(s.attendance[d.date][p]) totalSlots++;
+    }
+  });
+  const percent = totalSlots ? ((present / totalSlots) * 100).toFixed(2) : "0.00";
+  return { present, percent };
+}
+function computeClassAverage(){
+  if(students.length === 0) return "0.00";
+  let sum = 0;
+  students.forEach(s => { sum += Number(computeTotalsForStudent(s).percent || 0); });
+  return (sum / students.length).toFixed(2);
+}
+
+function renderAll(){
+  // ensure arrays exist
+  students.forEach(s => days.forEach(d => ensureAttendanceArray(s, d.date)));
+  buildHeader();
+  buildBody();
+  dateInfo.textContent = days.length ? `Current (latest) Day: ${formatDisplayDate(days[days.length-1].date)} (${weekdayName(days[days.length-1].date)})` : "No attendance day yet";
+  summary.textContent = `Class Average (visible days): ${computeClassAverage()}%`;
+  saveAll();
+}
+
+// Event delegation
+document.addEventListener('click', function(e){
+  const target = e.target;
+
+  // A/P toggle
+  if(target.classList.contains('ap-btn')){
+    const roll = target.dataset.roll;
+    const date = target.dataset.date;
+    const period = Number(target.dataset.period);
+    const student = students.find(s => s.roll === roll);
+    if(!student) return;
+    ensureAttendanceArray(student, date);
+    const cur = student.attendance[date][period] || "";
+    const next = cur === "" ? "P" : cur === "P" ? "A" : "";
+    student.attendance[date][period] = next;
+    renderAll();
+    return;
+  }
+
+  // Edit student
+  if(target.matches('button[data-edit]')){
+    const idx = Number(target.dataset.edit);
+    const s = students[idx];
+    const newRoll = prompt("Roll No:", s.roll);
+    const newName = prompt("Name:", s.name);
+    const newClass = prompt("Class:", s.class);
+    if(newRoll && newName && newClass){
+      s.roll = newRoll; s.name = newName; s.class = newClass;
+      saveAll(); renderAll();
+    }
+    return;
+  }
+
+  // Delete student
+  if(target.matches('button[data-del]')){
+    const idx = Number(target.dataset.del);
+    if(confirm("Delete this student?")) {
+      students.splice(idx,1);
+      saveAll(); renderAll();
+    }
+    return;
+  }
+
+  // Toggle individual day hide/unhide (and hide/unhide all related cells)
+  if(target.matches('button[data-toggle-day]')){
+    const di = Number(target.dataset.toggleDay);
+    days[di].hidden = !days[di].hidden;
+
+    // hide/unhide all cells/headers with matching data-date
+    const dayDate = days[di].date;
+    document.querySelectorAll(`[data-date='${dayDate}']`).forEach(el=>{
+      el.style.display = days[di].hidden ? 'none' : '';
+    });
+
+    saveAll(); renderAll();
+    return;
+  }
+
+  // Delete Day (🗑) - remove day and remove attendance entries from students
+  if(target.matches('button[data-del-day]')){
+    const di = Number(target.dataset.delDay);
+    const delDate = days[di].date;
+    if(confirm(`Delete attendance for ${formatDisplayDate(delDate)}? This will remove the day and all records for it.`)){
+      days.splice(di,1);
+      students.forEach(s => { if(s.attendance && s.attendance[delDate]) delete s.attendance[delDate]; });
+      saveAll(); renderAll();
+    }
+    return;
+  }
+});
+
+// Add Day: try showPicker(), else prompt fallback
+addDayBtn.addEventListener('click', () => {
+  if(typeof hiddenDatePicker.showPicker === 'function'){
+    hiddenDatePicker.value = new Date().toISOString().slice(0,10);
+    hiddenDatePicker.showPicker();
+  } else {
+    const pref = new Date().toISOString().slice(0,10);
+    const input = prompt("Enter date (YYYY-MM-DD):", pref);
+    if(!input) return;
+    const iso = validateISODate(input);
+    if(!iso){ alert("Invalid date format. Use YYYY-MM-DD"); return; }
+    addOrShowDay(iso);
+  }
+});
+hiddenDatePicker.addEventListener('change', () => {
+  const val = hiddenDatePicker.value;
+  if(!val) return;
+  addOrShowDay(val);
+});
+
+function addOrShowDay(isoDate){
+  // hide others
+  days.forEach(d => d.hidden = true);
+  const existing = days.find(d => d.date === isoDate);
+  if(existing){
+    existing.hidden = false;
+  } else {
+    days.push({ date: isoDate, hidden: false });
+    students.forEach(s => ensureAttendanceArray(s, isoDate));
+  }
+  saveAll(); renderAll();
+}
+
+// Show Hidden Days
+showHiddenBtn.addEventListener('click', () => {
+  days.forEach(d => d.hidden = false);
+  // unhide all DOM cells
+  document.querySelectorAll('[data-date]').forEach(el => el.style.display = '');
+  saveAll(); renderAll();
+});
+
+// Save All
+saveAllBtn.addEventListener('click', () => {
+  saveAll();
+  alert("Attendance saved.");
+});
+
+// Delete All
+deleteAllBtn.addEventListener('click', () => {
+  if(!confirm("Delete all students and attendance data?")) return;
+  students = [];
+  days = [];
+  saveAll();
+  renderAll();
+});
+
+// Import CSV
+importBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (ev) => {
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result.replace(/\r/g,"");
+    const lines = text.split("\n").map(l=>l.trim()).filter(Boolean);
+    if(lines.length === 0) return alert("Empty file");
+    const headers = splitCsvLine(lines.shift());
+    const fixed = 4;
+    const dayGroups = [];
+    for(let i=fixed;i<headers.length;i+=PERIODS){
+      const group = headers.slice(i, i+PERIODS);
+      if(group.length < PERIODS) break;
+      const first = group[0];
+      const token = first.split('_')[0].trim();
+      const iso = tryToISODate(token) || token;
+      dayGroups.push(iso);
+    }
+    days = dayGroups.map(d => ({ date: d, hidden: false }));
+    const newStudents = lines.map(line => {
+      const cols = splitCsvLine(line);
+      const s = { roll: cols[1]||"", name: cols[2]||"", class: cols[3]||"", attendance: {} };
+      let pos = fixed;
+      days.forEach(d => {
+        s.attendance[d.date] = [];
+        for(let p=0;p<PERIODS;p++){
+          s.attendance[d.date][p] = cols[pos] ? cols[pos].trim() : "";
+          pos++;
+        }
+      });
+      return s;
+    });
+    students = newStudents;
+    students.forEach(s => days.forEach(d => ensureAttendanceArray(s, d.date)));
+    saveAll(); renderAll();
+    alert("Imported CSV successfully.");
+  };
+  reader.readAsText(file);
+  fileInput.value = "";
+});
+
+// Export CSV
+exportBtn.addEventListener('click', () => {
+  if(students.length === 0) return alert("No data to export");
+  const hdr = ["Sr","Roll","Name","Class"];
+  days.forEach(d => { for(let p=1;p<=PERIODS;p++) hdr.push(`${d.date}_P${p}`); });
+  const rowsOut = [hdr.join(",")];
+  students.forEach((s,i) => {
+    const line = [i+1, `"${(s.roll||"").replace(/"/g,'""')}"`, `"${(s.name||"").replace(/"/g,'""')}"`, `"${(s.class||"").replace(/"/g,'""')}"`];
+    days.forEach(d => {
+      ensureAttendanceArray(s, d.date);
+      s.attendance[d.date].forEach(cell => line.push(cell || ""));
+    });
+    rowsOut.push(line.join(","));
+  });
+  const blob = new Blob([rowsOut.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "attendance_export.csv"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+
+// Print: prints only visible days (hidden days excluded)
+printBtn.addEventListener('click', () => {
+  if(students.length === 0) return alert("No data to print");
+  let html = `<!doctype html><html><head><meta charset="utf-8"><title>Attendance</title>
+    <style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #222;padding:6px;text-align:center}th{background:#eef6ff}</style></head><body>`;
+  html += `<h2 style="text-align:center">Dept. of Modern Education - Attendance</h2>`;
+  html += `<div style="text-align:center;margin-bottom:8px">Date: ${days.length?formatDisplayDate(days[days.length-1].date):""}</div>`;
+  html += `<table><thead><tr><th>Sr</th><th>Roll</th><th>Name</th><th>Class</th>`;
+  days.forEach(d => { if(d.hidden) return; for(let p=1;p<=PERIODS;p++) html += `<th>${formatDisplayDate(d.date)} P${p}</th>`; });
+  html += `</tr></thead><tbody>`;
+  const q = (searchInput.value||"").toLowerCase();
+  students.forEach((s,i) => {
+    const text = `${s.roll} ${s.name} ${s.class}`.toLowerCase();
+    if(q && !text.includes(q)) return;
+    html += `<tr><td>${i+1}</td><td>${escapeHtml(s.roll)}</td><td style="text-align:left;padding-left:8px">${escapeHtml(s.name)}</td><td>${escapeHtml(s.class)}</td>`;
+    days.forEach(d => {
+      if(d.hidden) return;
+      ensureAttendanceArray(s, d.date);
+      for(let p=0;p<PERIODS;p++) html += `<td>${escapeHtml(s.attendance[d.date][p] || "")}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></body></html>`;
+  const w = window.open("","_blank","width=900,height=700");
+  w.document.write(html); w.document.close(); w.focus();
+  setTimeout(()=>w.print(),300);
+});
+
+// Clear search
+clearSearchBtn.addEventListener('click', () => { searchInput.value = ""; renderAll(); });
+searchInput.addEventListener('input', () => renderAll());
+
+// CSV helpers
+function splitCsvLine(line){
+  const out=[]; let cur=''; let inQuotes=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch === '"'){ inQuotes = !inQuotes; continue; }
+    if(ch === ',' && !inQuotes){ out.push(cur); cur=''; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out.map(s=>s.trim());
+}
+function tryToISODate(token){
+  if(!token) return null;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(token)) return token;
+  const d = new Date(token);
+  if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+  return null;
+}
+function validateISODate(s){
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d = new Date(s);
+  if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+  return null;
+}
+
+// initial: if no days, create today's day
+if(days.length === 0){
+  const today = new Date().toISOString().slice(0,10);
+  days.push({ date: today, hidden: false });
+  students.forEach(s => ensureAttendanceArray(s, today));
+  saveAll();
+}
+
+// initial render
+renderAll();
+</script>
+</body>
+</html>

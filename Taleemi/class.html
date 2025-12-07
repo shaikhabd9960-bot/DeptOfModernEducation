@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Class Management</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.info-btn {
+  background-color: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.info-btn:hover { background-color:#0056b3; }
+
+.delete-all-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.delete-all-btn:hover { background-color:#a30e1f; }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="title">Dept. of Modern Education</div>
+  <div><a href="dashboard.html"><button class="button secondary no-print">← Back</button></a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2 style="margin-top:0;color:var(--blue)">Class Management</h2>
+
+    <div class="controls" style="margin-top:10px">
+      <button class="button no-print" id="addBtn">Add New</button>
+      <button class="button secondary no-print" id="importBtn">Import CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+      <button class="button secondary no-print" id="exportBtn">Export CSV</button>
+      <button class="button secondary no-print" id="exportPdf">Export PDF</button>
+      <button class="button secondary no-print" id="printPreview">Print Preview</button>
+      <button class="button secondary no-print" id="clearBtn">Clear Search</button>
+
+      <!-- NEW Delete All button -->
+      <button class="delete-all-btn no-print" id="deleteAll">Delete All</button>
+
+      <input class="input" id="search" placeholder="Global Search..." style="margin-left:auto;min-width:220px">
+    </div>
+
+    <div style="overflow:auto">
+      <table class="table" id="dataTable">
+        <thead>
+          <tr>
+            <th>Class ID</th>
+            <th>Class Name</th>
+            <th>Section</th>
+            <th>Number of Students</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <h3 id="modalTitle">Add New</h3>
+    <div class="form-grid">
+      <div><label>Class ID</label><input id="f_id" class="input" type="text"></div>
+      <div><label>Class Name</label><input id="f_name" class="input" type="text"></div>
+      <div><label>Section</label><input id="f_section" class="input" type="text"></div>
+      <div><label>Number of Students</label><input id="f_students" class="input" type="number" min="0"></div>
+    </div>
+    <div style="text-align:right;margin-top:12px">
+      <button class="button secondary" id="cancelModal">Cancel</button>
+      <button class="button" id="saveModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+var columns = [
+  {id:"id", label:"Class ID"},
+  {id:"name", label:"Class Name"},
+  {id:"section", label:"Section"},
+  {id:"students", label:"Number of Students"}
+];
+
+// Ensure storage exists
+(function(){
+  const key="classesData";
+  if(!localStorage.getItem(key)) localStorage.setItem(key,JSON.stringify([]));
+})();
+
+// Initialize Table Manager
+const tm = new TableManager({
+  storageKey:"classesData",
+  columns:columns,
+  tableBodyId:"dataBody",
+  searchInputId:"search",
+  addBtnId:"addBtn",
+  importBtnId:"importBtn",
+  exportBtnId:"exportBtn",
+  exportPdfId:"exportPdf",
+  printPreviewId:"printPreview",
+  clearBtnId:"clearBtn",
+  fileInputId:"fileInput",
+  modalId:"modal",
+  modalTitleId:"modalTitle",
+  saveBtnId:"saveModal",
+  cancelBtnId:"cancelModal",
+  formFieldIds:["f_id","f_name","f_section","f_students"],
+  initialData:[]
+});
+// --- Fix for auto-saving in LocalStorage ---
+
+const classStorageKey = "classesData";
+
+function saveClassData() {
+  const rows = [];
+  document.querySelectorAll("#dataBody tr").forEach(row => {
+    const cells = row.querySelectorAll("td");
+    if (cells.length >= 4) {
+      rows.push({
+        id: cells[0].innerText.trim(),
+        name: cells[1].innerText.replace(" i","").trim(),
+        section: cells[2].innerText.trim(),
+        students: cells[3].innerText.trim()
+      });
+    }
+  });
+  localStorage.setItem(classStorageKey, JSON.stringify(rows));
+}
+
+function loadClassData() {
+  const saved = JSON.parse(localStorage.getItem(classStorageKey) || "[]");
+  const tbody = document.getElementById("dataBody");
+  tbody.innerHTML = "";
+  saved.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.id}</td>
+      <td>${r.name} <button class="info-btn" onclick="window.location.href='teachers.html?class=${encodeURIComponent(r.name)}'">i</button></td>
+      <td>${r.section}</td>
+      <td>${r.students}</td>
+      <td><button class="button secondary" onclick="editRow(${i})">Edit</button> <button class="button danger" onclick="deleteRow(${i})">Delete</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Re-save after add or delete
+document.getElementById("saveModal").addEventListener("click", saveClassData);
+document.getElementById("deleteAll").addEventListener("click", saveClassData);
+window.addEventListener("load", loadClassData);
+
+// --- (i) Info Buttons ---
+function addInfoButtons() {
+  const tbody=document.getElementById("dataBody");
+  tbody.querySelectorAll("tr").forEach(row=>{
+    const nameCell=row.children[1];
+    if(nameCell && !nameCell.querySelector(".info-btn")) {
+      const cname=nameCell.textContent.trim();
+      const btn=document.createElement("button");
+      btn.className="info-btn";
+      btn.textContent="i";
+      btn.title="View Teachers of "+cname;
+      btn.onclick=()=>{window.location.href="teachers.html?class="+encodeURIComponent(cname)};
+      nameCell.appendChild(document.createTextNode(" "));
+      nameCell.appendChild(btn);
+    }
+  });
+}
+new MutationObserver(addInfoButtons).observe(document.getElementById("dataBody"),{childList:true,subtree:true});
+window.addEventListener("load",addInfoButtons);
+
+// --- Delete All Button ---
+document.getElementById("deleteAll").addEventListener("click",()=>{
+  if(confirm("Are you sure you want to delete ALL records? This cannot be undone.")){
+    localStorage.setItem("classesData",JSON.stringify([]));
+    document.getElementById("dataBody").innerHTML="";
+    alert("All records have been deleted!");
+  }
+});
+
+// --- Enter Key = Save Modal ---
+document.addEventListener("keydown",function(e){
+  const modal=document.getElementById("modal");
+  if(modal.style.display!=="none" && e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveModal").click();
+  }
+});
+</script>
+</body>
+</html>

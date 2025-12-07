@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Teachers and Periods</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.delete-all-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.delete-all-btn:hover { background-color:#a30e1f; }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="title">Teachers and Periods - Dept. of Modern Education</div>
+  <div><a href="dashboard.html"><button class="button secondary no-print">← Back</button></a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2 style="margin-top:0;color:var(--blue)">Teachers and Periods</h2>
+
+    <div class="controls" style="margin-top:10px">
+      <button class="button no-print" id="addBtn">Add New</button>
+      <button class="button secondary no-print" id="importBtn">Import CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+      <button class="button secondary no-print" id="exportBtn">Export CSV</button>
+      <button class="button secondary no-print" id="exportPdf">Export PDF</button>
+      <button class="button secondary no-print" id="clearBtn">Clear Search</button>
+      <button class="delete-all-btn no-print" id="deleteAll">Delete All</button>
+      <input class="input" id="searchSr" placeholder="Search Sr No..." style="min-width:150px">
+      <input class="input" id="searchClass" placeholder="Search Class..." style="min-width:150px">
+      <input class="input" id="searchTeacher" placeholder="Search Teacher..." style="min-width:150px">
+      <input class="input" id="searchPeriods" placeholder="Search Periods..." style="min-width:150px">
+    </div>
+
+    <div style="overflow:auto">
+      <table class="table" id="dataTable">
+        <thead>
+          <tr>
+            <th>Sr No</th>
+            <th>Class</th>
+            <th>Teacher</th>
+            <th>Subject</th>
+            <th>Periods</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <h3 id="modalTitle">Add / Edit Record</h3>
+    <div class="form-grid">
+      <div><label>Sr No</label><input id="f_sr" class="input" type="text"></div>
+      <div><label>Class</label><input id="f_class" class="input" type="text"></div>
+      <div><label>Teacher</label><input id="f_teacher" class="input" type="text"></div>
+      <div><label>Subject</label><input id="f_subject" class="input" type="text"></div>
+      <div><label>Periods</label><input id="f_periods" class="input" type="text"></div>
+    </div>
+    <div style="text-align:right;margin-top:12px">
+      <button class="button secondary" id="cancelModal">Cancel</button>
+      <button class="button" id="saveModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+var columns = [
+  {"id": "sr", "label": "Sr No"},
+  {"id": "class", "label": "Class"},
+  {"id": "teacher", "label": "Teacher"},
+  {"id": "subject", "label": "Subject"},
+  {"id": "periods", "label": "Periods"}
+];
+
+(function(){ 
+  var key = "teachersData"; 
+  if(!localStorage.getItem(key)){ 
+    localStorage.setItem(key, JSON.stringify([])); 
+  } 
+})();
+
+const tm = new TableManager({
+  storageKey: "teachersData",
+  columns: columns,
+  tableBodyId: "dataBody",
+  searchInputId: "searchSr",
+  searchTeacherId: "searchTeacher",
+  searchClassId: "searchClass",
+  searchPeriodsId: "searchPeriods",
+  addBtnId: "addBtn",
+  importBtnId: "importBtn",
+  exportBtnId: "exportBtn",
+  exportPdfId: "exportPdf",
+  clearBtnId: "clearBtn",
+  fileInputId: "fileInput",
+  modalId: "modal",
+  modalTitleId: "modalTitle",
+  saveBtnId: "saveModal",
+  cancelBtnId: "cancelModal",
+  formFieldIds: ["f_sr", "f_class", "f_teacher", "f_subject", "f_periods"],
+  initialData: []
+});
+
+// --- Delete All Button ---
+document.getElementById("deleteAll").addEventListener("click",()=>{
+  if(confirm("Are you sure you want to delete ALL teacher records?")){
+    localStorage.setItem("teachersData",JSON.stringify([]));
+    document.getElementById("dataBody").innerHTML="";
+    alert("All teacher records deleted!");
+  }
+});
+
+// --- Enter Key Save Shortcut ---
+document.addEventListener("keydown",function(e){
+  const modal=document.getElementById("modal");
+  if(modal.style.display!=="none" && e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveModal").click();
+  }
+});
+
+// Auto-filter if class passed via URL
+const urlParams = new URLSearchParams(window.location.search);
+const classFilter = urlParams.get("class");
+if (classFilter) {
+  document.getElementById("searchClass").value = classFilter;
+  setTimeout(() => {
+    const event = new Event("input");
+    document.getElementById("searchClass").dispatchEvent(event);
+  }, 500);
+}
+</script>
+</body>
+</html>

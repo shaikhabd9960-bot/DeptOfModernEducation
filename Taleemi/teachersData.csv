@@ -1,0 +1,1076 @@
+﻿sr No,Teacher,Class,Subject,Periods
+1,M Uwais Sb Nawapuri,Awwal Alif ,Q Nahw-1,1st
+2,M Uwais Sb Nawapuri,Awwal Alif ,Qasas-1,2nd
+3,Q Sajid Sb,Awwal Alif ,Science-1,3rd
+4,Q Shafeeq Sb,Awwal Alif ,Sarf-1,4th
+5,M Rafeeq Sb Katihari,Awwal Alif ,Tafheemul Fiqah,5th
+6,M Khabbab Sb Wastanwi,Awwal Alif ,English-1,6th
+7,---,Awwal Alif ,Tajweed,7th
+8,M Riyaz Sb,Awwal Alif ,Civics,8th
+9,Q Shafeeq Sb,Awwal Alif ,Tareekhe Islam,9th
+10,M Noman Sb,Awwal Alif ,Mufradat,10th
+11,M Uwais Sb Nawapuri,Awwal Alif ,Supervision,---
+12,M Abu Sufyan Sb,Awwal Ba ,Q Nahw-1,1st
+13,M Abu Sufyan Sb,Awwal Ba ,Qasas-1,2nd
+14,M Khabbab Sb Wastanwi,Awwal Ba ,Sarf-1,3rd
+15,M Hameed Sb,Awwal Ba ,Science-1,4th
+16,M Jahangeer Sb,Awwal Ba ,Tafheemul Fiqah,5th
+17,M Iqrar Sb,Awwal Ba ,English-1,6th
+18,---,Awwal Ba ,Tajweed,7th
+19,M Nizamuddin Sb,Awwal Ba ,Civics,8th
+20,Q Abdullah Sb,Awwal Ba ,Tareekhe Islam,9th
+21,M Shakir Sb,Awwal Ba ,Mufradat,10th
+22,M Abu Sufyan Sb,Awwal Ba ,Supervision,---
+23,M Huzaifa Sb Marul,Awwal Jeem,Q Nahw-1,1st
+24,M Huzaifa Sb Marul,Awwal Jeem,Qasas-1,2nd
+25,M Tanweer Sb,Awwal Jeem,Sarf-1,3rd
+26,M Saeed Sb,Awwal Jeem,Tafheemul Fiqah,4th
+27,M Sanawwar Sb,Awwal Jeem,Science-1,5th
+28,M Ishaq Sb,Awwal Jeem,English-1,6th
+29,---,Awwal Jeem,Tajweed,7th
+30,M Ziyaullah Sb,Awwal Jeem,Civics,8th
+31,M Khabbab Sb Wastanwi,Awwal Jeem,Tareekhe Islam,9th
+32,M Zubair Sb,Awwal Jeem,Mufradat,10th
+33,M Huzaifa Sb Marul,Awwal Jeem,Supervision,---
+34,M Arif Sb charner,Awwal Dal,Q Nahw-1,1st
+35,M Arif Sb charner,Awwal Dal,Qasas-1,2nd
+36,M Huzaifa Sb Marul,Awwal Dal,Sarf-1,3rd
+37,M Hassan Sb,Awwal Dal,English-1,4th
+38,Q Shafeeq Sb,Awwal Dal,Tafheemul Fiqah,5th
+39,M Noman Sb,Awwal Dal,Science-1,6th
+40,---,Awwal Dal,Tajweed,7th
+41,M Ishaq Sb,Awwal Dal,Civics,8th
+42,M Uwais Sb Nawapuri,Awwal Dal,Tareekhe Islam,9th
+43,M Faizan Sb Bhadi,Awwal Dal,Mufradat,10th
+44,M Arif Sb charner,Awwal Dal,Supervision,---
+45,M Abdullah Sb Muzaffarpuri,Awwal Ha,Q Nahw-1,1st
+46,M Abdullah Sb Muzaffarpuri,Awwal Ha,Qasas-1,2nd
+47,---,Awwal Ha,Tajweed,3rd
+48,M Abdullah Sb Muzaffarpuri,Awwal Ha,Sarf-1,4th
+49,M Tanweer Sb,Awwal Ha,English-1,5th
+50,M Naeem Sb,Awwal Ha,Civics,6th
+51,M Iqrar Sb,Awwal Ha,Science-1,7th
+52,M Abdullah Sb Muzaffarpuri,Awwal Ha,Mufradat,8th
+53,M Nizamuddin Sb,Awwal Ha,Tafheemul Fiqah,9th
+54,M Aurangzeb Sb,Awwal Ha,Tareekhe Islam,10th
+55,M Abdullah Sb Muzaffarpuri,Awwal Ha,Supervision,---
+56,M Aurangzeb Sb,Awwal Waw,Q Nahw-1,1st
+57,M Aurangzeb Sb,Awwal Waw,Qasas-1,2nd
+58,M Harun Sb,Awwal Waw,Tafheemul Fiqah,3rd
+59,M Maher Sb,Awwal Waw,Sarf-1,4th
+60,M Khabbab Sb Wastanwi,Awwal Waw,English-1,5th
+61,M Jahangeer Sb,Awwal Waw,Tareekhe Islam,6th
+62,M Zubair Sb,Awwal Waw,Civics,7th
+63,M Jahangeer Sb,Awwal Waw,Science-1,8th
+64,---,Awwal Waw,Tajweed,9th
+65,M Nizamuddin Sb,Awwal Waw,Mufradat,10th
+66,M Aurangzeb Sb,Awwal Waw,Supervision,---
+67,M Iqrar Sb,Awwal Za,Q Nahw-1,1st
+68,M Iqrar Sb,Awwal Za,Qasas-1,2nd
+69,M Jawed Sb Purniya,Awwal Za,Tafheemul Fiqah,3rd
+70,M Saeeduddin Sb,Awwal Za,Sarf-1,4th
+71,M Rafeeq Alam Sb,Awwal Za,English-1,5th
+72,---,Awwal Za,Tajweed,6th
+73,M Riyaz Sb,Awwal Za,Civics,7th
+74,M Harun Sb,Awwal Za,Tareekhe Islam,8th
+75,M Subhan Sb,Awwal Za,Science-1,9th
+76,M Jahangeer Sb,Awwal Za,Mufradat,10th
+77,M Iqrar Sb,Awwal Za,Supervision,---
+78,M Ziyaullah Sb,Awwal Hha,Q Nahw-1,1st
+79,M Ziyaullah Sb,Awwal Hha,Qasas-1,2nd
+80,M Subhan Sb,Awwal Hha,Tafheemul Fiqah,3rd
+81,M Abu Sufyan Sb,Awwal Hha,Sarf-1,4th
+82,M Iqrar Sb,Awwal Hha,English-1,5th
+83,M Tahir Sb,Awwal Hha,Mufradat,6th
+84,M Uwais Sb Nawapuri,Awwal Hha,Civics,7th
+85,M Naeem Sb,Awwal Hha,Tareekhe Islam,8th
+86,---,Awwal Hha,Tajweed,9th
+87,M Hilal Sb,Awwal Hha,Science-1,10th
+88,M Ziyaullah Sb,Awwal Hha,Supervision,---
+89,Q Shafeeq Sb,Awwal Ta,Q Nahw-1,1st
+90,Q Shafeeq Sb,Awwal Ta,Qasas-1,2nd
+91,Anwar Sir,Awwal Ta,Math-1,3rd
+92,Q Abdullah Sb,Awwal Ta,Tafheemul Fiqah,4th
+93,M Mujeeburrahman Sb,Awwal Ta,Sarf-1,5th
+94,M Shakir Sb,Awwal Ta,Civics,6th
+95,M Yahya Sb Ndb,Awwal Ta,Tareekhe Islam,7th
+96,---,Awwal Ta,Tajweed,8th
+97,M Rafeeq Alam Sb,Awwal Ta,English-1,9th
+98,Q Shafeeq Sb,Awwal Ta,Mufradat,10th
+99,Q Shafeeq Sb,Awwal Ta,Supervision,---
+100,M Sanawwar Sb,Awwal Ya,Q Nahw-1,1st
+101,M Sanawwar Sb,Awwal Ya,Qasas-1,2nd
+102,M Iqrar Sb,Awwal Ya,English-1,3rd
+103,Anwar Sir,Awwal Ya,Math-1,4th
+104,M Mukhtar Sb,Awwal Ya,Sarf-1,5th
+105,M Ab Gafur Sb,Awwal Ya,Civics,6th
+106,M Shafi Sb,Awwal Ya,Tareekhe Islam,7th
+107,---,Awwal Ya,Tajweed,8th
+108,M Zubair Sb,Awwal Ya,Tafheemul Fiqah,9th
+109,Q Husain Sb,Awwal Ya,Mufradat,10th
+110,M Sanawwar Sb,Awwal Ya,Supervision,---
+111,M Ehsan Sb,Awwal Kaf,Q Nahw-1,1st
+112,M Ehsan Sb,Awwal Kaf,Qasas-1,2nd
+113,M Ishaq Sb,Awwal Kaf,English-1,3rd
+114,M Riyaz Sb,Awwal Kaf,Tafheemul Fiqah,4th
+115,Anwar Sir,Awwal Kaf,Math-1,5th
+116,M Huzaifa Sb Marul,Awwal Kaf,Civics,6th
+117,Q Ab Rashid Sb,Awwal Kaf,Tareekhe Islam,7th
+118,---,Awwal Kaf,Tajweed,8th
+119,M Jahangeer Sb,Awwal Kaf,Sarf-1,9th
+120,Q Ab Rashid Sb,Awwal Kaf,Mufradat,10th
+121,M Ehsan Sb,Awwal Kaf,Supervision,---
+122,M Shakir Sb,Awwal Lam,Q Nahw-1,1st
+123,M Shakir Sb,Awwal Lam,Qasas-1,2nd
+124,M Arif Sb charner,Awwal Lam,English-1,3rd
+125,Q Ab Rashid Sb,Awwal Lam,Tafheemul Fiqah,4th
+126,M Riyaz Sb,Awwal Lam,Sarf-1,5th
+127,Anwar Sir,Awwal Lam,Math-1,6th
+128,M Arif Sb Khagadya,Awwal Lam,Tareekhe Islam,7th
+129,---,Awwal Lam,Tajweed,8th
+130,M Shakir Sb,Awwal Lam,Civics,9th
+131,M Mujeeb Sb Babulgaon,Awwal Lam,Mufradat,10th
+132,M Shakir Sb,Awwal Lam,Supervision,---
+133,Q Husain Sb,Awwal Mim,Q Nahw-1,1st
+134,Q Husain Sb,Awwal Mim,Qasas-1,2nd
+135,M Nazim Sb,Awwal Mim,Tareekhe Islam,3rd
+136,M Ehsan Sb,Awwal Mim,English-1,4th
+137,Shamim Akhtar Sir,Awwal Mim,Civics,5th
+138,---,Awwal Mim,Tajweed,6th
+139,Anwar Sir,Awwal Mim,Math-1,7th
+140,M Arif Sb charner,Awwal Mim,Tafheemul Fiqah,8th
+141,M Arif Sb Khagadya,Awwal Mim,Tafheemul Fiqah,9th
+142,M Jawed Sb Purniya,Awwal Mim,Mufradat,10th
+143,Q Husain Sb,Awwal Mim,Supervision,---
+144,M Zubair Sb,Awwal Nun,Q Nahw-1,1st
+145,M Zubair Sb,Awwal Nun,Qasas-1,2nd
+146,M Saeed Sb,Awwal Nun,Tareekhe Islam,3rd
+147,Shamim Akhtar Sir,Awwal Nun,English-1,4th
+148,M Ishaq Sb,Awwal Nun,Civics,5th
+149,M Tanweer Sb,Awwal Nun,Mufradat,6th
+150,M Ziyaullah Sb,Awwal Nun,Tafheemul Fiqah,7th
+151,Anwar Sir,Awwal Nun,Math-1,8th
+152,M Aurangzeb Sb,Awwal Nun,Sarf-1,9th
+153,---,Awwal Nun,Tajweed,10th
+154,M Zubair Sb,Awwal Nun,Supervision,---
+155,M Muhammad Sb,Dom Alif ,Nurul Ezah,1st
+156,M Maher Sb,Dom Alif ,Math-2,2nd
+157,M Muhammad Sb,Dom Alif ,H Nahw,3rd
+158,M Uwais Sb Nawapuri,Dom Alif ,Qasas-2,4th
+159,M Nafees Sb,Dom Alif ,Alarabiyyah-2,5th
+160,M Kamal Sb,Dom Alif ,English-2,6th
+161,Q Ab Salam Sb,Dom Alif ,Tajweed-2,7th
+162,M Jawed Sb Purniya,Dom Alif ,Civics-2,8th
+163,M Sadrulhasan Sb,Dom Alif ,Ilmus Segah,9th
+164,M Nazim Sb,Dom Alif ,A Wazeh,10th
+165,M Muhammad Sb,Dom Alif ,Supervision,---
+166,M Sulaiman Sb,Dom Ba ,Qasas-2,1st
+167,M Sadiq Sb,Dom Ba ,Civics-2,2nd
+168,M Noman Sb,Dom Ba ,H Nahw,3rd
+169,---,Dom Ba ,Tajweed-2,4th
+170,M Aurangzeb Sb,Dom Ba ,Alarabiyyah-2,5th
+171,M Ab Mateen Sb,Dom Ba ,Nurul Ezah,6th
+172,M Ishaq Sb,Dom Ba ,English-2,7th
+173,M Sanawwar Sb,Dom Ba ,Math-2,8th
+174,M Ubaidullah Sb,Dom Ba ,Ilmus Segah,9th
+175,M Ab Mateen Sb,Dom Ba ,A Wazeh,10th
+176,M Noman Sb,Dom Ba ,Supervision,---
+177,M Nizamuddin Sb,Dom Jeem,Nurul Ezah,1st
+178,M Noman Sb,Dom Jeem,Math-2,2nd
+179,M Ehsan Sb,Dom Jeem,English-2,3rd
+180,---,Dom Jeem,Tajweed-2,4th
+181,M Noman Sb,Dom Jeem,Alarabiyyah-2,5th
+182,M Zubair Sb,Dom Jeem,H Nahw,6th
+183,Q Husain Sb,Dom Jeem,Qasas-2,7th
+184,M Nazim Sb,Dom Jeem,Civics-2,8th
+185,M Nafees Sb,Dom Jeem,Ilmus Segah,9th
+186,M Huzaifa Sb Marul,Dom Jeem,A Wazeh,10th
+187,M Nizamuddin Sb,Dom Jeem,Supervision,---
+188,M Tanweer Sb,Dom Dal,Qasas-2,1st
+189,M Riyaz Sb,Dom Dal,Civics-2,2nd
+190,M Rehan Sb,Dom Dal,H Nahw,3rd
+191,---,Dom Dal,Tajweed-2,4th
+192,M Nizamuddin Sb,Dom Dal,Alarabiyyah-2,5th
+193,M Arif Sb Khagadya,Dom Dal,Nurul Ezah,6th
+194,M Abdullah Sb Muzaffarpuri,Dom Dal,English-2,7th
+195,M Huzaifa Sb Marul,Dom Dal,Math-2,8th
+196,Q Husain Sb,Dom Dal,Ilmus Segah,9th
+197,M Abdullah Sb Muzaffarpuri,Dom Dal,A Wazeh,10th
+198,M Tanweer Sb,Dom Dal,Supervision,---
+199,M Saeed Sb,Dom Ha,Nurul Ezah,1st
+200,M Ishaq Sb,Dom Ha,Civics-2,2nd
+201,M Ab Qayyum Sb,Dom Ha,Qasas-2,3rd
+202,M Rafeeq Alam Sb,Dom Ha,Ilmus Segah,4th
+203,M Shakir Sb,Dom Ha,Alarabiyyah-2,5th
+204,M Aurangzeb Sb,Dom Ha,H Nahw,6th
+205,M Hassan Sb,Dom Ha,English-2,7th
+206,M Iqrar Sb,Dom Ha,Math-2,8th
+207,Q Ab Rahman Sb,Dom Ha,Tajweed-2,9th
+208,M Hameed Sb,Dom Ha,A Wazeh,10th
+209,M Ishaq Sb,Dom Ha,Supervision,---
+210,M Ab Sattar Sb,Dom Waw,Qasas-2,1st
+211,M Mujahid Sb,Dom Waw,H Nahw,2nd
+212,M Uwais Sb Nawapuri,Dom Waw,Ilmus Segah,3rd
+213,M Ab Mateen Sb,Dom Waw,Civics-2,4th
+214,,Dom Waw,Tajweed-2,5th
+215,Q Ramizuddin Sb,Dom Waw,Nurul Ezah,6th
+216,Shamim Akhtar Sir,Dom Waw,English-2,7th
+217,M Ehsan Sb,Dom Waw,Math-2,8th
+218,M Hameed Sb,Dom Waw,Alarabiyyah-2,9th
+219,M Muhammad Sb,Dom Waw,A Wazeh,10th
+220,M Ab Sattar Sb,Dom Waw,Supervision,---
+221,M Rafeeq Alam Sb,Dom Za,Qasas-2,1st
+222,M Nafees Sb,Dom Za,H Nahw,2nd
+223,M Raziyurrahman Sb,Dom Za,Ilmus Segah,3rd
+224,M Zubair Sb,Dom Za,Civics-2,4th
+225,M Maher Sb,Dom Za,Math-2,5th
+226,M Hilal Sb,Dom Za,Nurul Ezah,6th
+227,Q Shafeeq Sb,Dom Za,Alarabiyyah-2,7th
+228,M Saeeduddin Sb,Dom Za,English-2,8th
+229,Q Umar Sb,Dom Za,Tajweed-2,9th
+230,M Ziyaullah Sb,Dom Za,A Wazeh,10th
+231,M Rafeeq Alam Sb,Dom Za,Supervision,---
+232,M Danish Sb,Dom Hha,Nurul Ezah,1st
+233,M Tanweer Sb,Dom Hha,English-2,2nd
+234,M Ziyaullah Sb,Dom Hha,H Nahw,3rd
+235,M Ab Gafur Sb,Dom Hha,Qasas-2,4th
+236,M Ab Azim Sb,Dom Hha,Civics-2,5th
+237,M Arif Sb charner,Dom Hha,Math-2,6th
+238,M Huzaifa Sb Marul,Dom Hha,Alarabiyyah-2,7th
+239,,Dom Hha,Tajweed-2,8th
+240,Q Ramizuddin Sb,Dom Hha,Ilmus Segah,9th
+241,M Arif Sb charner,Dom Hha,A Wazeh,10th
+242,M Danish Sb,Dom Hha,Supervision,---
+243,M Arif Sb Khagadya,Dom Ta,Qasas-2,1st
+244,M Arif Sb Khagadya,Dom Ta,H Nahw,2nd
+245,Q Shafeeq Sb,Dom Ta,Ilmus Segah,3rd
+246,Q Sajid Sb,Dom Ta,Math-2,4th
+247,M Sulaiman Sb,Dom Ta,Alarabiyyah-2,5th
+248,M Ziyaullah Sb,Dom Ta,Nurul Ezah,6th
+249,M Tanweer Sb,Dom Ta,English-2,7th
+250,Q Ab Salam Sb,Dom Ta,Tajweed-2,8th
+251,M Muhammad Sb,Dom Ta,Civics-2,9th
+252,M Uwais Sb Nawapuri,Dom Ta,A Wazeh,10th
+253,M Jahangeer Sb,Dom Ta,Supervision,---
+254,M Nazim Sb,Dom Ya,Nurul Ezah,1st
+255,M Kamal Sb,Dom Ya,English-2,2nd
+256,M Aurangzeb Sb,Dom Ya,Ilmus Segah,3rd
+257,,Dom Ya,Tajweed-2,4th
+258,M Zubair Sb,Dom Ya,Alarabiyyah-2,5th
+259,M Nazim Sb,Dom Ya,H Nahw,6th
+260,M Rehan Sb,Dom Ya,Qasas-2,7th
+261,Q Husain Sb,Dom Ya,Math-2,8th
+262,M Mujahid Sb,Dom Ya,Civics-2,9th
+263,M Sadiq Sb,Dom Ya,A Wazeh,10th
+264,M Nazim Sb,Dom Ya,Supervision,---
+265,M Ab Azim Sb,Som Alif ,Tarjama-3,1st
+266,M Muhammad Sb,Som Alif ,Shashi,2nd
+267,M Sanawwar Sb,Som Alif ,English-3,3rd
+268,M Danish Sb,Som Alif ,Kafiya,4th
+269,M Nazim Sb,Som Alif ,Alarabiyyah-2-3,5th
+270,Q Uwais Sb,Som Alif ,Tajweed-3,6th
+271,M Aurangzeb Sb,Som Alif ,Math-3,7th
+272,M Sadiq Sb,Som Alif ,Civics-3,8th
+273,M Raziyurrahman Sb,Som Alif ,Mantiq,9th
+274,M Ab Gafur Sb,Som Alif ,Quduri,10th
+275,M Ab Azim Sb,Som Alif ,Supervision,---
+276,M Noman Sb,Som Ba ,Tarjama-3,1st
+277,M Umer Sb,Som Ba ,Shashi,2nd
+278,M Hassan Sb,Som Ba ,English-3,3rd
+279,M Raziyurrahman Sb,Som Ba ,Kafiya,4th
+280,M Rehan Sb,Som Ba ,Alarabiyyah-2-3,5th
+281,M Umer Sb,Som Ba ,Math-3,6th
+282,,Som Ba ,Tajweed-3,7th
+283,M Sulaiman Sb,Som Ba ,Civics-3,8th
+284,M Ehsan Sb,Som Ba ,Mantiq,9th
+285,M Afzal Sb,Som Ba ,Quduri,10th
+286,M Sulaiman Sb,Som Ba ,Supervision,---
+287,M Rehan Sb,Som Jeem,Tarjama-3,1st
+288,M Murshid Sb,Som Jeem,Shashi,2nd
+289,M Ab Gafur Sb,Som Jeem,Kafiya,3rd
+290,M Ubaidullah Sb,Som Jeem,Mantiq,4th
+291,M Muhammad Sb,Som Jeem,Alarabiyyah-2-3,5th
+292,---,Som Jeem,Tajweed-3,6th
+293,M Arif Sb charner,Som Jeem,Math-3,7th
+294,M Umer Sb,Som Jeem,Civics-3,8th
+295,M Sanawwar Sb,Som Jeem,English-3,9th
+296,M Ubaidullah Sb,Som Jeem,Quduri,10th
+297,M Rehan Sb,Som Jeem,Supervision,---
+298,M Ab Gafur Sb,Som Dal,Tarjama-3,1st
+299,M Hameed Sb,Som Dal,Quduri,2nd
+300,M Sulaiman Sb,Som Dal,Mantiq,3rd
+301,M Nafees Sb,Som Dal,Social Science,4th
+302,M Huzaifa Sb Marul,Som Dal,Alarabiyyah-2-3,5th
+303,Q Sajid Sb,Som Dal,Tajweed-3,6th
+304,M Ab Azim Sb,Som Dal,Shashi,7th
+305,M Ab Qayyum Sb,Som Dal,SSC Urdu,8th
+306,M Ishaq Sb,Som Dal,SSC English,9th
+307,M Ab Qayyum Sb,Som Dal,Kafiya,10th
+308,M Ab Gafur Sb,Som Dal,Supervision,---
+309,M Umer Sb,Som Ha,Quduri,1st
+310,M Ab Hasib Sb,Som Ha,Tarjama-3,2nd
+311,M Kamal Sb,Som Ha,Mantiq,3rd
+312,M Shamshad Sb,Som Ha,Social Science,4th
+313,Q Ramizuddin Sb,Som Ha,Alarabiyyah-2-3,5th
+314,Q Jabir Sb,Som Ha,Tajweed-3,6th
+315,M Noman Sb,Som Ha,Shashi,7th
+316,M Tanweer Sb,Som Ha,SSC English,8th
+317,M Jawed Sb Purniya,Som Ha,SSC Urdu,9th
+318,M Sadrulhasan Sb,Som Ha,Kafiya,10th
+319,M Umer Sb,Som Ha,Supervision,---
+320,M Ab Mateen Sb,Som Waw,Quduri,1st
+321,Q Muhammad Ali Sb,Som Waw,Tarjama-3,2nd
+322,M Hameed Sb,Som Waw,Kafiya,3rd
+323,M Kamal Sb,Som Waw,SSC Urdu,4th
+324,Q Ab Rahman Sb,Som Waw,Tajweed-3,5th
+325,M Ab Sattar Sb,Som Waw,Alarabiyyah-2-3,6th
+326,Q Ramizuddin Sb,Som Waw,Shashi,7th
+327,M Subhan Sb,Som Waw,Computer-3,8th
+328,M Ab Sattar Sb,Som Waw,Mantiq,9th
+329,M Sanawwar Sb,Som Waw,SSC English,10th
+330,M Kamal Sb,Som Waw,Supervision,---
+331,M Nafees Sb,Som Za,Tarjama-3,1st
+332,M Danish Sb,Som Za,Quduri,2nd
+333,M Arif Sb Khagadya,Som Za,Kafiya,3rd
+334,Q Ramizuddin Sb,Som Za,SSC Urdu,4th
+335,M Umer Sb,Som Za,Alarabiyyah-2-3,5th
+336,Q Fayyaz Sb,Som Za,Tajweed-3,6th
+337,M Hameed Sb,Som Za,Shashi,7th
+338,M Kamal Sb,Som Za,Social Science,8th
+339,M Hilal Sb,Som Za,Mantiq,9th
+340,Shamim Akhtar Sir,Som Za,SSC English,10th
+341,M Nafees Sb,Som Za,Supervision,---
+342,M Raziyurrahman Sb,Chaharum Alif ,Tarjama-4,1st
+343,Q Sajid Sb,Chaharum Alif ,Tajweed-4,2nd
+344,M Sadiq Sb,Chaharum Alif ,Riyazussalihin,3rd
+345,Q Husain Sb,Chaharum Alif ,Math-4,4th
+346,M Hilal Sb,Chaharum Alif ,S Wiqaya,5th
+347,M Ehsan Sb,Chaharum Alif ,Civics-4,6th
+348,M Nafees Sb,Chaharum Alif ,Nurul Anwar-4,7th
+349,M Noman Sb,Chaharum Alif ,S Ibne Aqeel,8th
+350,M Sulaiman Sb,Chaharum Alif ,English-4,9th
+351,M Ab Rahman Sb Milli,Chaharum Alif ,Mukhtarat-4,10th
+352,M Raziyurrahman Sb,Chaharum Alif ,Supervision,---
+353,M Uwais Sb Wastanwi,Chaharum Ba,Tarjama-4,1st
+354,Q Uwais Sb,Chaharum Ba,Tajweed-4,2nd
+355,M Uwais Sb Wastanwi,Chaharum Ba,Riyazussalihin,3rd
+356,M Ishaq Sb,Chaharum Ba,Math-4,4th
+357,M Iftekhar Sb Samastipur,Chaharum Ba,Nurul Anwar-4,5th
+358,M Ab Qayyum Sb,Chaharum Ba,Civics-4,6th
+359,M Sadiq Sb,Chaharum Ba,S Wiqaya,7th
+360,M Mujahid Sb,Chaharum Ba,S Ibne Aqeel,8th
+361,M Hassan Sb,Chaharum Ba,English-4,9th
+362,M Arif Sb Khagadya,Chaharum Ba,Mukhtarat-4,10th
+363,M Arif Sb Khagadya,Chaharum Ba,Supervision,---
+364,M Sadiq Sb,Chaharum Jeem,Tarjama-4,1st
+365,----,Chaharum Jeem,Tajweed-4,2nd
+366,M Altaf Sb,Chaharum Jeem,Riyazussalihin,3rd
+367,,Chaharum Jeem,,4th
+368,M Arif Sb Khagadya,Chaharum Jeem,S Wiqaya,5th
+369,,Chaharum Jeem,,6th
+370,M Hilal Sb,Chaharum Jeem,Nurul Anwar-4,7th
+371,M Sadrulhasan Sb,Chaharum Jeem,S Ibne Aqeel,8th
+372,,Chaharum Jeem,,9th
+373,Q Ramizuddin Sb,Chaharum Jeem,Mukhtarat-4,10th
+374,M Sadiq Sb,Chaharum Jeem,Supervision,---
+375,M Murshid Sb,Chaharum Dal,Tarjama-4,1st
+376,Q Umar Sb,Chaharum Dal,Tajweed-4,2nd
+377,M Sadrulhasan Sb,Chaharum Dal,Riyazussalihin,3rd
+378,M Nazim Sb,Chaharum Dal,HSC Urdu,4th
+379,M Ab Qayyum Sb,Chaharum Dal,S Wiqaya,5th
+380,M Maher Sb,Chaharum Dal,Computer-4,6th
+381,M Sadrulhasan Sb,Chaharum Dal,Nurul Anwar-4,7th
+382,M Murshid Sb,Chaharum Dal,S Ibne Aqeel,8th
+383,M Kamal Sb,Chaharum Dal,12th English,9th
+384,M Raziyurrahman Sb,Chaharum Dal,Mukhtarat-4,10th
+385,M Sadrulhasan Sb,Chaharum Dal,Supervision,---
+386,M Mujahid Sb,Chaharum Ha,Tarjama-4,1st
+387,Q Jabir Sb,Chaharum Ha,Tajweed-4,2nd
+388,M Ab Rahman Sb Milli,Chaharum Ha,Riyazussalihin,3rd
+389,M Jawed Sb Purniya,Chaharum Ha,HSC Urdu,4th
+390,M Ab Gafur Sb,Chaharum Ha,Nurul Anwar-4,5th
+391,Shamim Akhtar Sir,Chaharum Ha,HSC English,6th
+392,M Mujahid Sb,Chaharum Ha,S Wiqaya,7th
+393,M Ab Azim Sb,Chaharum Ha,S Ibne Aqeel,8th
+394,M Maher Sb,Chaharum Ha,Computer-4,9th
+395,M Ab Sattar Sb,Chaharum Ha,Mukhtarat-4,10th
+396,M Mujahid Sb,Chaharum Ha,Supervision,---
+397,M Ubaidullah Sb,Panjum Alif,Tarjama-5,1st
+398,M Mujeeburrahman Sb,Panjum Alif,Siraji,2nd
+399,M Ubaidullah Sb,Panjum Alif,Hidaya-5.1,3rd
+400,M Iftekhar Sb Bastawi,Panjum Alif,Nurul Anwar-5,4th
+401,M Sadrulhasan Sb,Panjum Alif,Balagat,5th
+402,M Altaf Sb,Panjum Alif,Ulume Hadees,6th
+403,M Umer Sb,Panjum Alif,Mukhtarat-5,7th
+404,M Ab Mateen Sb,Panjum Alif,Hidaya-5.2,8th
+405,M Iftekhar Sb Samastipur,Panjum Alif,Muqaddma Hadis,9th
+406,M Tanweer Sb,Panjum Alif,English-5,10th
+407,M Ubaidullah Sb,Panjum Alif,Supervision,---
+408,M Ab Rahman Sb Milli,Panjum Ba,Tarjama-5,1st
+409,M Ab Mateen Sb,Panjum Ba,Siraji,2nd
+410,M Ab Azim Sb,Panjum Ba,Hidaya-5.1,3rd
+411,M Murshid Sb,Panjum Ba,Nurul Anwar-5,4th
+412,M Murshid Sb,Panjum Ba,Balagat,5th
+413,M Yahya Wasif Sb,Panjum Ba,Ulume Hadees,6th
+414,M Ab Rahman Sb Milli,Panjum Ba,Mukhtarat-5,7th
+415,M Raziyurrahman Sb,Panjum Ba,Hidaya-5.2,8th
+416,M Ab Mateen Sb,Panjum Ba,Muqaddma Hadis,9th
+417,M Sulaiman Sb,Panjum Ba,English-5,10th
+418,M Ab Mateen Sb,Panjum Ba,Supervision,---
+419,M Ab Qayyum Sb,Panjum Jeem,Tarjama-5,1st
+420,M Afzal Sb,Panjum Jeem,Siraji,2nd
+421,M Umer Sb,Panjum Jeem,Hidaya-5.1,3rd
+422,M Sadiq Sb,Panjum Jeem,Nurul Anwar-5,4th
+423,M Faruq Sb Madni,Panjum Jeem,Balagat,5th
+424,M Raziyurrahman Sb,Panjum Jeem,Ulume Hadees,6th
+425,M Murshid Sb,Panjum Jeem,Mukhtarat-5,7th
+426,Q Arif Sb,Panjum Jeem,Hidaya-5.2,8th
+427,M Afzal Sb,Panjum Jeem,Muqaddma Hadis,9th
+428,M Rafeeq Alam Sb,Panjum Jeem,English-5,10th
+429,M Afzal Sb,Panjum Jeem,Supervision,---
+430,M Ehsan Sb,Panjum Dal,HSC English,10th
+431,M Faruq Sb Madni,Shashum Alif,Jalalain-6.1,1st
+432,M Sadrulhasan Sb,Shashum Alif,Jalalain-6.3,2nd
+433,M Iftekhar Sb Samastipur,Shashum Alif,Hidaya-6.1,3rd
+434,M Ab Rahman Sb Madni,Shashum Alif,Mishkat-1,4th
+435,Q Muhammad Ali Sb,Shashum Alif,Mishkat-2,5th
+436,Q Arif Sb/M Afzal Sb,Shashum Alif,Fiqhul Buyu/Ibne Salah,6th
+437,M Ubaidullah Sb,Shashum Alif,Nasafiyyah,7th
+438,M Afzal Sb,Shashum Alif,Hidaya-6.12,8th
+439,M Murshid Sb,Shashum Alif,Mishkat-2,9th
+440,M Iftekhar Sb Bastawi,Shashum Alif,Jalalain-6.2,10th
+441,M Murshid Sb,Shashum Alif,Supervision,---
+442,Q Arif Sb,Shashum Ba,Jalalain-6.3,1st
+443,M Iftekhar Sb Samastipur,Shashum Ba,Mishkat-1,2nd
+444,M Shamshad Sb,Shashum Ba,Hidaya-6.1,3rd
+445,Q Arif Sb,Shashum Ba,Mishkat-2,4th
+446,M Ab Hasib Sb,Shashum Ba,Jalalain-6.1,5th
+447,M Iftekhar Sb Samastipur,Shashum Ba,Jalalain-6.2,6th
+448,M Ab Qayyum Sb,Shashum Ba,Hidaya-6.2,7th
+449,M Iftekhar Sb Samastipur,Shashum Ba,Nasafiyyah,8th
+450,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Shashum Ba,Fiqhul Buyu/Ibne Salah,9th
+451,M Ab Azim Sb,Shashum Ba,Mishkat-3,10th
+452,M Ab Qayyum Sb,Shashum Ba,Supervision,---
+453,M Rizwanuddin Sb,Haftum,Bukhari-1.1,1st
+454,M Faruq Sb Madni,Haftum,Abu Daud,2nd
+455,M Faruq Sb Madni,Haftum,Nasai,3rd
+456,M Huzaifa Sb Wastanwi,Haftum,Bukhari-1.2,4th
+457,M Huzaifa Sb Wastanwi,Haftum,Muslim,5th
+458,M Jafar Sb,Haftum,Tahawi,6th
+459,M Rizwanuddin Sb,Haftum,Tirmizi-1,7th
+460,M Rizwanuddin Sb,Haftum,Tirmizi-2,8th
+461,M Rizwanuddin Sb,Haftum,Bukhari-1.3,9th
+462,Q Arif Sb,Haftum,Baizawi,10th
+463,M Faruq Sb Madni/Q Arif Sb,Haftum,Supervision,---
+464,Q Tayyab Sb,Aidadiya Alif,Quran,1st
+465,Q Tayyab Sb,Aidadiya Alif,Quran,2nd
+466,Q Ab Rashid Sb,Aidadiya Alif,Baheshti Samar,3rd
+467,M Naeem Sb,Aidadiya Alif,Urdu Ki Dusri,4th
+468,M Naeem Sb,Aidadiya Alif,Urdu Ki Dusri,5th
+469,M Mukhtar Sb,Aidadiya Alif,Tareekhul Islam,6th
+470,M Mukhtar Sb,Aidadiya Alif,Islam kya hai,7th
+471,M Khabbab Sb Wastanwi,Aidadiya Alif,Phonics,8th
+472,M Jawed Sb Kashmiri,Aidadiya Alif,Rasule Arabi,9th
+473,---,Aidadiya Alif,Tajweed-0,10th
+474,M Naeem Sb,Aidadiya Alif,Supervision,---
+475,M Mukhtar Sb,Aidadiya Ba,Urdu Ki Dusri,1st
+476,M Mukhtar Sb,Aidadiya Ba,Urdu Ki Dusri,2nd
+477,Q Tayyab Sb,Aidadiya Ba,Quran,3rd
+478,Q Tayyab Sb,Aidadiya Ba,Quran,4th
+479,---,Aidadiya Ba,Tajweed-0,5th
+480,M Ab Gani Sb,Aidadiya Ba,Baheshti Samar,6th
+481,M Masud Sb,Aidadiya Ba,Rasule Arabi,7th
+482,Q Ab Rashid Sb,Aidadiya Ba,Phonics,8th
+483,M Naeem Sb,Aidadiya Ba,Tareekhul Islam,9th
+484,M Jawed Sb Kashmiri,Aidadiya Ba,Islam kya hai,10th
+485,Q Tayyab Sb,Aidadiya Ba,Supervision,---
+486,---,Aidadiya Jeem,Tajweed-0,1st
+487,M Khabbab Sb Wastanwi,Aidadiya Jeem,Deeni Taleem Ka Risala-2,2nd
+488,M Riyaz Sb,Aidadiya Jeem,Urdu Ki Dusri,3rd
+489,M Khabbab Sb Wastanwi,Aidadiya Jeem,Deeni Taleem Ka Risala-2,4th
+490,Q Abdullah Sb,Aidadiya Jeem,Baheshti Samar,5th
+491,Q Tayyab Sb,Aidadiya Jeem,Quran,6th
+492,Q Tayyab Sb,Aidadiya Jeem,Quran,7th
+493,M Shakir Sb,Aidadiya Jeem,Phonics,8th
+494,M Riyaz Sb,Aidadiya Jeem,Urdu Ki Dusri,9th
+495,M Riyaz Sb,Aidadiya Jeem,Urdu Ki Dusri,10th
+496,M Riyaz Sb,Aidadiya Jeem,Supervision,---
+497,---,Aidadiya Dal,Tajweed-0,1st
+498,M Jahangeer Sb,Aidadiya Dal,Urdu Ki Dusri,2nd
+499,M Jahangeer Sb,Aidadiya Dal,Urdu Ki Dusri,3rd
+500,M Jahangeer Sb,Aidadiya Dal,Urdu Ki Dusri,4th
+501,Q Ab Rashid Sb,Aidadiya Dal,Deeni Taleem Ka Risala-2,5th
+502,Q Ab Rashid Sb,Aidadiya Dal,Deeni Taleem Ka Risala-2,6th
+503,M Sanawwar Sb,Aidadiya Dal,Phonics,7th
+504,M Mukhtar Sb,Aidadiya Dal,Baheshti Samar,8th
+505,Q Tayyab Sb,Aidadiya Dal,Quran,9th
+506,Q Tayyab Sb,Aidadiya Dal,Quran,10th
+507,Q Ab Rashid Sb,Aidadiya Dal,Supervision,---
+508,M Iftekhar Sb Bastawi,Dawah,Ar En Translation,1st
+509,Shamim Akhtar Sir,Dawah,Text Book,2nd
+510,M Rafeeq Alam Sb,Dawah,Language Proficiency,3rd
+511,M Sulaiman Sb,Dawah,Ur En Traslation,4th
+512,M Kamal Sb,Dawah,Grammar,5th
+513,M Hassan Sb,Dawah,Voice & Accent,6th
+514,M Iftekhar Sb Bastawi,Dawah,Textbook,7th
+515,M Iftekhar Sb Bastawi,Dawah,Text Book,8th
+516,M Iftekhar Sb Bastawi,Dawah,Spoken,9th
+517,M Kamal Sb,Dawah,Dawah Studies,10th
+518,M Iftekhar Sb Bastawi,Dawah,Supervision,---
+519,M Hameed Sb,M Awwal Alif,Q Nahw-1,1st
+520,Q Ramizuddin Sb,M Awwal Alif,Tareekhe Islam,2nd
+521,M Danish Sb,M Awwal Alif,Sarf-1,3rd
+522,Q Jabir Sb,M Awwal Alif,Tajweed-1,4th
+523,M Arif Sb charner,M Awwal Alif,English-1,5th
+524,M Riyaz Sb,M Awwal Alif,Civics-1,6th
+525,M Nizamuddin Sb,M Awwal Alif,Safwatul Masadir,7th
+526,M Ab Gafur Sb,M Awwal Alif,Tafheemul Fiqah,8th
+527,Anwar Sir,M Awwal Alif,Math-1,9th
+528,M Shamshad Sb,M Awwal Alif,Durus-1,10th
+529,M Hameed Sb,M Awwal Alif,Supervision,---
+530,Q Ramizuddin Sb,M Awwal Ba,Q Nahw-1,1st
+531,M Nizamuddin Sb,M Awwal Ba,Tareekhe Islam,2nd
+532,M Mujahid Sb,M Awwal Ba,Sarf-1,3rd
+533,Q Umar Sb,M Awwal Ba,Tajweed-1,4th
+534,M Yahya Wasif Sb,M Awwal Ba,Durus-1,5th
+535,M Uwais Sb Nawapuri,M Awwal Ba,Safwatul Masadir,6th
+536,M Sulaiman Sb,M Awwal Ba,Civics-1,7th
+537,M Nafees Sb,M Awwal Ba,Tafheemul Fiqah,8th
+538,Shamim Akhtar Sir,M Awwal Ba,English-1,9th
+539,Anwar Sir,M Awwal Ba,Math-1,10th
+540,Q Ramizuddin Sb,M Awwal Ba,Supervision,---
+541,---,M Dom Alif,Tajweed-2,1st
+542,M Altaf Sb,M Dom Alif,Taiseere Insha,2nd
+543,Shamim Akhtar Sir,M Dom Alif,English-2,3rd
+544,M Shakir Sb,M Dom Alif,Civics-2,4th
+545,M Shamshad Sb,M Dom Alif,Durus-2,5th
+546,M Shamshad Sb,M Dom Alif,Math-2,6th
+547,M Ab Sattar Sb,M Dom Alif,Nurul Ezah,7th
+548,M Hameed Sb,M Dom Alif,Ilmussega,8th
+549,M Yahya Wasif Sb,M Dom Alif,Bidayatunnahwi,9th
+550,M Umer Sb,M Dom Alif,Qasas-2,10th
+551,M Shamshad Sb,M Dom Alif,Supervision,---
+552,M Altaf Sb,M Som Alif,Tarjama-3,1st
+553,M Shamshad Sb,M Som Alif,Quduri,2nd
+554,M Yahya Wasif Sb,M Som Alif,Alarabiyyah-2-3,3rd
+555,M Ziyaullah Sb,M Som Alif,Civics-3,4th
+556,Q Sajid Sb,M Som Alif,Tajweed-3,5th
+557,Q Husain Sb,M Som Alif,Math-3,6th
+558,M Altaf Sb,M Som Alif,Shashi,7th
+559,M Rafeeq Alam Sb,M Som Alif,English-3,8th
+560,M Altaf Sb,M Som Alif,S Ibne Aqeel-3,9th
+561,M Yahya Wasif Sb,M Som Alif,Alinshaul Hurr,10th
+562,M Altaf Sb,M Som Alif,Supervision,---
+563,M Yahya Wasif Sb,M Chaharum Alif,Tarjama-4,1st
+564,Q Fayyaz Sb,M Chaharum Alif,Tajweed-4,2nd
+565,M Ab Sattar Sb,M Chaharum Alif,Nurul Anwar-4,3rd
+566,M Ab Azim Sb,M Chaharum Alif,Civics-4,4th
+567,M Ab Rahman Madni,M Chaharum Alif,Riyazussalihin,5th
+568,M Rafeeq Alam Sb,M Chaharum Alif,English-4,6th
+569,M Maher Sb,M Chaharum Alif,Computer-4,7th
+570,M Yahya Wasif Sb,M Chaharum Alif,S Wiqaya,8th
+571,M Shamshad Sb,M Chaharum Alif,S Ibne Aqeel,9th
+572,M Altaf Sb,M Chaharum Alif,Mukhtarat-4,10th
+573,M Yahya Wasif Sb,M Chaharum Alif,Supervision,---
+574,M Jafar Sb,Ifta,Durre Mukhtar,1st
+575,M Jafar Sb,Ifta,Rasmul Mufti,2nd
+576,M Afzal Sb,Ifta,Siraji,3rd
+577,M Afzal Sb,Ifta,Tahqeeqe Fatawa,4th
+578,M Afzal Sb,Ifta,Tahqeeqe Fatawa,5th
+579,M Jafar Sb,Ifta,Tamreen,6th
+580,M Jafar Sb,Ifta,Tamreen,7th
+581,M Jafar Sb,Ifta,Tamreen,8th
+582,M Jafar Sb,Ifta,Tamreen,9th
+583,M Jafar Sb,Ifta,Tamreen,10th
+584,----,Ifta,Supervision,---
+585,Teachers,Empty,---,1st
+586,Teachers,Empty,---,2nd
+587,Teachers,Empty,---,3rd
+588,Teachers,Empty,---,4th
+589,Teachers,Empty,---,5th
+590,Teachers,Empty,---,6th
+591,Teachers,Empty,---,7th
+592,Teachers,Empty,---,8th
+593,Teachers,Empty,---,9th
+594,Teachers,Empty,---,10th
+595,M Uwais Sb Nawapuri,Empty,---,5th
+596,M Uwais Sb Nawapuri,Empty,---,8th
+597,Q Sajid Sb,Empty,---,1st
+598,Q Sajid Sb,Empty,---,7th
+599,Q Sajid Sb,Empty,---,8th
+600,Q Sajid Sb,Empty,---,9th
+601,Q Sajid Sb,Empty,---,10th
+602,Q Shafeeq Sb,Empty,---,6th
+603,Q Shafeeq Sb,Empty,---,8th
+604,M Rafeeq Sb Katihari,Empty,---,1st
+605,M Rafeeq Sb Katihari,Empty,---,2nd
+606,M Rafeeq Sb Katihari,Empty,---,3rd
+607,M Rafeeq Sb Katihari,Empty,---,4th
+608,M Rafeeq Sb Katihari,Empty,---,6th
+609,M Rafeeq Sb Katihari,Empty,---,7th
+610,M Rafeeq Sb Katihari,Empty,---,8th
+611,M Rafeeq Sb Katihari,Empty,---,9th
+612,M Rafeeq Sb Katihari,Empty,---,10th
+613,M Khabbab Sb Wastanwi,Empty,---,1st
+614,M Khabbab Sb Wastanwi,Empty,---,7th
+615,M Khabbab Sb Wastanwi,Empty,---,10th
+616,---,Empty,---,2nd
+617,M Riyaz Sb,Empty,---,1st
+618,M Noman Sb,Empty,---,4th
+619,M Noman Sb,Empty,---,9th
+620,M Abu Sufyan Sb,Empty,---,3rd
+621,M Abu Sufyan Sb,Empty,---,5th
+622,M Abu Sufyan Sb,Empty,---,6th
+623,M Abu Sufyan Sb,Empty,---,7th
+624,M Abu Sufyan Sb,Empty,---,8th
+625,M Abu Sufyan Sb,Empty,---,9th
+626,M Abu Sufyan Sb,Empty,---,10th
+627,M Hameed Sb,Empty,---,5th
+628,M Hameed Sb,Empty,---,6th
+629,M Jahangeer Sb,Empty,---,1st
+630,M Jahangeer Sb,Empty,---,7th
+631,M Iqrar Sb,Empty,---,4th
+632,M Iqrar Sb,Empty,---,9th
+633,M Iqrar Sb,Empty,---,10th
+634,M Nizamuddin Sb,Empty,---,3rd
+635,M Nizamuddin Sb,Empty,---,4th
+636,M Nizamuddin Sb,Empty,---,6th
+637,Q Abdullah Sb,Empty,---,1st
+638,Q Abdullah Sb,Empty,---,2nd
+639,Q Abdullah Sb,Empty,---,3rd
+640,Q Abdullah Sb,Empty,---,6th
+641,Q Abdullah Sb,Empty,---,7th
+642,Q Abdullah Sb,Empty,---,8th
+643,Q Abdullah Sb,Empty,---,10th
+644,M Shakir Sb,Empty,---,3rd
+645,M Shakir Sb,Empty,---,7th
+646,M Huzaifa Sb Marul,Empty,---,4th
+647,M Huzaifa Sb Marul,Empty,---,9th
+648,M Tanweer Sb,Empty,---,4th
+649,M Tanweer Sb,Empty,---,9th
+650,M Saeed Sb,Empty,---,2nd
+651,M Saeed Sb,Empty,---,5th
+652,M Saeed Sb,Empty,---,6th
+653,M Saeed Sb,Empty,---,7th
+654,M Saeed Sb,Empty,---,8th
+655,M Saeed Sb,Empty,---,9th
+656,M Saeed Sb,Empty,---,10th
+657,M Sanawwar Sb,Empty,---,4th
+658,M Sanawwar Sb,Empty,---,6th
+659,M Ishaq Sb,Empty,---,1st
+660,M Ishaq Sb,Empty,---,10th
+661,M Ziyaullah Sb,Empty,---,5th
+662,M Ziyaullah Sb,Empty,---,9th
+663,M Zubair Sb,Empty,---,3rd
+664,M Zubair Sb,Empty,---,8th
+665,M Arif Sb charner,Empty,---,4th
+666,M Arif Sb charner,Empty,---,9th
+667,M Hassan Sb,Empty,---,1st
+668,M Hassan Sb,Empty,---,2nd
+669,M Hassan Sb,Empty,---,5th
+670,M Hassan Sb,Empty,---,8th
+671,M Hassan Sb,Empty,---,10th
+672,M Faizan Sb Bhadi,Empty,---,1st
+673,M Faizan Sb Bhadi,Empty,---,2nd
+674,M Faizan Sb Bhadi,Empty,---,3rd
+675,M Faizan Sb Bhadi,Empty,---,4th
+676,M Faizan Sb Bhadi,Empty,---,5th
+677,M Faizan Sb Bhadi,Empty,---,6th
+678,M Faizan Sb Bhadi,Empty,---,7th
+679,M Faizan Sb Bhadi,Empty,---,8th
+680,M Faizan Sb Bhadi,Empty,---,9th
+681,M Abdullah Sb Muzaffarpuri,Empty,---,3rd
+682,M Abdullah Sb Muzaffarpuri,Empty,---,5th
+683,M Abdullah Sb Muzaffarpuri,Empty,---,6th
+684,M Abdullah Sb Muzaffarpuri,Empty,---,9th
+685,M Naeem Sb,Empty,---,1st
+686,M Naeem Sb,Empty,---,2nd
+687,M Naeem Sb,Empty,---,3rd
+688,M Naeem Sb,Empty,---,7th
+689,M Naeem Sb,Empty,---,10th
+690,M Aurangzeb Sb,Empty,---,4th
+691,M Aurangzeb Sb,Empty,---,8th
+692,M Harun Sb,Empty,---,1st
+693,M Harun Sb,Empty,---,2nd
+694,M Harun Sb,Empty,---,4th
+695,M Harun Sb,Empty,---,5th
+696,M Harun Sb,Empty,---,6th
+697,M Harun Sb,Empty,---,7th
+698,M Harun Sb,Empty,---,9th
+699,M Harun Sb,Empty,---,10th
+700,M Maher Sb,Empty,---,1st
+701,M Maher Sb,Empty,---,3rd
+702,M Maher Sb,Empty,---,8th
+703,M Maher Sb,Empty,---,10th
+704,M Jawed Sb Purniya,Empty,---,1st
+705,M Jawed Sb Purniya,Empty,---,2nd
+706,M Jawed Sb Purniya,Empty,---,5th
+707,M Jawed Sb Purniya,Empty,---,6th
+708,M Jawed Sb Purniya,Empty,---,7th
+709,M Saeeduddin Sb,Empty,---,1st
+710,M Saeeduddin Sb,Empty,---,2nd
+711,M Saeeduddin Sb,Empty,---,3rd
+712,M Saeeduddin Sb,Empty,---,5th
+713,M Saeeduddin Sb,Empty,---,6th
+714,M Saeeduddin Sb,Empty,---,7th
+715,M Saeeduddin Sb,Empty,---,9th
+716,M Saeeduddin Sb,Empty,---,10th
+717,M Rafeeq Alam Sb,Empty,---,2nd
+718,M Rafeeq Alam Sb,Empty,---,7th
+719,M Subhan Sb,Empty,---,1st
+720,M Subhan Sb,Empty,---,2nd
+721,M Subhan Sb,Empty,---,4th
+722,M Subhan Sb,Empty,---,5th
+723,M Subhan Sb,Empty,---,6th
+724,M Subhan Sb,Empty,---,7th
+725,M Subhan Sb,Empty,---,10th
+726,M Tahir Sb,Empty,---,1st
+727,M Tahir Sb,Empty,---,2nd
+728,M Tahir Sb,Empty,---,3rd
+729,M Tahir Sb,Empty,---,4th
+730,M Tahir Sb,Empty,---,5th
+731,M Tahir Sb,Empty,---,7th
+732,M Tahir Sb,Empty,---,8th
+733,M Tahir Sb,Empty,---,9th
+734,M Tahir Sb,Empty,---,10th
+735,M Hilal Sb,Empty,---,1st
+736,M Hilal Sb,Empty,---,2nd
+737,M Hilal Sb,Empty,---,3rd
+738,M Hilal Sb,Empty,---,4th
+739,M Hilal Sb,Empty,---,8th
+740,Anwar Sir,Empty,---,1st
+741,Anwar Sir,Empty,---,2nd
+742,M Mujeeburrahman Sb,Empty,---,1st
+743,M Mujeeburrahman Sb,Empty,---,3rd
+744,M Mujeeburrahman Sb,Empty,---,4th
+745,M Mujeeburrahman Sb,Empty,---,6th
+746,M Mujeeburrahman Sb,Empty,---,7th
+747,M Mujeeburrahman Sb,Empty,---,8th
+748,M Mujeeburrahman Sb,Empty,---,9th
+749,M Mujeeburrahman Sb,Empty,---,10th
+750,M Yahya Sb Ndb,Empty,---,1st
+751,M Yahya Sb Ndb,Empty,---,2nd
+752,M Yahya Sb Ndb,Empty,---,3rd
+753,M Yahya Sb Ndb,Empty,---,4th
+754,M Yahya Sb Ndb,Empty,---,5th
+755,M Yahya Sb Ndb,Empty,---,6th
+756,M Yahya Sb Ndb,Empty,---,8th
+757,M Yahya Sb Ndb,Empty,---,9th
+758,M Yahya Sb Ndb,Empty,---,10th
+759,M Mukhtar Sb,Empty,---,3rd
+760,M Mukhtar Sb,Empty,---,4th
+761,M Mukhtar Sb,Empty,---,9th
+762,M Mukhtar Sb,Empty,---,10th
+763,M Ab Gafur Sb,Empty,---,2nd
+764,M Ab Gafur Sb,Empty,---,7th
+765,M Ab Gafur Sb,Empty,---,9th
+766,M Shafi Sb,Empty,---,1st
+767,M Shafi Sb,Empty,---,2nd
+768,M Shafi Sb,Empty,---,3rd
+769,M Shafi Sb,Empty,---,4th
+770,M Shafi Sb,Empty,---,5th
+771,M Shafi Sb,Empty,---,6th
+772,M Shafi Sb,Empty,---,8th
+773,M Shafi Sb,Empty,---,9th
+774,M Shafi Sb,Empty,---,10th
+775,Q Husain Sb,Empty,---,3rd
+776,Q Husain Sb,Empty,---,5th
+777,M Ehsan Sb,Empty,---,5th
+778,M Ehsan Sb,Empty,---,7th
+779,Q Ab Rashid Sb,Empty,---,1st
+780,Q Ab Rashid Sb,Empty,---,2nd
+781,Q Ab Rashid Sb,Empty,---,9th
+782,M Arif Sb Khagadya,Empty,---,4th
+783,M Arif Sb Khagadya,Empty,---,8th
+784,M Mujeeb Sb Babulgaon,Empty,---,1st
+785,M Mujeeb Sb Babulgaon,Empty,---,2nd
+786,M Mujeeb Sb Babulgaon,Empty,---,3rd
+787,M Mujeeb Sb Babulgaon,Empty,---,4th
+788,M Mujeeb Sb Babulgaon,Empty,---,5th
+789,M Mujeeb Sb Babulgaon,Empty,---,6th
+790,M Mujeeb Sb Babulgaon,Empty,---,7th
+791,M Mujeeb Sb Babulgaon,Empty,---,8th
+792,M Mujeeb Sb Babulgaon,Empty,---,9th
+793,M Nazim Sb,Empty,---,2nd
+794,M Nazim Sb,Empty,---,7th
+795,M Nazim Sb,Empty,---,9th
+796,Shamim Akhtar Sir,Empty,---,1st
+797,Shamim Akhtar Sir,Empty,---,8th
+798,M Muhammad Sb,Empty,---,4th
+799,M Muhammad Sb,Empty,---,6th
+800,M Muhammad Sb,Empty,---,7th
+801,M Muhammad Sb,Empty,---,8th
+802,M Nafees Sb,Empty,---,3rd
+803,M Nafees Sb,Empty,---,6th
+804,M Nafees Sb,Empty,---,10th
+805,M Kamal Sb,Empty,---,1st
+806,M Kamal Sb,Empty,---,7th
+807,Q Ab Salam Sb,Empty,---,1st
+808,Q Ab Salam Sb,Empty,---,2nd
+809,Q Ab Salam Sb,Empty,---,3rd
+810,Q Ab Salam Sb,Empty,---,4th
+811,Q Ab Salam Sb,Empty,---,5th
+812,Q Ab Salam Sb,Empty,---,6th
+813,Q Ab Salam Sb,Empty,---,9th
+814,Q Ab Salam Sb,Empty,---,10th
+815,M Sadrulhasan Sb,Empty,---,1st
+816,M Sadrulhasan Sb,Empty,---,4th
+817,M Sadrulhasan Sb,Empty,---,6th
+818,M Sulaiman Sb,Empty,---,2nd
+819,M Sulaiman Sb,Empty,---,6th
+820,M Sadiq Sb,Empty,---,5th
+821,M Sadiq Sb,Empty,---,6th
+822,M Sadiq Sb,Empty,---,9th
+823,M Ab Mateen Sb,Empty,---,3rd
+824,M Ab Mateen Sb,Empty,---,5th
+825,M Ab Mateen Sb,Empty,---,7th
+826,M Ubaidullah Sb,Empty,---,2nd
+827,M Ubaidullah Sb,Empty,---,5th
+828,M Ubaidullah Sb,Empty,---,6th
+829,M Ubaidullah Sb,Empty,---,8th
+830,M Rehan Sb,Empty,---,2nd
+831,M Rehan Sb,Empty,---,4th
+832,M Rehan Sb,Empty,---,6th
+833,M Rehan Sb,Empty,---,8th
+834,M Rehan Sb,Empty,---,9th
+835,M Rehan Sb,Empty,---,10th
+836,M Ab Qayyum Sb,Empty,---,2nd
+837,M Ab Qayyum Sb,Empty,---,4th
+838,M Ab Qayyum Sb,Empty,---,9th
+839,Q Ab Rahman Sb,Empty,---,1st
+840,Q Ab Rahman Sb,Empty,---,2nd
+841,Q Ab Rahman Sb,Empty,---,3rd
+842,Q Ab Rahman Sb,Empty,---,4th
+843,Q Ab Rahman Sb,Empty,---,6th
+844,Q Ab Rahman Sb,Empty,---,7th
+845,Q Ab Rahman Sb,Empty,---,8th
+846,Q Ab Rahman Sb,Empty,---,10th
+847,M Ab Sattar Sb,Empty,---,2nd
+848,M Ab Sattar Sb,Empty,---,4th
+849,M Ab Sattar Sb,Empty,---,5th
+850,M Ab Sattar Sb,Empty,---,8th
+851,M Mujahid Sb,Empty,---,4th
+852,M Mujahid Sb,Empty,---,5th
+853,M Mujahid Sb,Empty,---,6th
+854,M Mujahid Sb,Empty,---,10th
+855,,Empty,---,1st
+856,,Empty,---,2nd
+857,,Empty,---,3rd
+858,,Empty,---,4th
+859,,Empty,---,5th
+860,,Empty,---,6th
+861,,Empty,---,7th
+862,,Empty,---,8th
+863,,Empty,---,9th
+864,,Empty,---,10th
+865,Q Ramizuddin Sb,Empty,---,3rd
+866,Q Ramizuddin Sb,Empty,---,8th
+867,M Raziyurrahman Sb,Empty,---,2nd
+868,M Raziyurrahman Sb,Empty,---,5th
+869,M Raziyurrahman Sb,Empty,---,7th
+870,Q Umar Sb,Empty,---,1st
+871,Q Umar Sb,Empty,---,3rd
+872,Q Umar Sb,Empty,---,5th
+873,Q Umar Sb,Empty,---,6th
+874,Q Umar Sb,Empty,---,7th
+875,Q Umar Sb,Empty,---,8th
+876,Q Umar Sb,Empty,---,10th
+877,M Danish Sb,Empty,---,5th
+878,M Danish Sb,Empty,---,6th
+879,M Danish Sb,Empty,---,7th
+880,M Danish Sb,Empty,---,8th
+881,M Danish Sb,Empty,---,9th
+882,M Danish Sb,Empty,---,10th
+883,M Ab Azim Sb,Empty,---,2nd
+884,M Ab Azim Sb,Empty,---,6th
+885,M Ab Azim Sb,Empty,---,9th
+886,Q Uwais Sb,Empty,---,1st
+887,Q Uwais Sb,Empty,---,3rd
+888,Q Uwais Sb,Empty,---,4th
+889,Q Uwais Sb,Empty,---,5th
+890,Q Uwais Sb,Empty,---,7th
+891,Q Uwais Sb,Empty,---,8th
+892,Q Uwais Sb,Empty,---,9th
+893,Q Uwais Sb,Empty,---,10th
+894,M Umer Sb,Empty,---,4th
+895,M Umer Sb,Empty,---,9th
+896,M Afzal Sb,Empty,---,1st
+897,M Afzal Sb,Empty,---,6th
+898,M Afzal Sb,Empty,---,7th
+899,M Murshid Sb,Empty,---,3rd
+900,M Murshid Sb,Empty,---,6th
+901,M Murshid Sb,Empty,---,10th
+902,M Ab Hasib Sb,Empty,---,1st
+903,M Ab Hasib Sb,Empty,---,3rd
+904,M Ab Hasib Sb,Empty,---,4th
+905,M Ab Hasib Sb,Empty,---,6th
+906,M Ab Hasib Sb,Empty,---,7th
+907,M Ab Hasib Sb,Empty,---,8th
+908,M Ab Hasib Sb,Empty,---,9th
+909,M Ab Hasib Sb,Empty,---,10th
+910,M Shamshad Sb,Empty,---,1st
+911,M Shamshad Sb,Empty,---,7th
+912,M Shamshad Sb,Empty,---,8th
+913,Q Jabir Sb,Empty,---,1st
+914,Q Jabir Sb,Empty,---,3rd
+915,Q Jabir Sb,Empty,---,5th
+916,Q Jabir Sb,Empty,---,7th
+917,Q Jabir Sb,Empty,---,8th
+918,Q Jabir Sb,Empty,---,9th
+919,Q Jabir Sb,Empty,---,10th
+920,Q Muhammad Ali Sb,Empty,---,1st
+921,Q Muhammad Ali Sb,Empty,---,3rd
+922,Q Muhammad Ali Sb,Empty,---,4th
+923,Q Muhammad Ali Sb,Empty,---,6th
+924,Q Muhammad Ali Sb,Empty,---,7th
+925,Q Muhammad Ali Sb,Empty,---,8th
+926,Q Muhammad Ali Sb,Empty,---,9th
+927,Q Muhammad Ali Sb,Empty,---,10th
+928,Q Fayyaz Sb,Empty,---,1st
+929,Q Fayyaz Sb,Empty,---,3rd
+930,Q Fayyaz Sb,Empty,---,4th
+931,Q Fayyaz Sb,Empty,---,5th
+932,Q Fayyaz Sb,Empty,---,7th
+933,Q Fayyaz Sb,Empty,---,8th
+934,Q Fayyaz Sb,Empty,---,9th
+935,Q Fayyaz Sb,Empty,---,10th
+936,M Ab Rahman Sb Milli,Empty,---,2nd
+937,M Ab Rahman Sb Milli,Empty,---,4th
+938,M Ab Rahman Sb Milli,Empty,---,5th
+939,M Ab Rahman Sb Milli,Empty,---,6th
+940,M Ab Rahman Sb Milli,Empty,---,8th
+941,M Ab Rahman Sb Milli,Empty,---,9th
+942,M Uwais Sb Wastanwi,Empty,---,2nd
+943,M Uwais Sb Wastanwi,Empty,---,4th
+944,M Uwais Sb Wastanwi,Empty,---,5th
+945,M Uwais Sb Wastanwi,Empty,---,6th
+946,M Uwais Sb Wastanwi,Empty,---,7th
+947,M Uwais Sb Wastanwi,Empty,---,8th
+948,M Uwais Sb Wastanwi,Empty,---,9th
+949,M Uwais Sb Wastanwi,Empty,---,10th
+950,M Iftekhar Sb Samastipur,Empty,---,1st
+951,M Iftekhar Sb Samastipur,Empty,---,4th
+952,M Iftekhar Sb Samastipur,Empty,---,7th
+953,M Iftekhar Sb Samastipur,Empty,---,10th
+954,----,Empty,---,1st
+955,----,Empty,---,3rd
+956,----,Empty,---,4th
+957,----,Empty,---,5th
+958,----,Empty,---,6th
+959,----,Empty,---,7th
+960,----,Empty,---,8th
+961,----,Empty,---,9th
+962,----,Empty,---,10th
+963,M Altaf Sb,Empty,---,4th
+964,M Altaf Sb,Empty,---,5th
+965,M Altaf Sb,Empty,---,8th
+966,M Iftekhar Sb Bastawi,Empty,---,2nd
+967,M Iftekhar Sb Bastawi,Empty,---,3rd
+968,M Iftekhar Sb Bastawi,Empty,---,5th
+969,M Iftekhar Sb Bastawi,Empty,---,6th
+970,M Yahya Wasif Sb,Empty,---,2nd
+971,M Yahya Wasif Sb,Empty,---,4th
+972,M Yahya Wasif Sb,Empty,---,7th
+973,M Faruq Sb Madni,Empty,---,4th
+974,M Faruq Sb Madni,Empty,---,6th
+975,M Faruq Sb Madni,Empty,---,7th
+976,M Faruq Sb Madni,Empty,---,8th
+977,M Faruq Sb Madni,Empty,---,9th
+978,M Faruq Sb Madni,Empty,---,10th
+979,Q Arif Sb,Empty,---,2nd
+980,Q Arif Sb,Empty,---,3rd
+981,Q Arif Sb,Empty,---,5th
+982,Q Arif Sb,Empty,---,6th
+983,Q Arif Sb,Empty,---,7th
+984,Q Arif Sb,Empty,---,9th
+985,M Ab Rahman Sb Madni,Empty,---,1st
+986,M Ab Rahman Sb Madni,Empty,---,2nd
+987,M Ab Rahman Sb Madni,Empty,---,3rd
+988,M Ab Rahman Sb Madni,Empty,---,5th
+989,M Ab Rahman Sb Madni,Empty,---,6th
+990,M Ab Rahman Sb Madni,Empty,---,7th
+991,M Ab Rahman Sb Madni,Empty,---,8th
+992,M Ab Rahman Sb Madni,Empty,---,9th
+993,M Ab Rahman Sb Madni,Empty,---,10th
+994,Q Arif Sb/M Afzal Sb,Empty,---,1st
+995,Q Arif Sb/M Afzal Sb,Empty,---,2nd
+996,Q Arif Sb/M Afzal Sb,Empty,---,3rd
+997,Q Arif Sb/M Afzal Sb,Empty,---,4th
+998,Q Arif Sb/M Afzal Sb,Empty,---,5th
+999,Q Arif Sb/M Afzal Sb,Empty,---,7th
+1000,Q Arif Sb/M Afzal Sb,Empty,---,8th
+1001,Q Arif Sb/M Afzal Sb,Empty,---,9th
+1002,Q Arif Sb/M Afzal Sb,Empty,---,10th
+1003,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,1st
+1004,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,2nd
+1005,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,3rd
+1006,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,4th
+1007,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,5th
+1008,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,6th
+1009,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,7th
+1010,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,8th
+1011,M Ab Rahman Sb Madni/ M Ab Qayyum Sb,Empty,---,10th
+1012,M Rizwanuddin Sb,Empty,---,2nd
+1013,M Rizwanuddin Sb,Empty,---,3rd
+1014,M Rizwanuddin Sb,Empty,---,4th
+1015,M Rizwanuddin Sb,Empty,---,5th
+1016,M Rizwanuddin Sb,Empty,---,6th
+1017,M Rizwanuddin Sb,Empty,---,10th
+1018,M Huzaifa Sb Wastanwi,Empty,---,1st
+1019,M Huzaifa Sb Wastanwi,Empty,---,2nd
+1020,M Huzaifa Sb Wastanwi,Empty,---,3rd
+1021,M Huzaifa Sb Wastanwi,Empty,---,6th
+1022,M Huzaifa Sb Wastanwi,Empty,---,7th
+1023,M Huzaifa Sb Wastanwi,Empty,---,8th
+1024,M Huzaifa Sb Wastanwi,Empty,---,9th
+1025,M Huzaifa Sb Wastanwi,Empty,---,10th
+1026,M Jafar Sb,Empty,---,3rd
+1027,M Jafar Sb,Empty,---,4th
+1028,M Jafar Sb,Empty,---,5th
+1029,M Faruq Sb Madni/Q Arif Sb,Empty,---,1st
+1030,M Faruq Sb Madni/Q Arif Sb,Empty,---,2nd
+1031,M Faruq Sb Madni/Q Arif Sb,Empty,---,3rd
+1032,M Faruq Sb Madni/Q Arif Sb,Empty,---,4th
+1033,M Faruq Sb Madni/Q Arif Sb,Empty,---,5th
+1034,M Faruq Sb Madni/Q Arif Sb,Empty,---,6th
+1035,M Faruq Sb Madni/Q Arif Sb,Empty,---,7th
+1036,M Faruq Sb Madni/Q Arif Sb,Empty,---,8th
+1037,M Faruq Sb Madni/Q Arif Sb,Empty,---,9th
+1038,M Faruq Sb Madni/Q Arif Sb,Empty,---,10th
+1039,Q Tayyab Sb,Empty,---,5th
+1040,Q Tayyab Sb,Empty,---,8th
+1041,M Jawed Sb Kashmiri,Empty,---,1st
+1042,M Jawed Sb Kashmiri,Empty,---,2nd
+1043,M Jawed Sb Kashmiri,Empty,---,3rd
+1044,M Jawed Sb Kashmiri,Empty,---,4th
+1045,M Jawed Sb Kashmiri,Empty,---,5th
+1046,M Jawed Sb Kashmiri,Empty,---,6th
+1047,M Jawed Sb Kashmiri,Empty,---,7th
+1048,M Jawed Sb Kashmiri,Empty,---,8th
+1049,M Ab Gani Sb,Empty,---,1st
+1050,M Ab Gani Sb,Empty,---,2nd
+1051,M Ab Gani Sb,Empty,---,3rd
+1052,M Ab Gani Sb,Empty,---,4th
+1053,M Ab Gani Sb,Empty,---,5th
+1054,M Ab Gani Sb,Empty,---,7th
+1055,M Ab Gani Sb,Empty,---,8th
+1056,M Ab Gani Sb,Empty,---,9th
+1057,M Ab Gani Sb,Empty,---,10th
+1058,M Masud Sb,Empty,---,1st
+1059,M Masud Sb,Empty,---,2nd
+1060,M Masud Sb,Empty,---,3rd
+1061,M Masud Sb,Empty,---,4th
+1062,M Masud Sb,Empty,---,5th
+1063,M Masud Sb,Empty,---,6th
+1064,M Masud Sb,Empty,---,8th
+1065,M Masud Sb,Empty,---,9th
+1066,M Masud Sb,Empty,---,10th
+1067,M Ab Rahman Madni,Empty,---,1st
+1068,M Ab Rahman Madni,Empty,---,2nd
+1069,M Ab Rahman Madni,Empty,---,3rd
+1070,M Ab Rahman Madni,Empty,---,4th
+1071,M Ab Rahman Madni,Empty,---,6th
+1072,M Ab Rahman Madni,Empty,---,7th
+1073,M Ab Rahman Madni,Empty,---,8th
+1074,M Ab Rahman Madni,Empty,---,9th
+1075,M Ab Rahman Madni,Empty,---,10th

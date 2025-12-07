@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard - Dept. of Modern Education</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{
+  background: linear-gradient(to bottom right,#d7ecff,#f6faff);
+  font-family: "Poppins",sans-serif;
+}
+h1{
+  color:#004aad;
+  text-align:center;
+  margin-top:40px;
+}
+.dashboard{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:25px;
+  margin-top:60px;
+}
+.button-card{
+  width:260px;
+  height:120px;
+  border:none;
+  border-radius:20px;
+  background:rgb(236, 240, 240);
+  box-shadow:0 4px 10px rgba(0, 0, 0, 0.927);
+  font-size:1.2rem;
+  color:#0600ad;
+  cursor:pointer;
+  transition:all .3s ease;
+}
+.button-card:hover{
+  transform:translateY(-5px);
+  background:#004aad;
+  color:white;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 30px;
+  background:#004aad;
+  color:white;
+  font-size:1.2rem;
+}
+.header a{
+  color:white;
+  text-decoration:none;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div><strong>Dashboard - Dept. of Modern Education</strong></div>
+  <div><a href="index.html">← Back to Home</a></div>
+</header>
+
+<h1>Choose a Section</h1>
+
+<div class="dashboard">
+  <a href="teachers.html"><button class="button-card">👩‍🏫 Teachers & Periods</button></a>
+  <a href="students.html"><button class="button-card">🎓 Students Data</button></a>
+  <a href="class.html"><button class="button-card">🏫 Class Name</button></a>
+  <a href="result.html"><button class="button-card">📊 Result</button></a>
+  <a href="proxy.html"><button class="button-card">🧾 Proxy</button></a>
+</div>
+
+</body>
+</html>

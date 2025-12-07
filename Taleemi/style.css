@@ -1,0 +1,31 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+:root{--blue:#2563eb;--muted:#f1f8ff;--card:#ffffff;--radius:12px}
+*{box-sizing:border-box;font-family:Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;}
+body{margin:0;background:linear-gradient(180deg,#eaf6ff,#f7fbff);color:#0f172a;-webkit-font-smoothing:antialiased}
+.header{background:linear-gradient(90deg,#dbeeff,#e6f2ff);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+.header .title{font-weight:700;color:var(--blue);font-size:18px}
+.container{max-width:1100px;margin:22px auto;padding:16px}
+.card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 8px 20px rgba(2,6,23,0.05)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.button{background:var(--blue);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 6px 12px rgba(37,99,235,0.12)}
+.button.secondary{background:#fff;color:var(--blue);border:1px solid #dbeafe;box-shadow:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
+.table thead th{background:#e6f2ff;color:#0b3d91;padding:12px;text-align:left;font-weight:600}
+.table tbody td{padding:10px;border-bottom:1px solid #eef6ff}
+.input{padding:8px;border-radius:8px;border:1px solid #d1d5db}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;z-index:40}
+.modal{background:#fff;padding:18px;border-radius:12px;max-width:720px;width:94%;box-shadow:0 12px 40px rgba(2,6,23,0.15)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.footer{margin-top:20px;text-align:center;color:#475569;font-size:14px}
+.no-print{}
+@media(max-width:640px){ .controls{flex-direction:column;align-items:stretch} .table thead th, .table tbody td{padding:8px} }
+@media print {
+  @page { size: A4; margin-top: 3in; margin-bottom: 1in; margin-left: 0.75in; margin-right: 0.75in; }
+  body { margin:0; font-family:Poppins, Arial, sans-serif; font-size:20pt; }
+  .no-print { display:none !important; }
+  .print-table { width:100%; border-collapse:collapse; }
+  .print-table th, .print-table td { border:1px solid #ddd; padding:6px; font-size:20pt; }
+  .letter-bg{position:fixed; inset:0; z-index:-1; background-image:url('letterhead.png'); background-size:cover; background-repeat:no-repeat; background-position:center; }
+}

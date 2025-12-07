@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Total Teachers and Proxy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body{font-family:"Poppins",sans-serif;background:#f3f7ff;margin:0;color:#0f172a}
+  header{background:#0b61d6;color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+  .container{max-width:1200px;margin:20px auto;padding:18px}
+  .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:14px}
+  .btn-primary{background:#0b61d6;color:#fff}
+  .btn-secondary{background:#f3f4f6;color:#111}
+  .btn-danger{background:#e11d48;color:#fff}
+  .input-search{padding:8px;border-radius:8px;border:1px solid #e6eef8;min-width:200px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  th,td{border:1px solid #e6eef8;padding:6px;text-align:center;vertical-align:middle}
+  th{background:#eef6ff;color:#0b61d6;font-weight:600}
+  .present{background:#16a34a;color:#fff;padding:4px 8px;border-radius:6px}
+  .absent{background:#ef4444;color:#fff;padding:4px 8px;border-radius:6px}
+  .proxy{background:#facc15;color:#000;padding:4px 8px;border-radius:6px}
+  @media print {header,.controls{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div>Total Teachers & Proxy Management</div>
+  <div><a href="dashboard.html" style="color:#fff;text-decoration:none">← Back</a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <input type="date" id="fromDate">
+      <input type="date" id="toDate">
+      <button class="btn btn-primary" id="filterDate">Filter</button>
+      <button class="btn btn-secondary" id="importBtn">📥 Import CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+      <button class="btn btn-secondary" id="exportBtn">📤 Export CSV</button>
+      <button class="btn btn-secondary" id="printBtn">🖨 Print</button>
+      <button class="btn btn-danger" id="deleteAllBtn">🗑 Delete All</button>
+      <button class="btn btn-secondary" id="clearSearchBtn">❌ Clear Search</button>
+      <input id="searchInput" class="input-search" placeholder="Search by teacher, class, subject...">
+    </div>
+
+    <table id="proxyTable">
+      <thead>
+        <tr>
+          <th>Sr No</th>
+          <th>Teacher</th>
+          <th>Class</th>
+          <th>Subject</th>
+          <th>Period</th>
+          <th>Status</th>
+          <th>Proxy Teacher</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="proxyBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const TEACHERS_KEY = "teachersData";
+const PROXY_KEY = "proxyData_final_v1";
+
+let teachers = JSON.parse(localStorage.getItem(TEACHERS_KEY)) || [];
+let proxyList = JSON.parse(localStorage.getItem(PROXY_KEY)) || [];
+
+function saveAll(){ localStorage.setItem(PROXY_KEY, JSON.stringify(proxyList)); }
+
+function renderTable(){
+  const tbody = document.getElementById("proxyBody");
+  tbody.innerHTML = "";
+  const query = (document.getElementById("searchInput").value || "").toLowerCase();
+
+  proxyList.forEach((item, i) => {
+    if(query && !`${item.teacher} ${item.class} ${item.subject}`.toLowerCase().includes(query)) return;
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i+1}</td>
+      <td>${item.teacher}</td>
+      <td>${item.class}</td>
+      <td>${item.subject}</td>
+      <td>${item.period}</td>
+      <td>
+        <button class="status-btn ${item.status==='Present'?'present':'absent'}" data-index="${i}">${item.status}</button>
+      </td>
+      <td>${item.proxy || "-"}</td>
+      <td>
+        <button class="btn btn-secondary" data-edit="${i}">Edit</button>
+        <button class="btn btn-danger" data-del="${i}">Delete</button>
+      </td>`;
+    tbody.appendChild(row);
+  });
+}
+
+function autoGenerateProxy(){
+  proxyList = teachers.map(t => ({
+    teacher: t.name || t.teacher || "Unnamed",
+    class: t.class || t.Class || "-",
+    subject: t.subject || t.Subject || "-",
+    period: t.period || t.Period || "-",
+    status: "Present",
+    proxy: ""
+  }));
+  saveAll(); renderTable();
+}
+
+document.addEventListener("click", e => {
+  const t = e.target;
+
+  if(t.classList.contains("status-btn")){
+    const idx = +t.dataset.index;
+    const item = proxyList[idx];
+    if(item.status === "Present"){
+      item.status = "Absent";
+      const available = teachers.find(tc => tc.period === "Empty" || (tc.Period && tc.Period.includes("Empty")));
+      item.proxy = available ? available.name || available.teacher : "None";
+    } else {
+      item.status = "Present";
+      item.proxy = "";
+    }
+    saveAll(); renderTable();
+  }
+
+  if(t.matches("[data-edit]")){
+    const idx = +t.dataset.edit;
+    const item = proxyList[idx];
+    const newProxy = prompt("Enter Proxy Teacher:", item.proxy || "");
+    if(newProxy!==null){ item.proxy = newProxy; saveAll(); renderTable(); }
+  }
+
+  if(t.matches("[data-del]")){
+    const idx = +t.dataset.del;
+    if(confirm("Delete this record?")){ proxyList.splice(idx,1); saveAll(); renderTable(); }
+  }
+});
+
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("fileInput").click());
+document.getElementById("fileInput").addEventListener("change",ev=>{
+  const file = ev.target.files[0]; if(!file)return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const rows=e.target.result.trim().split("\n").map(r=>r.split(","));
+    proxyList = rows.slice(1).map(r=>({teacher:r[0],class:r[1],subject:r[2],period:r[3],status:r[4],proxy:r[5]}));
+    saveAll(); renderTable();
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const hdr="Teacher,Class,Subject,Period,Status,Proxy\n";
+  const rows=proxyList.map(x=>[x.teacher,x.class,x.subject,x.period,x.status,x.proxy].join(",")).join("\n");
+  const blob=new Blob([hdr+rows],{type:"text/csv"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="proxy_export.csv"; a.click();
+});
+
+document.getElementById("printBtn").addEventListener("click",()=>{
+  const w=window.open("","_blank","width=900,height=700");
+  w.document.write(`<html><head><title>Proxy Print</title></head><body><h2>Total Teachers & Proxy</h2>${document.getElementById("proxyTable").outerHTML}</body></html>`);
+  w.document.close(); w.print();
+});
+
+document.getElementById("deleteAllBtn").addEventListener("click",()=>{
+  if(confirm("Delete all records?")){ proxyList=[]; saveAll(); renderTable(); }
+});
+
+document.getElementById("clearSearchBtn").addEventListener("click",()=>{document.getElementById("searchInput").value="";renderTable();});
+document.getElementById("searchInput").addEventListener("input",renderTable);
+document.getElementById("filterDate").addEventListener("click",()=>alert("Date filter active (for future expansion)."));
+
+if(proxyList.length===0) autoGenerateProxy();
+else renderTable();
+</script>
+</body>
+</html>
