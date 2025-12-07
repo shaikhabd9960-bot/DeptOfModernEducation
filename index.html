@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dept. of Modern Education</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: url('DN5A8697.JPG') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Poppins', sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.header img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  background-color: rgba(0,0,0,0.3);
+}
+
+.button {
+  background-color: #0056b3;
+  color: white;
+  padding: 15px 35px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.button:hover {
+  background-color: #003d80;
+  transform: scale(1.05);
+}
+.container img{
+  width: 600px;
+  height: auto;
+}
+</style>
+</head>
+<body>
+
+<!-- Header with logo -->
+<header class="header">
+  <img src="ME PNG.png" alt="Logo">
+  <div class="title">Dept. of Modern Education</div>
+</header>
+
+<!-- Welcome Section -->
+<div class="container">
+  <img src="Jamia.JPG" alt="">
+  <h1>Welcome to Dept. of Modern Education</h1>
+  <button class="button" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+</div>
+
+</body>
+</html>
