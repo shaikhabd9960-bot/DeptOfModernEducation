@@ -1,0 +1,935 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Students Attendance & Profile - Dept. of Modern Education</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{--blue:#0b61d6;--muted:#6b7280;--danger:#e11d48;--card:#fff;--overlay:rgba(0,0,0,0.5);}
+  body{font-family:"Poppins",sans-serif;background:#f3f7ff;margin:0;color:#0f172a}
+  
+  /* Urdu Font Class */
+  .urdu-text { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; }
+  .urdu-cell { font-family: 'Noto Nastaliq Urdu', serif; font-size: 15px; font-weight: bold; text-align: right; }
+
+  header{background:var(--blue);color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+  .container{max-width:1200px;margin:20px auto;padding:18px}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06); position: relative;}
+  
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:14px; display:inline-flex; align-items:center; gap:5px;}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-secondary{background:#f3f4f6;color:#111}
+  .btn-danger{background:#e11d48;color:#fff}
+  .input-search{padding:8px;border-radius:8px;border:1px solid #e6eef8;min-width:200px}
+  
+  /* Column Toggle Menu */
+  .settings-btn { background: transparent; border: 1px solid #ccc; color: #555; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+  .column-menu {
+      position: absolute; top: 60px; right: 20px; background: white; border: 1px solid #ddd; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 10px; 
+      z-index: 500; width: 250px; display: none; max-height: 400px; overflow-y: auto;
+  }
+  .column-menu.show { display: block; }
+  .col-option { display: block; padding: 5px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+  .col-option:last-child { border: none; }
+  .col-option input { margin-right: 10px; }
+
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  th,td{border:1px solid #e6eef8;padding:6px;text-align:center;vertical-align:middle}
+  th{background:#eef6ff;color:var(--blue);font-weight:600}
+  
+  td .ap-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
+  td .present{background:#16a34a;color:#fff}
+  td .absent{background:#ef4444;color:#fff}
+  td .na{background:#f3f4f6;color:#333}
+  .small{padding:4px 6px;border-radius:4px;font-size:11px;}
+  .summary{margin-top:12px;text-align:right;font-weight:600}
+
+  /* MODAL STYLES */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--overlay); display: none; justify-content: center; align-items: center; z-index: 1000;
+  }
+  .modal {
+    background: white; width: 95%; max-width: 850px; max-height: 90vh; overflow-y: auto;
+    border-radius: 12px; padding: 20px; position: relative;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+  .modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: #555; }
+  .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+  .section-title { grid-column: span 2; font-weight: bold; margin-top: 10px; color: var(--blue); border-bottom: 1px solid #eee; }
+  .full-width { grid-column: span 2; }
+  .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; }
+
+  /* View Details Modal specific */
+  .view-row { display: flex; border-bottom: 1px solid #eee; padding: 8px 0; }
+  .view-label { font-weight: bold; width: 150px; color: #555; }
+  .view-val { flex: 1; color: #333; }
+
+  @media (max-width:900px){ table{font-size:12px} .controls { gap:6px } .modal-body { grid-template-columns: 1fr; } .section-title, .full-width { grid-column: span 1; } }
+  
+  /* Print Specifics */
+  @media print { 
+      header, .controls, .summary, .modal-overlay, .column-menu { display:none !important } 
+      body{background:#fff} 
+      table{font-size:12px; width:100%;} 
+      th{background:#dceeff;color:#000} 
+      button{display:none} 
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>Dept. of Modern Education — Students Attendance</div>
+  <div><a href="dashboard.html" style="color:#fff;text-decoration:none">← Back</a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <button id="addNewStudentBtn" class="btn btn-primary admin-only"><i class="fas fa-user-plus"></i> New Student</button>
+      
+      <button id="addDayBtn" class="btn btn-primary admin-only"><i class="fas fa-calendar-plus"></i> Add Day</button>
+      <button id="showHiddenBtn" class="btn btn-secondary admin-only"><i class="fas fa-eye"></i> Show Hidden</button>
+      
+      <button id="saveAllBtn" class="btn btn-primary admin-only"><i class="fas fa-cloud-upload-alt"></i> Sync Data</button>
+      
+      <button id="importBtn" class="btn btn-secondary admin-only"><i class="fas fa-file-import"></i> Import Excel</button>
+      <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display:none">
+
+      <button id="exportBtn" class="btn btn-secondary"><i class="fas fa-file-export"></i> Export</button>
+      <button id="printBtn" class="btn btn-secondary"><i class="fas fa-print"></i> Print List</button>
+      
+      <button id="deleteSelectedBtn" class="btn btn-danger admin-only" style="display:none;"><i class="fas fa-trash"></i> Delete Selected</button>
+      
+      <button id="deleteAllBtn" class="btn btn-danger admin-only"><i class="fas fa-trash-alt"></i> Reset All</button>
+
+      <button id="clearSearchBtn" class="btn btn-secondary"><i class="fas fa-times"></i></button>
+      <input id="searchInput" class="input-search" placeholder="Search Class, Div, Name, GR..." style="margin-left:auto">
+      
+      <button class="settings-btn" onclick="toggleColumnMenu()" title="Select Columns">
+          <i class="fas fa-ellipsis-v"></i>
+      </button>
+    </div>
+
+    <div id="columnMenu" class="column-menu">
+        <h4 style="margin:0 0 10px 0; font-size:14px; border-bottom:1px solid #eee;">Show/Hide Columns</h4>
+        <div id="columnList"></div>
+    </div>
+
+    <div id="dateInfo" style="text-align:center;color:var(--blue);margin-bottom:8px;font-weight:600"></div>
+
+    <div style="overflow:auto">
+      <table id="attendanceTable" aria-label="Attendance table">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="summary" id="summary"></div>
+  </div>
+</div>
+
+<input type="date" id="hiddenDatePicker" style="display:none">
+
+<div id="studentModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Student Profile</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <form id="studentForm" onsubmit="handleFormSubmit(event)">
+      <div class="modal-body">
+        
+        <div class="section-title">Personal Information</div>
+        
+        <div class="form-group">
+          <label>GR Number (Auto/Manual) *</label>
+          <input type="number" name="gr_no" id="inp_gr_no" required placeholder="Auto Generated">
+        </div>
+
+        <div class="form-group">
+            <label>Surname (سرنیم)</label>
+            <input type="text" name="surname">
+        </div>
+        
+        <div class="form-group">
+          <label>Student Name (English) *</label>
+          <input type="text" name="name_en" required>
+        </div>
+
+        <div class="form-group">
+          <label>نام طالب علم (اردو)</label>
+          <input type="text" name="name_ur" dir="rtl" class="urdu-text">
+        </div>
+        
+        <div class="form-group">
+          <label>Father Name (English)</label>
+          <input type="text" name="father_en">
+        </div>
+        <div class="form-group">
+          <label>ولدیت (اردو)</label>
+          <input type="text" name="father_ur" dir="rtl" class="urdu-text">
+        </div>
+
+        <div class="form-group">
+          <label>Mother Name (English)</label>
+          <input type="text" name="mother_en">
+        </div>
+        <div class="form-group">
+          <label>والدہ کا نام (اردو)</label>
+          <input type="text" name="mother_ur" dir="rtl" class="urdu-text">
+        </div>
+        
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" name="dob">
+        </div>
+        <div class="form-group">
+            <label>Registration Date</label>
+            <input type="date" name="reg_date" id="inp_reg_date">
+        </div>
+
+        <div class="form-group">
+          <label>Gender</label>
+          <select name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Aadhar Number (12 Digits)</label>
+          <input type="text" name="aadhar" placeholder="1234-5678-9101" maxlength="14">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Passout">Passout</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Class (درجہ)</label>
+          <select name="class" id="classSelect" onchange="toggleDivision()">
+            <option value="">Select Class</option>
+            <option value="عربی اول">عربی اول</option>
+            <option value="عربی دوم">عربی دوم</option>
+            <option value="عربی سوم">عربی سوم</option>
+            <option value="عربی چہارم">عربی چہارم</option>
+            <option value="عربی پنجم">عربی پنجم</option>
+            <option value="عربی ششم">عربی ششم</option>
+            <option value="عربی ہفتم">عربی ہفتم (دورۂ حدیث)</option>
+            <option value="افتا">افتا</option>
+            <option value="دعوہ-انگریزی">دعوہ-انگریزی</option>
+            <option value="معہد">معہد</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+            <label>Division (شعبہ)</label>
+            <select name="division" id="divSelect" disabled>
+                <option value="">- Select -</option>
+                <option value="الف">الف</option>
+                <option value="ب">ب</option>
+                <option value="ج">ج</option>
+                <option value="دال">دال</option>
+                <option value="ھ">ھ</option>
+                <option value="واو">واو</option>
+                <option value="ز">ز</option>
+                <option value="ح">ح</option>
+                <option value="ط">ط</option>
+                <option value="ی">ی</option>
+                <option value="کاف">کاف</option>
+                <option value="لام">لام</option>
+                <option value="میم">میم</option>
+                <option value="ن">ن</option>
+                <option value="س">س</option>
+                <option value="ع">ع</option>
+            </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Passport Picture</label>
+          <input type="file" id="picInput" accept="image/*">
+          <input type="hidden" name="profile_pic_url" id="inp_pic_url">
+          <div id="uploadStatus" style="font-size:12px; color:blue;"></div>
+        </div>
+
+        <div class="section-title">Address Information</div>
+
+        <div class="form-group"><label>مقام (Place)</label><input type="text" name="addr_place"></div>
+        <div class="form-group"><label>پوسٹ (Post)</label><input type="text" name="addr_post"></div>
+        <div class="form-group"><label>تھانہ (Thana)</label><input type="text" name="addr_thana"></div>
+        <div class="form-group"><label>ضلع (District)</label><input type="text" name="addr_dist"></div>
+        <div class="form-group"><label>پن کوڈ (Pincode)</label><input type="number" name="addr_pin" placeholder="6 digits"></div>
+        <div class="form-group"><label>Mobile Number</label><input type="tel" name="mobile"></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email"></div>
+
+      </div>
+      <div style="margin-top:15px; text-align:right;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Student</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="viewModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Student Details</h3>
+            <button class="close-btn" onclick="document.getElementById('viewModal').style.display='none'">×</button>
+        </div>
+        <div id="viewModalContent"></div>
+    </div>
+</div>
+
+<script>
+// --- FIREBASE CONFIGURATION (Updated) ---
+// Note: We use the new config provided, but keep using the "compat" syntax 
+// so the rest of your existing application logic works without errors.
+const firebaseConfig = {
+  apiKey: "AIzaSyD8GSmPAHCliCyUv8AuhE-0hTr3tPz3CBg",
+  authDomain: "students-portel.firebaseapp.com",
+  projectId: "students-portel",
+  storageBucket: "students-portel.firebasestorage.app",
+  messagingSenderId: "728392531804",
+  appId: "1:728392531804:web:3405fd41545d8c1f644b99",
+  measurementId: "G-X7SD4RVQPN"
+};
+
+let db = null;
+let storage = null;
+let analytics = null;
+
+try {
+  if(firebase.apps.length === 0) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  db = firebase.firestore();
+  storage = firebase.storage();
+  analytics = firebase.analytics(); // Initialized Analytics
+  console.log("Firebase Active");
+} catch(e) {
+  console.log("Firebase not configured. Using Local Mode.", e);
+}
+
+// CONSTANTS
+const STUD_KEY = "dme_students_final";
+const DAYS_KEY = "dme_days_final";
+const PERIODS = 10;
+
+// MASTER SCHEMA (For Export/Import & Display)
+const fieldSchema = [
+    { key: 'gr_no', label: 'GR No', visible: true },
+    { key: 'surname', label: 'Surname', visible: false },
+    { key: 'name_ur', label: 'Name (Urdu)', visible: true }, 
+    { key: 'name_en', label: 'Student Name (Eng)', visible: false },
+    { key: 'father_ur', label: 'Father (Urdu)', visible: false },
+    { key: 'father_en', label: 'Father Name (Eng)', visible: false },
+    { key: 'mother_ur', label: 'Mother (Urdu)', visible: false },
+    { key: 'mother_en', label: 'Mother Name (Eng)', visible: false },
+    { key: 'dob', label: 'DOB', visible: false },
+    { key: 'reg_date', label: 'Reg Date', visible: false },
+    { key: 'gender', label: 'Gender', visible: false },
+    { key: 'aadhar', label: 'Aadhar', visible: false },
+    { key: 'status', label: 'Status', visible: false },
+    { key: 'class', label: 'Class', visible: true },
+    { key: 'division', label: 'Division', visible: true },
+    { key: 'profile_pic_url', label: 'Pic URL', visible: false },
+    { key: 'addr_place', label: 'Place', visible: false },
+    { key: 'addr_post', label: 'Post', visible: false },
+    { key: 'addr_thana', label: 'Thana', visible: false },
+    { key: 'addr_dist', label: 'District', visible: false },
+    { key: 'addr_pin', label: 'Pincode', visible: false },
+    { key: 'mobile', label: 'Mobile', visible: false },
+    { key: 'email', label: 'Email', visible: false }
+];
+
+// STATE
+let students = [];
+let days = []; 
+let selectedStudents = new Set();
+let isIndividual = false; 
+
+// DOM
+const tableHead = document.getElementById("tableHead");
+const tableBody = document.getElementById("tableBody");
+const dateInfo = document.getElementById("dateInfo");
+const hiddenDatePicker = document.getElementById("hiddenDatePicker");
+const searchInput = document.getElementById("searchInput");
+
+// --- PERMISSION CHECK ---
+function checkPermissions() {
+    const session = localStorage.getItem('exam_user');
+    if(session) {
+        const user = JSON.parse(session);
+        if(user.role === 'individual') {
+            isIndividual = true;
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+        }
+    }
+}
+
+// --- COLUMN TOGGLE LOGIC ---
+function renderColumnMenu() {
+    const container = document.getElementById('columnList');
+    container.innerHTML = '';
+    fieldSchema.forEach(field => {
+        const div = document.createElement('div');
+        div.className = 'col-option';
+        const checked = field.visible ? 'checked' : '';
+        div.innerHTML = `<label><input type="checkbox" onchange="toggleColumn('${field.key}')" ${checked}> ${field.label}</label>`;
+        container.appendChild(div);
+    });
+}
+
+function toggleColumn(key) {
+    const field = fieldSchema.find(f => f.key === key);
+    if(field) {
+        field.visible = !field.visible;
+        renderAll();
+    }
+}
+
+function toggleColumnMenu() {
+    const menu = document.getElementById('columnMenu');
+    menu.classList.toggle('show');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('columnMenu');
+    const btn = document.querySelector('.settings-btn');
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('show');
+    }
+});
+
+// --- LOAD DATA ---
+function loadData() {
+    checkPermissions(); 
+    renderColumnMenu(); 
+
+    const localStud = localStorage.getItem(STUD_KEY);
+    const localDays = localStorage.getItem(DAYS_KEY);
+
+    if(localStud) students = JSON.parse(localStud);
+    else students = [];
+
+    if(localDays) days = JSON.parse(localDays);
+    else {
+        const today = new Date().toISOString().slice(0,10);
+        days = [{ date: today, hidden: false }];
+    }
+
+    renderAll();
+
+    if(db) {
+        db.collection("settings").doc("attendance_days").get().then(doc => {
+            if(doc.exists) {
+                days = doc.data().list || [];
+                saveToLocal();
+                renderAll();
+            }
+        });
+
+        db.collection("students").get().then(snapshot => {
+            if(!snapshot.empty) {
+                let cloudStudents = [];
+                snapshot.forEach(doc => cloudStudents.push(doc.data()));
+                students = cloudStudents;
+                students.sort((a,b) => (parseInt(a.gr_no) || 0) - (parseInt(b.gr_no) || 0));
+                saveToLocal();
+                renderAll();
+            }
+        });
+    }
+}
+
+function saveToLocal() {
+    localStorage.setItem(STUD_KEY, JSON.stringify(students));
+    localStorage.setItem(DAYS_KEY, JSON.stringify(days));
+}
+
+function saveAllData() {
+    saveToLocal();
+    if(db) {
+        const batch = db.batch();
+        students.forEach(s => {
+            const ref = db.collection("students").doc(String(s.gr_no));
+            batch.set(ref, s, { merge: true });
+        });
+        db.collection("settings").doc("attendance_days").set({ list: days });
+        batch.commit()
+            .then(() => alert("Data Saved to Local & Cloud!"))
+            .catch(e => alert("Saved Locally. Cloud error: " + e.message));
+    } else {
+        alert("Saved Locally!");
+    }
+}
+
+function ensureAttendanceArray(obj, date){
+    if(!obj.attendance) obj.attendance = {};
+    if(!Array.isArray(obj.attendance[date])) obj.attendance[date] = Array(PERIODS).fill("");
+}
+
+// --- RENDER FUNCTIONS ---
+function formatDisplayDate(d){
+    const dt = new Date(d + "T00:00:00");
+    return dt.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function buildHeader(){
+    // Start Row
+    let headerHtml = "<tr><th><input type='checkbox' id='selectAll' " + (isIndividual ? "disabled" : "") + "></th><th>Sr</th>";
+    
+    // Dynamic Profile Columns
+    fieldSchema.forEach(f => {
+        if(f.visible) headerHtml += `<th>${f.label}</th>`;
+    });
+
+    // Attendance Days
+    days.forEach((d, idx) => {
+        const controls = isIndividual ? "" : `
+        <div style="margin-top:6px;display:flex;gap:6px">
+          <button class="btn btn-secondary small" data-toggle-day="${idx}">${d.hidden ? 'Show' : 'Hide'}</button>
+          <button class="btn btn-danger small" data-del-day="${idx}">🗑</button>
+        </div>`;
+
+        headerHtml += `<th colspan="${PERIODS}" data-day="${d.date}">
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div style="font-weight:700">${formatDisplayDate(d.date)}</div>
+            ${controls}
+          </div>
+        </th>`;
+    });
+    headerHtml += `<th>Stats</th><th>Action</th></tr>`;
+
+    // Second Row (Periods)
+    headerHtml += "<tr><th></th><th></th>"; 
+    fieldSchema.forEach(f => { if(f.visible) headerHtml += "<th></th>"; });
+    
+    days.forEach(d => {
+        for(let p=1;p<=PERIODS;p++){
+            headerHtml += `<th data-date="${d.date}" style="${d.hidden ? 'display:none' : ''}">P${p}</th>`;
+        }
+    });
+    headerHtml += "<th></th><th></th></tr>";
+
+    tableHead.innerHTML = headerHtml;
+    
+    if(!isIndividual){
+        document.getElementById('selectAll').addEventListener('change', function(e) {
+            const isChecked = e.target.checked;
+            const checkboxes = document.querySelectorAll('.stud-check');
+            selectedStudents.clear();
+            checkboxes.forEach(cb => {
+                cb.checked = isChecked;
+                if(isChecked) selectedStudents.add(cb.dataset.gr);
+            });
+            toggleBulkButtons();
+        });
+    }
+}
+
+function buildBody(){
+    tableBody.innerHTML = "";
+    const q = (searchInput.value || "").toLowerCase();
+    
+    students.forEach((s, idx) => {
+        const rowText = `${s.gr_no} ${s.name_en||""} ${s.name_ur||""} ${s.surname||""} ${s.class||""} ${s.division||""}`.toLowerCase();
+        
+        if(q && !rowText.includes(q)) return;
+        
+        days.forEach(d => ensureAttendanceArray(s, d.date));
+        
+        const isChecked = selectedStudents.has(String(s.gr_no)) ? "checked" : "";
+        const checkboxDisabled = isIndividual ? "disabled" : "";
+
+        let html = `<tr>
+            <td><input type="checkbox" class="stud-check" data-gr="${s.gr_no}" ${isChecked} ${checkboxDisabled}></td>
+            <td>${idx+1}</td>`;
+        
+        // Render Dynamic Columns
+        fieldSchema.forEach(f => {
+            if(f.visible) {
+                let content = s[f.key] || "-";
+                if(f.key === 'name_ur') content = `<b>${content}</b>`;
+                html += `<td class="${f.key === 'name_ur' ? 'urdu-cell' : ''}">${content}</td>`;
+            }
+        });
+        
+        // Attendance Cells
+        days.forEach(d => {
+            const date = d.date;
+            for(let p=0;p<PERIODS;p++){
+                const val = (s.attendance[date] && s.attendance[date][p]) ? s.attendance[date][p] : "";
+                const display = val || "-";
+                const btnClass = val === "P" ? "present" : val === "A" ? "absent" : "na";
+                const disabledAttr = isIndividual ? "disabled style='cursor:default; opacity:0.7'" : "";
+                
+                html += `<td data-date="${date}" style="${d.hidden ? 'display:none' : ''}">
+                    <button class="ap-btn ${btnClass}" data-gr="${escapeAttr(s.gr_no)}" data-date="${date}" data-period="${p}" ${disabledAttr}>${display}</button>
+                </td>`;
+            }
+        });
+
+        const totals = computeTotalsForStudent(s);
+        html += `<td>${totals.percent}%</td>`;
+        
+        const editBtn = isIndividual ? "" : `<button class="btn btn-primary small" title="Edit" onclick="openModalForEdit('${s.gr_no}')"><i class="fas fa-edit"></i></button>`;
+        
+        html += `<td>
+            <div style="display:flex; gap:5px; justify-content:center;">
+                <button class="btn btn-secondary small" title="View" onclick="viewStudent('${s.gr_no}')"><i class="fas fa-eye"></i></button>
+                ${editBtn}
+            </div>
+        </td></tr>`;
+        
+        tableBody.insertAdjacentHTML("beforeend", html);
+    });
+}
+
+function escapeHtml(s){ if(s==null) return ""; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+function computeTotalsForStudent(s){
+    let present = 0, totalSlots = 0;
+    days.forEach(d => {
+        if(d.hidden) return;
+        ensureAttendanceArray(s, d.date);
+        for(let p=0;p<PERIODS;p++){
+            if(s.attendance[d.date][p] === "P") present++;
+            if(s.attendance[d.date][p]) totalSlots++;
+        }
+    });
+    const percent = totalSlots ? ((present / totalSlots) * 100).toFixed(2) : "0.00";
+    return { present, percent };
+}
+
+function renderAll(){
+    buildHeader();
+    buildBody();
+    dateInfo.textContent = days.length ? `Latest Day: ${days[days.length-1].date}` : "No days";
+    toggleBulkButtons();
+}
+
+function toggleBulkButtons() {
+    const btn = document.getElementById('deleteSelectedBtn');
+    if(!isIndividual && selectedStudents.size > 0) {
+        btn.style.display = 'inline-flex';
+        btn.innerHTML = `<i class="fas fa-trash"></i> Delete Selected (${selectedStudents.size})`;
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+// --- PRINT & EXPORT ---
+document.getElementById("printBtn").addEventListener("click", () => {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    
+    let headersHtml = "<th>SR</th>";
+    fieldSchema.forEach(f => { if(f.visible) headersHtml += `<th>${f.label}</th>`; });
+
+    let html = `
+    <html lang="ur" dir="rtl">
+    <head>
+        <title>Student List Print</title>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400&display=swap" rel="stylesheet">
+        <style>
+            body { font-family: 'Noto Nastaliq Urdu', serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+            th { background-color: #f0f0f0; }
+            h2 { text-align: center; margin-bottom: 20px; }
+        </style>
+    </head>
+    <body>
+        <h2>Dept. of Modern Education - Students List</h2>
+        <table>
+            <thead>
+                <tr>${headersHtml}</tr>
+            </thead>
+            <tbody>
+    `;
+
+    const q = (searchInput.value || "").toLowerCase();
+    const filteredStudents = students.filter(s => {
+        const rowText = `${s.gr_no} ${s.name_en||""} ${s.name_ur||""} ${s.class||""} ${s.division||""}`.toLowerCase();
+        return !q || rowText.includes(q);
+    });
+
+    filteredStudents.forEach((s, idx) => {
+        html += `<tr><td>${idx + 1}</td>`;
+        fieldSchema.forEach(f => {
+            if(f.visible) html += `<td>${s[f.key] || ""}</td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table></body></html>`;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 500);
+});
+
+// --- MASTER EXPORT (ALL FIELDS + HEADERS) ---
+document.getElementById("exportBtn").addEventListener("click", () => {
+    // Note: Empty check removed so headers export even if no data
+    
+    // Use Schema to generate ALL Headers and Keys automatically
+    const headers = fieldSchema.map(f => f.label);
+    const keys = fieldSchema.map(f => f.key);
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "\uFEFF"; 
+    csvContent += headers.join(",") + "\r\n";
+
+    students.forEach(s => {
+        let row = keys.map(key => {
+            let val = s[key] || "";
+            val = String(val).replace(/"/g, '""'); 
+            if (val.search(/("|,|\n)/g) >= 0) val = `"${val}"`;
+            return val;
+        });
+        csvContent += row.join(",") + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "students_master_data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+
+// --- IMPORT (Using Schema Keys) ---
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+
+document.getElementById("fileInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        let addedCount = 0;
+        let updatedCount = 0;
+
+        jsonData.forEach(row => {
+            // Flexible match for GR
+            const gr = row['GR No'] || row['gr_no'] || row['GR'];
+            if(gr) {
+                const sIndex = students.findIndex(s => s.gr_no == gr);
+                const newStudent = {};
+                
+                // Map based on Schema Labels
+                fieldSchema.forEach(f => {
+                    newStudent[f.key] = row[f.label] || row[f.key] || "";
+                });
+                
+                // Ensure GR is string
+                newStudent.gr_no = String(gr);
+                // Defaults
+                if(!newStudent.status) newStudent.status = "Active";
+                if(!newStudent.attendance) newStudent.attendance = {};
+
+                if(sIndex > -1) {
+                    newStudent.attendance = students[sIndex].attendance; // Preserve Attendance
+                    students[sIndex] = { ...students[sIndex], ...newStudent };
+                    updatedCount++;
+                } else {
+                    students.push(newStudent);
+                    addedCount++;
+                }
+            }
+        });
+
+        saveToLocal();
+        renderAll();
+        alert(`Import Complete!\nAdded: ${addedCount}\nUpdated: ${updatedCount}`);
+        document.getElementById("fileInput").value = "";
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+// --- HELPER LOGIC ---
+function generateNextGR() {
+    if(students.length === 0) return 1000;
+    const max = Math.max(...students.map(s => parseInt(s.gr_no) || 0));
+    return max + 1;
+}
+
+function toggleDivision() {
+    const cls = document.getElementById('classSelect').value;
+    const divSelect = document.getElementById('divSelect');
+    if(cls) {
+        divSelect.disabled = false;
+    } else {
+        divSelect.disabled = true;
+        divSelect.value = "";
+    }
+}
+
+function viewStudent(gr) {
+    const s = students.find(st => st.gr_no == gr);
+    if(!s) return;
+    
+    let html = "";
+    if(s.profile_pic_url) {
+        html += `<div style="text-align:center; margin-bottom:15px;"><img src="${s.profile_pic_url}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--blue);"></div>`;
+    }
+    
+    // Display all fields from schema
+    fieldSchema.forEach(f => {
+        if(f.key !== 'profile_pic_url') { // skip image url text
+             html += `<div class="view-row"><div class="view-label">${f.label}:</div><div class="view-val urdu-text">${s[f.key] || "-"}</div></div>`;
+        }
+    });
+
+    document.getElementById('viewModalContent').innerHTML = html;
+    document.getElementById('viewModal').style.display = 'flex';
+}
+
+// --- EVENTS ---
+document.addEventListener('click', function(e){
+  const target = e.target;
+  
+  if(target.classList.contains('stud-check')) {
+      if(target.checked) selectedStudents.add(target.dataset.gr);
+      else selectedStudents.delete(target.dataset.gr);
+      toggleBulkButtons();
+  }
+
+  if(target.classList.contains('ap-btn') && !isIndividual){
+    const gr = target.dataset.gr;
+    const date = target.dataset.date;
+    const period = Number(target.dataset.period);
+    const s = students.find(st => st.gr_no === gr);
+    if(s) {
+      ensureAttendanceArray(s, date);
+      const cur = s.attendance[date][period] || "";
+      const next = cur === "" ? "P" : cur === "P" ? "A" : "";
+      s.attendance[date][period] = next;
+      saveToLocal(); renderAll();
+    }
+  }
+  
+  // Admin Only Actions
+  if(!isIndividual) {
+      if(target.matches('button[data-toggle-day]')){
+        const di = Number(target.dataset.toggleDay);
+        days[di].hidden = !days[di].hidden;
+        saveToLocal(); renderAll();
+      }
+      if(target.matches('button[data-del-day]')){
+        if(confirm("Delete this day?")) {
+          days.splice(Number(target.dataset.delDay),1);
+          saveToLocal(); renderAll();
+        }
+      }
+  }
+});
+
+document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
+    if(!confirm(`Delete ${selectedStudents.size} students?`)) return;
+    students = students.filter(s => !selectedStudents.has(String(s.gr_no)));
+    if(db) { selectedStudents.forEach(gr => { db.collection("students").doc(String(gr)).delete(); }); }
+    selectedStudents.clear();
+    document.getElementById('selectAll').checked = false;
+    saveToLocal(); renderAll();
+});
+
+// Admin Button Listeners
+if(document.getElementById("addNewStudentBtn")) {
+    document.getElementById("addNewStudentBtn").addEventListener("click", () => {
+      document.getElementById("studentForm").reset();
+      isEditing = false;
+      document.getElementById("inp_gr_no").value = generateNextGR();
+      document.getElementById("inp_reg_date").value = new Date().toISOString().split('T')[0];
+      toggleDivision();
+      document.getElementById("studentModal").style.display = "flex";
+    });
+}
+
+document.getElementById("addDayBtn").addEventListener("click", () => hiddenDatePicker.showPicker());
+hiddenDatePicker.addEventListener("change", () => {
+  if(hiddenDatePicker.value && !days.find(d => d.date === hiddenDatePicker.value)) {
+    days.push({date: hiddenDatePicker.value, hidden: false});
+    saveToLocal(); renderAll();
+  }
+});
+
+document.getElementById("showHiddenBtn").addEventListener("click", () => { days.forEach(d => d.hidden = false); saveToLocal(); renderAll(); });
+document.getElementById("saveAllBtn").addEventListener("click", saveAllData);
+document.getElementById("deleteAllBtn").addEventListener("click", () => { if(confirm("Delete ALL?")) { students = []; days = []; saveToLocal(); renderAll(); } });
+
+// Edit Form Logic
+let isEditing = false;
+function openModalForEdit(gr) {
+  const s = students.find(st => st.gr_no == gr);
+  if(!s) return;
+  const form = document.getElementById("studentForm");
+  fieldSchema.forEach(f => {
+      if(form.elements[f.key]) form.elements[f.key].value = s[f.key] || "";
+  });
+  toggleDivision();
+  if(s.division) form.elements['division'].value = s.division;
+  isEditing = true;
+  document.getElementById("studentModal").style.display = "flex";
+}
+
+function closeModal() { document.getElementById("studentModal").style.display = "none"; }
+
+function handleFormSubmit(e) {
+  e.preventDefault();
+  const formData = new FormData(document.getElementById("studentForm"));
+  const data = Object.fromEntries(formData.entries());
+
+  if(isEditing) {
+    const idx = students.findIndex(s => s.gr_no == data.gr_no);
+    if(idx > -1) {
+      data.attendance = students[idx].attendance || {};
+      students[idx] = data;
+    }
+  } else {
+    if(students.find(s => s.gr_no == data.gr_no)) { alert("GR exists!"); return; }
+    data.attendance = {};
+    students.push(data);
+  }
+  saveToLocal(); closeModal(); renderAll();
+}
+
+searchInput.addEventListener("input", renderAll);
+document.getElementById("clearSearchBtn").addEventListener("click", () => { searchInput.value = ""; renderAll(); });
+
+// Init
+loadData();
+</script>
+</body>
+</html>

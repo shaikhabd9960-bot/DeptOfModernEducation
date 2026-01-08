@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 { color: #4f46e5; }
+        p { color: #6b7280; }
+        button {
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background-color: #4338ca; }
+    </style>
+</head>
+<body>
+
+    <h1>Feature Coming Soon</h1>
+    <p>This module is under development.</p>
+    
+    <button onclick="window.history.back()">Go Back</button>
+
+    <script>
+        // یہ وہ Alert ہے جو آپ نے تصویر میں دکھایا ہے
+        // جیسے ہی پیج لوڈ ہوگا، یہ میسج آجائے گا
+        window.onload = function() {
+            alert("Feature coming soon!");
+        };
+    </script>
+
+</body>
+</html>

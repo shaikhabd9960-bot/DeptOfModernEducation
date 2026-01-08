@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Class Management - Dept. of Modern Education</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root { 
+      --primary: #2563eb; /* Blue */
+      --danger: #dc2626; /* Red */
+      --success: #16a34a; /* Green */
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --text: #334155;
+  }
+  
+  body { font-family: "Poppins", sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+  
+  /* Header */
+  header { background: var(--white); color: var(--primary); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  
+  /* Layout */
+  .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+  .card { background: var(--white); padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+  
+  /* CONTROLS STYLING */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; align-items: center; }
+  
+  .btn { 
+      padding: 10px 16px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 14px; 
+      font-weight: 600; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      transition: all 0.2s;
+      border: 1px solid transparent;
+  }
+
+  .btn-solid-blue { background: var(--primary); color: white; border-color: var(--primary); }
+  .btn-solid-blue:hover { background: #1d4ed8; }
+
+  .btn-outline-blue { background: white; color: var(--primary); border: 1px solid #bfdbfe; }
+  .btn-outline-blue:hover { background: #eff6ff; border-color: var(--primary); }
+
+  .btn-solid-red { background: var(--danger); color: white; border-color: var(--danger); }
+  .btn-solid-red:hover { background: #b91c1c; }
+
+  .btn-solid-green { background: var(--success); color: white; border-color: var(--success); }
+  .btn-solid-green:hover { background: #15803d; }
+
+  /* Search Input styling */
+  .search-wrapper { margin-left: auto; position: relative; }
+  .input-search { 
+      padding: 10px 15px; 
+      border-radius: 8px; 
+      border: 1px solid var(--border); 
+      min-width: 250px; 
+      outline: none; 
+      color: var(--text);
+  }
+  .input-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+  /* Table */
+  .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  
+  th { background: #f1f5f9; color: #475569; font-weight: 600; text-align: left; padding: 16px; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:hover { background: #f8fafc; }
+
+  /* Checkbox styling */
+  .row-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+  /* Info Button ("i") */
+  .info-btn { 
+      background: #e0f2fe; color: #0284c7; 
+      border: none; width: 28px; height: 28px; 
+      border-radius: 50%; cursor: pointer; 
+      font-size: 14px; margin-left: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: 0.2s;
+  }
+  .info-btn:hover { background: #0284c7; color: white; }
+
+  /* Action Buttons */
+  .action-btn { border: none; background: transparent; cursor: pointer; font-size: 16px; padding: 5px; transition: 0.2s; }
+  .edit-btn { color: #64748b; } .edit-btn:hover { color: var(--primary); }
+  .del-btn { color: #64748b; } .del-btn:hover { color: var(--danger); }
+
+  /* Modal */
+  .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .modal { background: white; width: 90%; max-width: 600px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); animation: slideIn 0.3s ease; display: flex; flex-direction: column; max-height: 85vh; }
+  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  
+  .modal h3 { margin-top: 0; color: var(--text); margin-bottom: 25px; font-size: 1.5rem; display: flex; justify-content: space-between; align-items: center;}
+  
+  .form-grid { display: grid; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 0.9rem; font-weight: 600; color: #64748b; }
+  .input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
+  .input:focus { border-color: var(--primary); }
+
+  /* Schedule Table inside Modal */
+  .schedule-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .schedule-table th, .schedule-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+  .schedule-table th { background: #f8fafc; font-weight: 600; }
+  .schedule-modal-content { overflow-y: auto; flex-grow: 1; }
+
+  @media print {
+    header, .controls, .modal-backdrop, .action-cell, th:first-child, td:first-child, th:last-child, td:last-child { display: none !important; }
+    body { background: white; }
+    .card { box-shadow: none; border: none; padding: 0; }
+    table { font-size: 12px; }
+    th, td { border: 1px solid #000; padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title"><i class="fas fa-layer-group" style="color:var(--primary)"></i> Class Management</div>
+  <div><a href="dashboard.html" style="text-decoration:none;"><button class="btn btn-outline-blue"><i class="fas fa-arrow-left"></i> Back</button></a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="controls">
+      <button class="btn btn-solid-blue" id="addBtn"><i class="fas fa-plus"></i> Add New</button>
+      
+      <button class="btn btn-outline-blue" id="importBtn">Import CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+      
+      <button class="btn btn-outline-blue" id="exportBtn">Export CSV</button>
+      <button class="btn btn-outline-blue" id="exportPdfBtn">Export PDF</button>
+      <button class="btn btn-outline-blue" id="printBtn">Print Preview</button>
+      <button class="btn btn-outline-blue" id="clearBtn">Clear Search</button>
+      
+      <button class="btn btn-solid-red" id="deleteBtn">Delete All / Selected</button>
+      
+      <div class="search-wrapper">
+          <input class="input-search" id="search" placeholder="Global Search...">
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAll"></th>
+            <th>Class ID</th>
+            <th>Class Name</th>
+            <th>Section</th>
+            <th>Number of Students</th>
+            <th style="text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody">
+            <tr><td colspan="6" style="text-align:center; padding:20px; color:#666;">Loading Data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal-backdrop">
+  <div class="modal">
+    <h3 id="modalTitle">Add New Class</h3>
+    <input type="hidden" id="edit-doc-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Class ID</label><input id="f_id" class="input" type="text" placeholder="e.g. 101"></div>
+      <div class="form-group"><label>Class Name</label><input id="f_name" class="input" type="text" placeholder="e.g. Grade 8"></div>
+      <div class="form-group"><label>Section</label><input id="f_section" class="input" type="text" placeholder="e.g. A"></div>
+      <div class="form-group"><label>Number of Students</label><input id="f_students" class="input" type="number" min="0"></div>
+    </div>
+    <div style="text-align:right; margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn btn-outline-blue" id="cancelModal">Cancel</button>
+      <button class="btn btn-solid-blue" id="saveModal">Save Class</button>
+    </div>
+  </div>
+</div>
+
+<div id="scheduleModal" class="modal-backdrop">
+    <div class="modal">
+        <h3>
+            <span id="schedTitle">Class Schedule</span>
+            <button onclick="document.getElementById('scheduleModal').style.display='none'" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+        </h3>
+        <div class="schedule-modal-content">
+            <div id="scheduleLoader" style="text-align:center; padding:20px;">Loading Schedule...</div>
+            <table class="schedule-table" id="schedTable" style="display:none; direction: rtl;">
+                <thead>
+                    <tr>
+                        <th>گھنٹہ</th>
+                        <th>مضمون</th>
+                        <th>نام استاذ</th>
+                    </tr>
+                </thead>
+                <tbody id="schedBody">
+                    </tbody>
+            </table>
+        </div>
+        <div style="margin-top:20px; text-align:right; display:flex; justify-content:flex-end; gap:10px;">
+             <button class="btn btn-solid-green" onclick="window.printScheduleModal()"><i class="fas fa-print"></i> Print Schedule</button>
+             <button class="btn btn-solid-blue" onclick="document.getElementById('scheduleModal').style.display='none'">Close</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 1. CONFIG FOR CLASS MANAGEMENT
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPEPkNUTWtWBpvmn5HQareIloHOCuebgY",
+      authDomain: "classes-cd560.firebaseapp.com",
+      projectId: "classes-cd560",
+      storageBucket: "classes-cd560.firebasestorage.app",
+      messagingSenderId: "86601369450",
+      appId: "1:86601369450:web:05a71bf2da618403da4713",
+      measurementId: "G-EFX75CRE2J"
+    };
+
+    // 2. CONFIG FOR STAFF/CALENDAR
+    const staffConfig = {
+        apiKey: "AIzaSyAP3id6yfzYOg_xIr8EXRzynascW81ZyRE",
+        authDomain: "calendar-74c0a.firebaseapp.com",
+        projectId: "calendar-74c0a",
+        storageBucket: "calendar-74c0a.firebasestorage.app",
+        messagingSenderId: "253739441178",
+        appId: "1:253739441178:web:c99e2c4a9b69591b24c5a3",
+        measurementId: "G-M8N8JK8B8S"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const classesRef = collection(db, "classes");
+
+    const staffApp = initializeApp(staffConfig, "staffApp");
+    const staffDb = getFirestore(staffApp);
+    const staffRef = collection(staffDb, "staff_records");
+
+    // Standard English Periods List for Sorting (UPDATED AS REQUESTED)
+    const VALID_PERIODS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "Supervision"];
+
+    let classesData = [];
+
+    // --- LOAD CLASSES DATA ---
+    onSnapshot(classesRef, (snapshot) => {
+        classesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTable();
+    });
+
+    // --- RENDER TABLE (Sorted by Class ID) ---
+    function renderTable() {
+        const tbody = document.getElementById("dataBody");
+        const search = document.getElementById("search").value.toLowerCase();
+        tbody.innerHTML = "";
+
+        const filtered = classesData.filter(item => 
+            (item.classId || "").toLowerCase().includes(search) ||
+            (item.className || "").toLowerCase().includes(search) ||
+            (item.section || "").toLowerCase().includes(search)
+        );
+
+        if(filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No records found</td></tr>`;
+            return;
+        }
+
+        // --- SORTING LOGIC: SMALLEST TO LARGEST (CLASS ID) ---
+        filtered.sort((a,b) => {
+            const idA = parseInt(a.classId);
+            const idB = parseInt(b.classId);
+            
+            // If both are numbers, compare numerically
+            if (!isNaN(idA) && !isNaN(idB)) {
+                return idA - idB;
+            }
+            // If not numbers, compare alphabetically
+            return (a.classId || "").localeCompare(b.classId || "");
+        });
+
+        filtered.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td style="text-align:center;">
+                    <input type="checkbox" class="row-checkbox" value="${row.id}">
+                </td>
+                <td>${row.classId}</td>
+                <td>
+                    <span style="font-weight:600;">${row.className}</span>
+                    <button class="info-btn" onclick="window.viewSchedule('${row.className}')" title="View Schedule">
+                        <i class="fas fa-info"></i>
+                    </button>
+                </td>
+                <td>${row.section}</td>
+                <td>${row.students}</td>
+                <td style="text-align:center;">
+                    <button class="action-btn edit-btn" onclick="window.editClass('${row.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn del-btn" onclick="window.deleteClass('${row.id}')"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById("search").addEventListener("input", renderTable);
+    document.getElementById("clearBtn").addEventListener("click", () => {
+        document.getElementById("search").value = "";
+        renderTable();
+    });
+
+    document.getElementById("selectAll").addEventListener("change", (e) => {
+        const checkboxes = document.querySelectorAll(".row-checkbox");
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+
+    // --- VIEW SCHEDULE (Sorted by Periods + Print) ---
+    window.viewSchedule = async (className) => {
+        const schedModal = document.getElementById("scheduleModal");
+        const loader = document.getElementById("scheduleLoader");
+        const table = document.getElementById("schedTable");
+        const tbody = document.getElementById("schedBody");
+        const title = document.getElementById("schedTitle");
+
+        schedModal.style.display = "flex";
+        loader.style.display = "block";
+        loader.innerText = "Loading Schedule from Staff Database...";
+        table.style.display = "none";
+        title.innerText = `Schedule for: ${className}`;
+        tbody.innerHTML = "";
+
+        try {
+            const cleanName = className.trim();
+            const q = query(staffRef, where("class", "==", cleanName));
+            const querySnapshot = await getDocs(q);
+            
+            let scheduleData = [];
+            querySnapshot.forEach((doc) => {
+                scheduleData.push(doc.data());
+            });
+
+            if (scheduleData.length === 0) {
+                loader.innerText = `No schedule found in Staff records for "${cleanName}".`;
+            } else {
+                // --- SORTING LOGIC: SMALLEST TO LARGEST (PERIODS) ---
+                scheduleData.sort((a, b) => {
+                    const indexA = VALID_PERIODS.indexOf(a.periods);
+                    const indexB = VALID_PERIODS.indexOf(b.periods);
+                    
+                    // Handle periods not in the valid list (put them at end)
+                    const safeA = indexA === -1 ? 999 : indexA;
+                    const safeB = indexB === -1 ? 999 : indexB;
+
+                    return safeA - safeB;
+                });
+
+                scheduleData.forEach(row => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td style="font-family:'Noto Nastaliq Urdu'; font-size:1.1rem;">${row.periods}</td>
+                        <td style="font-family:'Noto Nastaliq Urdu';">${row.subject}</td>
+                        <td style="font-family:'Noto Nastaliq Urdu';">${row.teacher}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                loader.style.display = "none";
+                table.style.display = "table";
+            }
+        } catch (error) {
+            console.error(error);
+            loader.innerText = "Connection Error: " + error.message;
+        }
+    };
+
+    // --- NEW: PRINT SCHEDULE FUNCTION ---
+    window.printScheduleModal = () => {
+        const tableContent = document.getElementById("schedTable").outerHTML;
+        const title = document.getElementById("schedTitle").innerText;
+        
+        // Create a new window for printing
+        const win = window.open('', '', 'height=600,width=800');
+        win.document.write('<html><head><title>Print Schedule</title>');
+        win.document.write('<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">');
+        win.document.write('<style>');
+        win.document.write('body { font-family: "Noto Nastaliq Urdu", sans-serif; direction: rtl; padding: 20px; }');
+        win.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
+        win.document.write('th, td { border: 1px solid black; padding: 10px; text-align: center; font-size: 16px; }');
+        win.document.write('th { background-color: #f0f0f0; font-weight: bold; }');
+        win.document.write('h2 { text-align: center; margin-bottom: 20px; text-decoration: underline; }');
+        win.document.write('</style>');
+        win.document.write('</head><body>');
+        win.document.write('<h2>' + title + '</h2>');
+        win.document.write(tableContent);
+        win.document.write('</body></html>');
+        
+        win.document.close();
+        win.focus();
+        // Wait a moment for styles to load then print
+        setTimeout(() => {
+            win.print();
+            win.close();
+        }, 500);
+    };
+
+    // --- STANDARD CRUD FUNCTIONS ---
+    const modal = document.getElementById("modal");
+    const openModal = () => { modal.style.display = "flex"; };
+    const closeModal = () => { modal.style.display = "none"; };
+
+    document.getElementById("addBtn").addEventListener("click", () => {
+        document.getElementById("modalTitle").innerText = "Add New Class";
+        document.getElementById("edit-doc-id").value = "";
+        ['f_id', 'f_name', 'f_section', 'f_students'].forEach(id => document.getElementById(id).value = "");
+        openModal();
+    });
+
+    document.getElementById("cancelModal").addEventListener("click", closeModal);
+
+    document.getElementById("saveModal").addEventListener("click", async () => {
+        const id = document.getElementById("edit-doc-id").value;
+        const data = { 
+            classId: document.getElementById("f_id").value.trim(), 
+            className: document.getElementById("f_name").value.trim(), 
+            section: document.getElementById("f_section").value.trim(), 
+            students: document.getElementById("f_students").value.trim() 
+        };
+
+        if(!data.classId || !data.className) return alert("Class ID and Name are required!");
+
+        try {
+            if(id) await updateDoc(doc(db, "classes", id), data);
+            else await addDoc(classesRef, data);
+            closeModal();
+        } catch(e) { alert("Error: " + e.message); }
+    });
+
+    window.editClass = (id) => {
+        const item = classesData.find(c => c.id === id);
+        if(item) {
+            document.getElementById("modalTitle").innerText = "Edit Class";
+            document.getElementById("edit-doc-id").value = id;
+            document.getElementById("f_id").value = item.classId;
+            document.getElementById("f_name").value = item.className;
+            document.getElementById("f_section").value = item.section;
+            document.getElementById("f_students").value = item.students;
+            openModal();
+        }
+    };
+
+    window.deleteClass = async (id) => {
+        if(confirm("Delete this class?")) await deleteDoc(doc(db, "classes", id));
+    };
+
+    document.getElementById("deleteBtn").addEventListener("click", async () => {
+        const selected = Array.from(document.querySelectorAll(".row-checkbox:checked")).map(cb => cb.value);
+        if (selected.length > 0) {
+            if(confirm(`Delete ${selected.length} selected classes?`)) {
+                const batch = writeBatch(db);
+                selected.forEach(id => batch.delete(doc(db, "classes", id)));
+                await batch.commit();
+                document.getElementById("selectAll").checked = false;
+            }
+        } else {
+            if(confirm("Delete ALL classes permanently?")) {
+                if(prompt("Type 'DELETE' to confirm:") === "DELETE") {
+                    const batch = writeBatch(db);
+                    classesData.forEach(c => batch.delete(doc(db, "classes", c.id)));
+                    await batch.commit();
+                }
+            }
+        }
+    });
+
+    document.getElementById("importBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+    
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const rows = e.target.result.split("\n").map(r => r.split(","));
+            const batch = writeBatch(db);
+            let count = 0;
+            for(let i=1; i<rows.length; i++) {
+                const cols = rows[i];
+                if(cols.length >= 2) {
+                    batch.set(doc(collection(db, "classes")), {
+                        classId: cols[0]?.trim() || "", className: cols[1]?.trim() || "",
+                        section: cols[2]?.trim() || "", students: cols[3]?.trim() || "0"
+                    });
+                    count++;
+                }
+            }
+            await batch.commit();
+            alert(`${count} imported!`);
+        };
+        reader.readAsText(file);
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+        let csv = "Class ID,Class Name,Section,Students\n";
+        classesData.forEach(c => csv += `${c.classId},${c.className},${c.section},${c.students}\n`);
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+        a.download = "Classes_Export.csv";
+        a.click();
+    });
+
+    document.getElementById("exportPdfBtn").addEventListener("click", () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Class List", 14, 20);
+        doc.autoTable({
+            head: [["ID", "Name", "Section", "Students"]],
+            body: classesData.map(r => [r.classId, r.className, r.section, r.students]),
+            startY: 25,
+        });
+        doc.save("classes_report.pdf");
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+    document.addEventListener("keydown", (e) => {
+        if(modal.style.display === "flex" && e.key === "Enter") document.getElementById("saveModal").click();
+    });
+
+</script>
+</body>
+</html>

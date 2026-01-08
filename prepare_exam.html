@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prepare Exam Paper</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f8f9fa; --white: #ffffff; --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1); --font-urdu: 'Jameel Noori Nastaleeq Kasheeda', 'Nafees Nastaleeq', 'Noto Nastaliq Urdu', serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        
+        .urdu-text { font-family: var(--font-urdu); direction: rtl; font-size: 1.1rem; line-height: 1.8; }
+        
+        header { background: var(--white); padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 1.4rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .back-btn { text-decoration: none; color: #666; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        
+        .toolbar { padding: 15px 30px; background: #fff; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .search-box { position: relative; flex-grow: 1; max-width: 400px; }
+        .search-box input { width: 100%; padding: 10px 10px 10px 30px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+        
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; display: flex; align-items: center; gap: 8px; }
+        .btn-add { background: var(--primary); } .btn-excel { background: #27ae60; } .btn-print { background: #8e44ad; } .btn-del-main { background: #c0392b; }
+        .btn-edit-main { background: #3498db; }
+        
+        .btn-filter-pending { background: #e74c3c; color: white; }
+        .btn-filter-submitted { background: #16a34a; color: white; }
+        .btn-filter-all { background: #95a5a6; color: white; }
+
+        /* MAIN LAYOUT */
+        .main-content { display: flex; flex: 1; overflow: hidden; }
+        .table-wrapper { flex: 3; overflow-y: auto; padding: 0 20px 20px 20px; }
+        .summary-sidebar { flex: 1; background: white; border-left: 1px solid var(--border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; max-width: 300px; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--white); border-radius: 10px; box-shadow: var(--shadow); }
+        th { background: var(--primary); color: white; padding: 15px; text-align: left; position: sticky; top: 0; z-index: 10; }
+        td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        
+        .duplicate-highlight { background-color: #fff7ed !important; border-left: 4px solid #f39c12; }
+
+        .paper-entry { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .paper-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
+        .paper-dates { font-size: 0.8rem; color: #555; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #f8f9fa; padding: 5px; border-radius: 4px; margin-top: 5px; }
+        .date-item { display: flex; flex-direction: column; }
+        .date-label { font-size: 0.7rem; color: #888; }
+        .status-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-top: 5px; }
+        .status-pending { background: #fee2e2; color: #b91c1c; }
+        .status-done { background: #dcfce7; color: #15803d; }
+
+        /* Process Status Indicators */
+        .process-indicators { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+        .process-badge { font-size: 0.65rem; padding: 2px 5px; border-radius: 3px; border: 1px solid #ccc; color: #555; background: #fff; }
+        .process-active { background: #e0f2fe; border-color: #3498db; color: #0284c7; font-weight: bold; }
+
+        .add-paper-btn { width: 100%; padding: 8px; border: 1px dashed var(--accent); background: #fff; color: var(--accent); cursor: pointer; border-radius: 6px; margin-top: 5px; }
+        .auto-amt { width: 100px; padding: 8px; border: 1px solid #ccc; background-color: #e9ecef; border-radius: 6px; font-weight: bold; color: #555; text-align: center; }
+        
+        .sum-card { background: #f1f5f9; padding: 15px; border-radius: 10px; text-align: center; }
+        .sum-number { font-size: 2rem; font-weight: bold; color: var(--primary); }
+        .sum-label { color: #64748b; font-size: 0.9rem; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 3px; }
+        .form-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; outline: none; font-family: var(--font-urdu); }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-sec { background: #e0e0e0; color: #333; }
+        input[type="file"] { display: none; }
+
+        @media print { 
+            header, .toolbar, .add-paper-btn, .btn-del-main, .btn-edit-main, .action-cell, .modal-overlay, .summary-sidebar { display: none !important; } 
+            body, .main-content, .table-wrapper { height: auto !important; overflow: visible !important; display: block !important; }
+            table { width: 100%; border-collapse: collapse; border: 1px solid #000; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } tfoot { display: table-footer-group; }
+            th, td { border: 1px solid #000 !important; padding: 5px !important; font-size: 10pt; color: #000 !important; } 
+            .auto-amt { border: none; background: transparent; padding: 0; text-align: center; color: #000 !important; } 
+            .paper-entry { border: none; box-shadow: none; padding: 0; margin: 0; }
+            .paper-dates { border: none; background: transparent; padding: 0; display: block; }
+            .date-item { display: inline-block; margin-right: 10px; }
+            .status-tag { border: 1px solid #000; background: none !important; color: #000 !important; }
+            .process-indicators { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand"><i class="fas fa-file-pen"></i> Exam Paper Setter</div>
+        <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </header>
+    <div class="toolbar">
+        <div class="search-box"><input type="text" id="searchInput" placeholder="Search..."></div>
+        
+        <button onclick="setFilter('pending')" class="btn btn-filter-pending"><i class="fas fa-clock"></i> Pending</button>
+        <button onclick="setFilter('submitted')" class="btn btn-filter-submitted"><i class="fas fa-check-circle"></i> Submitted</button>
+        <button onclick="setFilter('all')" class="btn btn-filter-all"><i class="fas fa-list"></i> All</button>
+        <button onclick="openExaminerModal()" class="btn btn-add"><i class="fas fa-user-plus"></i> Add Examiner</button>
+        <button onclick="document.getElementById('excel-import').click()" class="btn btn-excel"><i class="fas fa-file-import"></i> Import</button>
+        <input type="file" id="excel-import" accept=".xlsx, .xls">
+        <button id="btnExcel" class="btn btn-excel"><i class="fas fa-file-excel"></i> Export</button>
+        <button onclick="window.print()" class="btn btn-print"><i class="fas fa-print"></i> Print</button>
+    </div>
+
+    <div class="main-content">
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th width="5%">Sr</th><th width="20%">Examiner Name</th><th width="40%">Paper Details & Deadlines</th><th width="8%">Qty</th><th width="8%">Setting (150)</th><th width="8%">Checking</th><th width="8%">Total</th><th width="10%" class="action-cell">Action</th></tr></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="summary-sidebar">
+            <h3 style="color:var(--primary); text-align:center; border-bottom:2px solid #ddd; padding-bottom:10px;">Status Summary</h3>
+            <div class="sum-card" style="background:#e0f2fe;">
+                <div class="sum-number" id="sum-total">0</div>
+                <div class="sum-label">Total Papers Assigned</div>
+            </div>
+            <div class="sum-card" style="background:#dcfce7;">
+                <div class="sum-number" style="color:#166534;" id="sum-done">0</div>
+                <div class="sum-label">Submitted (Done)</div>
+            </div>
+            <div class="sum-card" style="background:#fee2e2;">
+                <div class="sum-number" style="color:#b91c1c;" id="sum-pending">0</div>
+                <div class="sum-label">Pending / In Process</div>
+            </div>
+
+            <div class="sum-card" style="background:#fff7ed; border:1px solid #ffcc80; text-align:left; padding:10px;">
+                <h4 style="margin:0 0 10px 0; color:#d97706; text-align:center; border-bottom:1px solid #fcd34d; padding-bottom:5px;">Work Progress</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.9rem;">
+                    <span><i class="fas fa-keyboard"></i> Typing:</span> <strong id="sum-typing">0</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.9rem;">
+                    <span><i class="fas fa-glasses"></i> Checking:</span> <strong id="sum-checking">0</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.9rem;">
+                    <span><i class="fas fa-pen-nib"></i> Correction:</span> <strong id="sum-correction">0</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                    <span><i class="fas fa-print"></i> Ready Print:</span> <strong id="sum-ready">0</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="examinerModal" class="modal-overlay">
+        <div class="modal">
+            <h2 id="exModalTitle">Add Examiner</h2>
+            <input type="hidden" id="exEditId">
+            <div class="form-group"><label>Name</label><input type="text" id="exName" class="form-input" placeholder="نام"></div>
+            <div class="modal-footer"><button id="btnCancelEx" class="btn btn-sec">Cancel</button><button id="btnSaveEx" class="btn btn-add">Save</button></div>
+        </div>
+    </div>
+
+    <div id="paperModal" class="modal-overlay">
+        <div class="modal">
+            <h2>Paper Details</h2>
+            <input type="hidden" id="paperParentId"><input type="hidden" id="paperEditIdx">
+            
+            <div class="form-group"><label>Paper Name</label><input type="text" id="paperName" class="form-input urdu-text"></div>
+            <div class="form-group"><label>Class Name</label><input type="text" id="className" class="form-input urdu-text"></div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="form-group"><label>Assign Date (تاریخ اجراء)</label><input type="date" id="dateAssign" class="form-input"></div>
+                <div class="form-group"><label>Due Date (آخری تاریخ)</label><input type="date" id="dateDue" class="form-input"></div>
+            </div>
+            
+            <div class="form-group" style="background:#f0fdf4; padding:5px; border-radius:5px; border:1px dashed #166534;">
+                <label style="color:#166534;">Submission Date (جمع کرنے کی تاریخ)</label>
+                <input type="date" id="dateSub" class="form-input">
+                <small style="color:#666;">Leave empty if Pending</small>
+            </div>
+
+            <div class="form-group" style="border-top:1px dashed #ccc; padding-top:10px; margin-top:10px;">
+                <label style="font-weight:bold; margin-bottom:5px; color:#555;">Paper Status (مرحلہ)</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; background:#f9f9f9; padding:8px; border-radius:5px;">
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem; cursor:pointer;">
+                        <input type="radio" name="paperStatus" value="typing" id="radTyping"> Typing
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem; cursor:pointer;">
+                        <input type="radio" name="paperStatus" value="checking" id="radChecking"> Checking
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem; cursor:pointer;">
+                        <input type="radio" name="paperStatus" value="correction" id="radCorrection"> Correction
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem; cursor:pointer;">
+                        <input type="radio" name="paperStatus" value="ready" id="radReady"> Ready to Print
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-footer"><button id="btnCancelPaper" class="btn btn-sec">Cancel</button><button id="btnSavePaper" class="btn btn-add">Save Paper</button></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDf1R8Tlinug3KZTtDkLp7kvXiqJFnWso",
+            authDomain: "exam-system-fa393.firebaseapp.com",
+            projectId: "exam-system-fa393",
+            storageBucket: "exam-system-fa393.firebasestorage.app",
+            messagingSenderId: "640248740140",
+            appId: "1:640248740140:web:8dd2fd461051e3cd8fd489",
+            measurementId: "G-Y34TY4L3ME"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const examinersRef = collection(db, "examiners");
+        const teachersRef = collection(db, "teachers");
+
+        // --- AUTH & PERMISSION CHECK ---
+        const session = localStorage.getItem('exam_user');
+        if (!session) { window.location.href = 'dashboard.html'; }
+        const user = JSON.parse(session);
+        const isReadOnly = user.role === 'individual';
+
+        function applyPermissions() {
+            if (isReadOnly) {
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .btn-add, .btn-excel, .btn-print, .btn-del-main, 
+                    .btn-edit-main, .add-paper-btn, .action-cell,
+                    .fa-edit, .fa-trash, input[type="file"] { display: none !important; }
+                    th:last-child, td:last-child { display: none !important; }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        applyPermissions();
+
+        let examiners = [];
+        let checkingData = [];
+        window.currentFilter = 'all'; 
+
+        window.setFilter = (filter) => {
+            window.currentFilter = filter;
+            renderTable();
+        };
+
+        onSnapshot(examinersRef, (snap) => {
+            examiners = snap.docs.map(d => ({...d.data(), id: d.id}));
+            renderTable();
+        });
+        
+        onSnapshot(teachersRef, (snap) => {
+            checkingData = snap.docs.map(d => ({...d.data(), id: d.id}));
+            renderTable();
+        });
+
+        function getCheckingAmount(name) {
+            if(!name) return 0;
+            const teacher = checkingData.find(t => t.name && t.name.trim().toLowerCase() === name.trim().toLowerCase());
+            if (teacher && teacher.entries) {
+                const totalPapers = teacher.entries.reduce((sum, e) => sum + (parseInt(e.qty) || 0), 0);
+                return totalPapers * 8;
+            }
+            return 0;
+        }
+
+        const openModal = (id) => document.getElementById(id).style.display = 'flex';
+        const closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        // --- EXAMINER LOGIC ---
+        window.openExaminerModal = (id = null) => {
+            document.getElementById('exEditId').value = id || "";
+            if(id) {
+                const ex = examiners.find(e => e.id === id);
+                document.getElementById('exName').value = ex.name;
+                document.getElementById('exModalTitle').innerText = "Edit Examiner";
+                document.getElementById('btnSaveEx').innerText = "Update";
+            } else {
+                document.getElementById('exName').value = '';
+                document.getElementById('exModalTitle').innerText = "Add Examiner";
+                document.getElementById('btnSaveEx').innerText = "Save";
+            }
+            openModal('examinerModal');
+        };
+        document.getElementById('btnCancelEx').addEventListener('click', () => closeModal('examinerModal'));
+        document.getElementById('btnSaveEx').addEventListener('click', async () => {
+            const name = document.getElementById('exName').value;
+            const id = document.getElementById('exEditId').value;
+            if(!name) return;
+            if(id) { await updateDoc(doc(db, "examiners", id), { name: name }); } 
+            else { await addDoc(examinersRef, { name, papers: [] }); }
+            closeModal('examinerModal');
+        });
+
+        // --- PAPER LOGIC (Updated with Correction Radio Button) ---
+        window.openPaperModal = (pId, idx = null) => {
+            document.getElementById('paperParentId').value = pId;
+            // Clear radios
+            document.getElementById('radTyping').checked = false;
+            document.getElementById('radChecking').checked = false;
+            document.getElementById('radCorrection').checked = false; // Clear Correction
+            document.getElementById('radReady').checked = false;
+
+            if(idx != null) {
+                const ex = examiners.find(e => e.id === pId);
+                const p = ex.papers[idx];
+                document.getElementById('paperEditIdx').value = idx;
+                document.getElementById('paperName').value = p.name;
+                document.getElementById('className').value = p.cls;
+                document.getElementById('dateAssign').value = p.assignDate || '';
+                document.getElementById('dateDue').value = p.dueDate || '';
+                document.getElementById('dateSub').value = p.subDate || '';
+                
+                // Load Status
+                if (p.isTyping) document.getElementById('radTyping').checked = true;
+                else if (p.isChecking) document.getElementById('radChecking').checked = true;
+                else if (p.isCorrection) document.getElementById('radCorrection').checked = true; // Check Correction
+                else if (p.isReady) document.getElementById('radReady').checked = true;
+
+            } else {
+                // Add New - Set Default to Typing
+                document.getElementById('paperEditIdx').value = "";
+                document.getElementById('paperName').value = "";
+                document.getElementById('className').value = "";
+                document.getElementById('dateAssign').valueAsDate = new Date(); 
+                document.getElementById('dateDue').value = "";
+                document.getElementById('dateSub').value = "";
+                
+                // DEFAULT SELECTED
+                document.getElementById('radTyping').checked = true;
+            }
+            openModal('paperModal');
+        };
+        document.getElementById('btnCancelPaper').addEventListener('click', () => closeModal('paperModal'));
+        
+        document.getElementById('btnSavePaper').addEventListener('click', async () => {
+            const pId = document.getElementById('paperParentId').value;
+            const idx = document.getElementById('paperEditIdx').value;
+            const name = document.getElementById('paperName').value;
+            const cls = document.getElementById('className').value;
+            
+            const assignDate = document.getElementById('dateAssign').value;
+            const dueDate = document.getElementById('dateDue').value;
+            const subDate = document.getElementById('dateSub').value;
+
+            // Get Status from Radios
+            const isTyping = document.getElementById('radTyping').checked;
+            const isChecking = document.getElementById('radChecking').checked;
+            const isCorrection = document.getElementById('radCorrection').checked; // Get Correction
+            const isReady = document.getElementById('radReady').checked;
+
+            const ex = examiners.find(e => e.id === pId);
+            const papers = [...ex.papers];
+            
+            const paperObj = { 
+                name, cls, assignDate, dueDate, subDate,
+                isTyping, isChecking, isCorrection, isReady // Save Correction
+            };
+
+            if(idx !== "") papers[idx] = paperObj;
+            else papers.push(paperObj);
+
+            await updateDoc(doc(db, "examiners", pId), { papers });
+            closeModal('paperModal');
+        });
+
+        window.deleteExaminer = async (id) => {
+            if(confirm("Delete this examiner?")) await deleteDoc(doc(db, "examiners", id));
+        };
+        window.deletePaper = async (pId, idx) => {
+            if(confirm("Delete paper?")) {
+                const ex = examiners.find(e => e.id === pId);
+                const papers = ex.papers.filter((_, i) => i !== idx);
+                await updateDoc(doc(db, "examiners", pId), { papers });
+            }
+        };
+
+        // --- RENDER TABLE ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            let countTotal = 0;
+            let countDone = 0;
+            let countPending = 0;
+            let countTyping = 0;
+            let countChecking = 0;
+            let countCorrection = 0; // Init Correction Count
+            let countReady = 0;
+
+            const nameCounts = {};
+            examiners.forEach(ex => { const n = ex.name.trim().toLowerCase(); nameCounts[n] = (nameCounts[n] || 0) + 1; });
+
+            examiners.forEach((ex, index) => {
+                if (search && !ex.name.toLowerCase().includes(search)) return;
+
+                const totalPapers = ex.papers ? ex.papers.length : 0;
+                const systemAmt = totalPapers * 150;
+                const autoCheckingAmt = getCheckingAmount(ex.name);
+                const grandTotal = systemAmt + autoCheckingAmt;
+                const isDuplicate = nameCounts[ex.name.trim().toLowerCase()] > 1;
+                const rowClass = isDuplicate ? 'duplicate-highlight' : '';
+
+                let papersHtml = '';
+                let hasMatchingPapers = false; 
+
+                if(ex.papers) {
+                    ex.papers.forEach((p, pIdx) => {
+                        const isDone = p.subDate && p.subDate !== "";
+                        
+                        countTotal++;
+                        if(isDone) countDone++; else countPending++;
+                        
+                        // Count Process Status
+                        if(p.isTyping) countTyping++;
+                        if(p.isChecking) countChecking++;
+                        if(p.isCorrection) countCorrection++; // Count Correction
+                        if(p.isReady) countReady++;
+
+                        let showThisPaper = true;
+                        if (window.currentFilter === 'pending' && isDone) showThisPaper = false;
+                        if (window.currentFilter === 'submitted' && !isDone) showThisPaper = false;
+                        
+                        if (showThisPaper) {
+                            hasMatchingPapers = true;
+                            const statusBadge = isDone 
+                                ? `<span class="status-tag status-done">Submitted: ${p.subDate}</span>` 
+                                : `<span class="status-tag status-pending">Pending (Due: ${p.dueDate || 'N/A'})</span>`;
+
+                            let processBadges = `<div class="process-indicators">`;
+                            if(p.isTyping) processBadges += `<span class="process-badge process-active">Typing</span>`;
+                            if(p.isChecking) processBadges += `<span class="process-badge process-active">Checking</span>`;
+                            if(p.isCorrection) processBadges += `<span class="process-badge process-active" style="color:orange; border-color:orange; background:#fff7ed;">Correction</span>`; // Badge for Correction
+                            if(p.isReady) processBadges += `<span class="process-badge process-active" style="color:green; border-color:green; background:#dcfce7;">Ready Print</span>`;
+                            processBadges += `</div>`;
+
+                            papersHtml += `
+                            <div class="paper-entry">
+                                <div class="paper-header">
+                                    <span class="urdu-text">${p.name} - ${p.cls}</span>
+                                    <div>
+                                        <i class="fas fa-edit" style="cursor:pointer;color:blue;margin-right:5px;" onclick="openPaperModal('${ex.id}', ${pIdx})"></i>
+                                        <i class="fas fa-trash" style="cursor:pointer;color:red" onclick="deletePaper('${ex.id}', ${pIdx})"></i>
+                                    </div>
+                                </div>
+                                <div class="paper-dates">
+                                    <div class="date-item"><span class="date-label">Assign</span><span>${p.assignDate || '-'}</span></div>
+                                    <div class="date-item"><span class="date-label">Due</span><span>${p.dueDate || '-'}</span></div>
+                                </div>
+                                ${statusBadge}
+                                ${processBadges}
+                            </div>`;
+                        }
+                    });
+                }
+
+                if (window.currentFilter !== 'all' && !hasMatchingPapers) {
+                    return; 
+                }
+
+                const row = document.createElement('tr');
+                row.className = rowClass;
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="urdu-text" style="font-weight:bold;">${ex.name} 
+                        ${isDuplicate ? '<br><small style="color:red;font-size:0.7rem">(Duplicate)</small>' : ''}
+                    </td>
+                    <td>${papersHtml}<button class="add-paper-btn" onclick="openPaperModal('${ex.id}')">+ Add Paper</button></td>
+                    <td style="text-align:center">${totalPapers}</td>
+                    <td style="text-align:center">₹ ${systemAmt}</td>
+                    <td style="text-align:center"><input type="text" class="auto-amt" value="${autoCheckingAmt}" readonly></td>
+                    <td style="font-weight:bold; color:#e67e22; text-align:center">₹ ${grandTotal}</td>
+                    <td class="action-cell">
+                        <button class="btn btn-edit-main" style="padding:8px; margin-bottom:5px;" onclick="openExaminerModal('${ex.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-del-main" style="padding:8px;" onclick="deleteExaminer('${ex.id}')"><i class="fas fa-trash"></i></button>
+                    </td>`;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('sum-total').innerText = countTotal;
+            document.getElementById('sum-done').innerText = countDone;
+            document.getElementById('sum-pending').innerText = countPending;
+            
+            document.getElementById('sum-typing').innerText = countTyping;
+            document.getElementById('sum-checking').innerText = countChecking;
+            document.getElementById('sum-correction').innerText = countCorrection; // Update Correction Count
+            document.getElementById('sum-ready').innerText = countReady;
+        }
+        document.getElementById('searchInput').addEventListener('keyup', renderTable);
+        
+        // --- EXCEL IMPORT/EXPORT ---
+        document.getElementById('btnExcel').addEventListener('click', () => {
+            const data = [];
+            examiners.forEach(ex => {
+                const checkAmt = getCheckingAmount(ex.name);
+                if(!ex.papers || ex.papers.length === 0) {
+                    data.push({ "Name": ex.name, "Paper": "-", "Class": "-", "Assign": "-", "Due": "-", "Sub": "-", "Rate": 150, "Total": checkAmt });
+                } else {
+                    ex.papers.forEach(p => {
+                        data.push({ 
+                            "Name": ex.name, 
+                            "Paper": p.name, 
+                            "Class": p.cls, 
+                            "Assign": p.assignDate, 
+                            "Due": p.dueDate, 
+                            "Sub": p.subDate || "Pending",
+                            "Typing": p.isTyping ? "Yes" : "No",
+                            "Checking": p.isChecking ? "Yes" : "No",
+                            "Correction": p.isCorrection ? "Yes" : "No", // Export Correction
+                            "Ready": p.isReady ? "Yes" : "No",
+                            "Rate": 150, 
+                            "Total": "See Bottom" 
+                        });
+                    });
+                }
+            });
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            XLSX.writeFile(wb, "Exam_Setting_Full_Report.xlsx");
+        });
+
+        document.getElementById('excel-import').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                for (const row of json) {
+                    let exName = row['Name'] || row['Examiner'];
+                    let pName = row['Paper'];
+                    if(exName) {
+                        let existingEx = examiners.find(x => x.name.trim().toLowerCase() === exName.trim().toLowerCase());
+                        const newPaper = { 
+                            name: pName || 'Imported Paper', 
+                            cls: row['Class'] || '',
+                            assignDate: row['Assign'] || '',
+                            dueDate: row['Due'] || '',
+                            subDate: row['Sub'] || '',
+                            isTyping: false, isChecking: false, isCorrection: false, isReady: false
+                        };
+
+                        if(existingEx) {
+                            if(pName) {
+                                const newPapers = [...existingEx.papers, newPaper];
+                                await updateDoc(doc(db, "examiners", existingEx.id), { papers: newPapers });
+                            }
+                        } else {
+                            const papers = pName ? [newPaper] : [];
+                            await addDoc(examinersRef, { name: exName, papers: papers });
+                        }
+                    }
+                }
+                alert("Imported Successfully!");
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+    </script>
+</body>
+</html>

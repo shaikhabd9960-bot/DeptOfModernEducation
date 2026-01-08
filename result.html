@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Management System (Final Perfect)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root { --primary-color: #2c3e50; --secondary-color: #3498db; --accent-color: #e74c3c; --light-bg: #f5f6fa; --border-color: #dcdde1; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-bg); margin: 0; padding: 20px; }
+        .container { max-width: 98%; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .select-group { display: flex; gap: 10px; }
+        .class-select, .section-select { padding: 10px; border-radius: 5px; border: 2px solid var(--secondary-color); font-size: 16px; cursor: pointer; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-bottom: 20px; }
+        button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .btn-primary { background: var(--primary-color); }
+        .btn-success { background: #27ae60; }
+        .btn-warning { background: #f39c12; }
+        .btn-danger { background: var(--accent-color); }
+        .btn-info { background: var(--secondary-color); }
+        .btn-save { background: #8e44ad; }
+        .btn-paste { background: #34495e; border: 2px solid #2c3e50; }
+        .btn-edit { background: #2980b9; margin-left: 5px; }
+        .btn-view { background: #1abc9c; margin-left: 5px; } 
+        
+        .table-responsive { overflow-x: auto; min-height: 300px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; vertical-align: middle; }
+        th { background-color: var(--primary-color); color: white; white-space: nowrap; }
+        .sub-marks-badge { display: block; font-size: 0.7em; color: #ecf0f1; margin-top: 2px; }
+        
+        .locked-input { width: 50px; padding: 5px; text-align: center; background: transparent; border: none; color: #2c3e50; font-weight: bold; pointer-events: none; }
+        
+        /* Control Bar Style */
+        .control-bar {
+            background-color: #e3f2fd; border: 2px solid #2980b9; padding: 15px; border-radius: 8px; margin-bottom: 25px;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+        }
+        .control-bar label { font-weight: bold; font-size: 16px; color: #2c3e50; }
+        .year-select { padding: 8px; font-size: 15px; border-radius: 5px; border: 1px solid #3498db; margin-left: 10px; }
+        .semester-toggle { display: flex; gap: 20px; align-items: center; }
+        .semester-toggle label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .semester-toggle input[type="radio"] { transform: scale(1.3); accent-color: #e74c3c; }
+
+        /* SCANNER INPUT STYLE */
+        #scannerInput { padding: 10px; border: 2px solid #e67e22; border-radius: 5px; font-size: 16px; width: 300px; text-align: center; font-weight: bold; }
+        #scannerInput:focus { outline: none; border-color: #d35400; background-color: #fff3e0; }
+
+        .rank-1 { background-color: #fffacd !important; } .rank-2 { background-color: #f0f0f0 !important; } .rank-3 { background-color: #fff0e6 !important; }
+        
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 95%; height: 90%; display: flex; flex-direction: column; }
+        .small-modal-content { background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        #spreadsheet { flex: 1; overflow: auto; direction: ltr; }
+
+        /* --- STUDENT RESULT PLATE STYLES --- */
+        #resultPlateModal .modal-content { width: 800px; height: auto; max-height: 95vh; overflow-y: auto; background: #fff; }
+        .result-card { border: 2px solid #2c3e50; padding: 30px; text-align: center; position: relative; background-color: white; overflow: hidden; }
+        .print-bg-image { display: none; } /* Hidden on screen */
+        .result-header { border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px; }
+        .result-header h2 { margin: 5px 0; color: #2c3e50; }
+        .student-info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 18px; font-weight: bold; border: 1px solid #ccc; padding: 10px; background: rgba(249, 249, 249, 0.9); }
+        .marks-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: right; }
+        .marks-column table { width: 100%; border: 1px solid #ccc; background: rgba(255,255,255,0.9); }
+        .marks-column th { background: #34495e; color: white; padding: 5px; }
+        .marks-column td { border: 1px solid #ddd; padding: 5px; font-size: 16px; }
+        .result-footer { margin-top: 20px; font-size: 20px; font-weight: bold; padding: 10px; background: rgba(236, 240, 241, 0.9); border-radius: 5px; }
+
+        /* --- FIXED PRINT STYLES (THE SOLUTION) --- */
+        @media print {
+            @page { size: A4; margin: 10px; } /* Default margin for Main List */
+            body { margin: 0; padding: 0; background: white; }
+            .no-print { display: none !important; }
+            
+            /* == SCENARIO A: Printing the Main Class List (Default) == */
+            /* If 'printing-card' class is NOT on body, show container, hide modal */
+            body:not(.printing-card) .container { display: block !important; width: 100%; }
+            body:not(.printing-card) #resultPlateModal { display: none !important; }
+
+            /* == SCENARIO B: Printing Individual Student Card == */
+            /* Only active when 'printing-card' class IS on body */
+            body.printing-card @page { margin: 0; } /* Remove margins for full bleed */
+            body.printing-card .container { display: none !important; }
+            
+            body.printing-card #resultPlateModal { 
+                display: block !important; position: absolute; top: 0; left: 0; 
+                width: 100%; height: 100%; background: transparent !important; z-index: 9999;
+            }
+            body.printing-card #resultPlateModal .modal-content { 
+                box-shadow: none; border: none; width: 100%; max-width: 100%; 
+                padding: 0; margin: 0; background: transparent !important;
+            }
+            
+            /* Show Letterhead ONLY in Card Mode */
+            body.printing-card .print-bg-image {
+                display: block !important; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                z-index: -1; object-fit: cover;
+            }
+
+            body.printing-card .result-card {
+                border: none !important; width: 90% !important; margin: 0 auto !important; 
+                padding-top: 180px; background: transparent !important; 
+            }
+            body.printing-card .result-header { border: none; }
+            body.printing-card .student-info-grid, 
+            body.printing-card .marks-column table, 
+            body.printing-card .result-footer {
+                background: transparent !important; border: 1px solid #000;
+            }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" onchange="window.handleFile(event)">
+
+    <div id="subjectModal" class="modal-overlay">
+        <div class="small-modal-content">
+            <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">نئی کتاب شامل کریں</h3>
+            <div class="form-group"> <label>کتاب کا نام:</label> <input type="text" id="newSubName" placeholder="مثال: نحومیر"> </div>
+            <div class="form-group"> <label>کل نمبر:</label> <input type="number" id="newSubMarks" value="100"> </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn-danger" onclick="document.getElementById('subjectModal').style.display='none'">Cancel</button>
+                <button class="btn-success" onclick="window.confirmAddSubject()">Add Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pasteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h3>Excel View Editor</h3>
+                <button class="btn-danger" onclick="window.closePasteModal()">Close X</button>
+            </div>
+            <p style="font-size:12px; color:gray;">نوٹ: یہاں آپ ایکسل سے ڈیٹا کاپی کر کے Ctrl+V سے پیسٹ کر سکتے ہیں۔</p>
+            <div id="spreadsheet"></div>
+            <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-success" onclick="window.processSpreadsheetData()">Update & Save Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resultPlateModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="no-print" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h3>Student Result Card</h3>
+                <div>
+                    <button class="btn-info" onclick="window.printResultPlate()"><i class="fas fa-print"></i> Print</button>
+                    <button class="btn-danger" onclick="document.getElementById('resultPlateModal').style.display='none'">Back</button>
+                </div>
+            </div>
+            
+            <div class="result-card" id="printableCard">
+                <img src="letterhead.jpg" class="print-bg-image" alt="Letterhead">
+
+                <div class="result-header">
+                    <h1 style="margin:0; font-size:32px; text-decoration: underline;">رزلٹ کارڈ</h1>
+                    <p id="res_year" style="font-size: 18px; margin-top:5px;">Year: 2025-26</p>
+                </div>
+
+                <div class="student-info-grid">
+                    <span id="res_gr">GR: 123</span>
+                    <span id="res_name">Name: Abdullah</span>
+                    <span id="res_class">Class: 1st Year (A)</span>
+                </div>
+
+                <div class="marks-container">
+                    <div class="marks-column" id="col1"></div>
+                    <div class="marks-column" id="col2"></div>
+                </div>
+
+                <div class="result-footer">
+                    <span style="margin-left: 20px;">Total: <span id="res_total"></span></span>
+                    <span>Percentage: <span id="res_perc"></span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="resultContent">
+        
+        <div class="control-bar no-print">
+            <div style="display:flex; align-items:center;">
+                <label><i class="fas fa-calendar-alt"></i> تعلیمی سال:</label>
+                <select id="yearSelector" class="year-select" onchange="window.switchContext()">
+                    <option value="2025-26">2025-26 / 1446-47</option>
+                    <option value="2026-27">2026-27 / 1447-48</option>
+                    <option value="2027-28">2027-28 / 1448-49</option>
+                    <option value="2028-29">2028-29 / 1449-50</option>
+                    <option value="2029-30">2029-30 / 1450-51</option>
+                    <option value="2030-31">2030-31 / 1451-52</option>
+                    <option value="2031-32">2031-32 / 1452-53</option>
+                    <option value="2032-33">2032-33 / 1453-54</option>
+                    <option value="2033-34">2033-34 / 1454-55</option>
+                    <option value="2034-35">2034-35 / 1455-56</option>
+                </select>
+            </div>
+
+            <div class="semester-toggle">
+                <label>
+                    <input type="radio" name="semester" value="First" checked onchange="window.switchContext()">
+                    First Semester (ششماہی اول)
+                </label>
+                <label>
+                    <input type="radio" name="semester" value="Second" onchange="window.switchContext()">
+                    Second Semester (ششماہی دوم)
+                </label>
+            </div>
+        </div>
+
+        <div class="header">
+            <button class="btn-primary no-print" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+            <div class="select-group no-print">
+                <select id="sectionSelector" class="section-select" onchange="window.switchContext()">
+                    <option value="الف">الف</option>
+                    <option value="ب">ب</option>
+                    <option value="ج">ج</option>
+                    <option value="دال">دال</option>
+                    <option value="ھ">ھ</option>
+                    <option value="واو">واو</option>
+                    <option value="زا">زا</option>
+                    <option value="ح">ح</option>
+                    <option value="ط">ط</option>
+                    <option value="ی">ی</option>
+                    <option value="کاف">کاف</option>
+                    <option value="لام">لام</option>
+                    <option value="میم">میم</option>
+                    <option value="نون">نون</option>
+                    <option value="س">س</option>
+                    <option value="ع">ع</option>
+                </select>
+                <select id="classSelector" class="class-select" onchange="window.switchContext()">
+                    <option value="عربی اول">عربی اول</option>
+                    <option value="عربی دوم">عربی دوم</option>
+                    <option value="عربی سوم">عربی سوم</option>
+                    <option value="عربی چہارم">عربی چہارم</option>
+                    <option value="عربی پنجم">عربی پنجم</option>
+                    <option value="عربی ششم">عربی ششم</option>
+                    <option value="عربی ہفتم">عربی ہفتم</option>
+                    <option value="افتا">افتا</option>
+                    <option value="دعوہ- انگریزی">دعوہ- انگریزی</option>
+                    <option value="تجوید">تجوید</option>
+                    <option value="معہد اول">معہد اول</option>
+                    <option value="معہد دوم">معہد دوم</option>
+                    <option value="معہد سوم">معہد سوم</option>
+                    <option value="معہد چہارم">معہد چہارم</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="text-align:center;"> 
+            <h2 id="classTitle">نتیجہ برائے جماعت: عربی اول (الف)</h2> 
+            <h4 id="subTitle" style="color:#7f8c8d; margin-top:-10px;"></h4>
+        </div>
+
+        <div class="toolbar no-print">
+            <div style="display:flex; gap:5px;">
+                <button class="btn-success" onclick="window.importExcel()"><i class="fas fa-file-excel"></i> Import</button>
+                <button class="btn-paste" onclick="window.openPasteModal()"><i class="fas fa-table"></i> Open Excel View</button>
+                <button class="btn-warning" onclick="window.exportExcel()"><i class="fas fa-file-export"></i> Export</button>
+                <button class="btn-danger" onclick="window.exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="btn-info" onclick="window.printView()"><i class="fas fa-print"></i> Print</button>
+            </div>
+            
+            <div style="display:flex; align-items:center;">
+                <input type="text" id="scannerInput" placeholder="Scan GR or Name (All Files)" onchange="window.handleScan(this)" autofocus>
+            </div>
+
+            <div style="display:flex; gap:5px;">
+                <button class="btn-primary" onclick="window.openAddSubjectModal()"><i class="fas fa-book"></i> Add Subject</button>
+                <button class="btn-primary" onclick="window.addNewStudentRow()"><i class="fas fa-user-plus"></i> Add Student</button>
+                <button class="btn-danger" onclick="window.deleteSelected()"><i class="fas fa-trash-alt"></i> Delete Selected</button>
+                <button class="btn-save" id="saveBtn" onclick="window.saveToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Save Data</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table id="resultTable">
+                <thead> <tr id="tableHeader"></tr> </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <p id="emptyMsg" style="text-align:center; color:#999; margin-top:20px; display:none;">کوئی ڈیٹا موجود نہیں ہے۔</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot, enableNetwork } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTaoWDIKZ-JrYJIXr1ACu_TnRCdRxxWn0",
+            authDomain: "result-a8085.firebaseapp.com",
+            projectId: "result-a8085",
+            storageBucket: "result-a8085.firebasestorage.app",
+            messagingSenderId: "331113562434",
+            appId: "1:331113562434:web:5557a225994bc6f62588db",
+            measurementId: "G-BW5E1N1SF8"
+        };
+
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            enableNetwork(db).catch(console.error);
+            console.log("Firebase Initialized Successfully");
+        } catch(e) {
+            console.error("Firebase Config Error: ", e);
+            alert("Firebase Config Error! Check console.");
+        }
+
+        window.allClassData = {};
+        let spreadsheetInstance = null;
+
+        function getCompositeKey() {
+            let year = document.getElementById('yearSelector').value;
+            let sem = document.querySelector('input[name="semester"]:checked').value;
+            let cls = document.getElementById('classSelector').value;
+            let sec = document.getElementById('sectionSelector').value;
+
+            // Preserve old data for 2025-26 First Semester
+            if (year === "2025-26" && sem === "First") {
+                return `${cls}_${sec}`; 
+            }
+            return `${year}_${sem}_${cls}_${sec}`; 
+        }
+
+        function initDataStructure(key) {
+            if (!window.allClassData[key]) {
+                // SMART COPY: Copy subjects from siblings
+                let currentClass = document.getElementById('classSelector').value;
+                let foundSibling = null;
+                for(let k in window.allClassData) {
+                    if(k.includes(currentClass) && window.allClassData[k].subjects.length > 0) {
+                        foundSibling = window.allClassData[k];
+                        break;
+                    }
+                }
+                if (foundSibling) {
+                    window.allClassData[key] = {
+                        students: [],
+                        subjects: [...foundSibling.subjects],
+                        subjectLimits: {...foundSibling.subjectLimits}
+                    };
+                } else {
+                    window.allClassData[key] = { students: [], subjects: [], subjectLimits: {} };
+                }
+            }
+            if (!window.allClassData[key].subjectLimits) {
+                window.allClassData[key].subjectLimits = {};
+            }
+        }
+
+        function getCurrentData() {
+            let key = getCompositeKey();
+            initDataStructure(key);
+            return window.allClassData[key];
+        }
+
+        function syncSubjectsAcrossSections(className, subjects, limits) {
+            for (let key in window.allClassData) {
+                if (key.includes(className)) {
+                    window.allClassData[key].subjects = [...subjects];
+                    window.allClassData[key].subjectLimits = {...limits};
+                }
+            }
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('resultData_v4', JSON.stringify(window.allClassData));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('resultData_v4');
+            if (saved) {
+                try {
+                    window.allClassData = JSON.parse(saved);
+                } catch(e) { console.error(e); }
+            }
+            window.switchContext();
+        }
+
+        // --- FIREBASE FUNCTIONS (AUTO SYNC) ---
+        
+        window.saveToFirebase = async function () {
+            if(!db) { alert("Firebase not active!"); return; }
+            const btn = document.getElementById("saveBtn");
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            try {
+                await setDoc(doc(db, "results", "full_backup_v4"), {
+                    data: JSON.stringify(window.allClassData),
+                    timestamp: new Date().toISOString()
+                });
+                alert("✅ ڈیٹا محفوظ ہو گیا! (Everyone updated)");
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save Data';
+            }
+        }
+
+        // REAL-TIME LISTENER
+        function initRealtimeSync() {
+            if(!db) return;
+            const docRef = doc(db, "results", "full_backup_v4");
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const cloudData = JSON.parse(docSnap.data().data);
+                    if (JSON.stringify(window.allClassData) !== JSON.stringify(cloudData)) {
+                        window.allClassData = cloudData;
+                        saveToLocal();
+                        window.switchContext();
+                        console.log("Auto-synced from cloud.");
+                    }
+                }
+            }, (error) => {
+                console.error("Sync Error:", error);
+            });
+        }
+
+        window.switchContext = function() {
+            let year = document.getElementById('yearSelector').value;
+            let sem = document.querySelector('input[name="semester"]:checked').value;
+            let cls = document.getElementById('classSelector').value;
+            let sec = document.getElementById('sectionSelector').value;
+            let semText = (sem === "First") ? "ششماہی اول" : "ششماہی دوم";
+            document.getElementById('classTitle').innerText = "نتیجہ برائے جماعت: " + cls + " (" + sec + ")";
+            document.getElementById('subTitle').innerText = `${year} - ${semText}`;
+            window.renderTable();
+        }
+
+        // --- GLOBAL SCANNER LOGIC (SEARCH ALL FILES) ---
+        window.handleScan = function(input) {
+            let val = input.value.trim();
+            if(!val) return;
+            
+            let foundStudent = null;
+            let foundKey = null;
+
+            // Loop through ALL data keys (all classes/years)
+            const allKeys = Object.keys(window.allClassData);
+            for (let key of allKeys) {
+                const classData = window.allClassData[key];
+                if (classData.students && classData.students.length > 0) {
+                    // Match GR (Exact) OR Name (Partial)
+                    let s = classData.students.find(std => std.gr == val || std.name.includes(val));
+                    if (s) {
+                        foundStudent = s;
+                        foundKey = key;
+                        break;
+                    }
+                }
+            }
+
+            if(foundStudent && foundKey) {
+                let parts = foundKey.split('_');
+                // Handle key formats
+                if (parts.length === 2) {
+                    document.getElementById('yearSelector').value = "2025-26";
+                    document.querySelector('input[name="semester"][value="First"]').checked = true;
+                    document.getElementById('classSelector').value = parts[0];
+                    document.getElementById('sectionSelector').value = parts[1];
+                } else if (parts.length >= 4) {
+                    document.getElementById('yearSelector').value = parts[0];
+                    document.querySelector(`input[name="semester"][value="${parts[1]}"]`).checked = true;
+                    document.getElementById('classSelector').value = parts[2];
+                    document.getElementById('sectionSelector').value = parts[3];
+                }
+
+                window.switchContext();
+                setTimeout(() => {
+                    window.openResultCard(foundStudent.id);
+                }, 100);
+
+                input.value = ""; input.blur();
+            } else {
+                alert("Student not found in any record!");
+                input.select();
+            }
+        }
+
+        window.openResultCard = function(id) {
+            const data = getCurrentData();
+            let std = data.students.find(s => s.id === id);
+            if(!std) return;
+
+            let year = document.getElementById('yearSelector').value;
+            let cls = document.getElementById('classSelector').value;
+            let sec = document.getElementById('sectionSelector').value;
+
+            document.getElementById('res_year').innerText = "تعلیمی سال: " + year;
+            document.getElementById('res_gr').innerText = "G.R No: " + std.gr;
+            document.getElementById('res_name').innerText = "نام طالب علم: " + std.name;
+            document.getElementById('res_class').innerText = "درجہ: " + cls + " (" + sec + ")";
+
+            let subjects = data.subjects;
+            let limits = data.subjectLimits;
+            let half = Math.ceil(subjects.length / 2);
+            let col1HTML = "<table><tr><th>مضمون</th><th>نمبرات</th></tr>";
+            let col2HTML = "<table><tr><th>مضمون</th><th>نمبرات</th></tr>";
+            let obtained = 0, totalMax = 0;
+
+            subjects.forEach((sub, i) => {
+                let mark = std.marks[sub] || 0;
+                let max = limits[sub] || 100;
+                obtained += parseInt(mark);
+                totalMax += parseInt(max);
+                let row = `<tr><td>${sub} (${max})</td><td>${mark}</td></tr>`;
+                if(i < half) col1HTML += row; else col2HTML += row;
+            });
+
+            col1HTML += "</table>"; col2HTML += "</table>";
+            document.getElementById('col1').innerHTML = col1HTML;
+            document.getElementById('col2').innerHTML = col2HTML;
+            document.getElementById('res_total').innerText = obtained + " / " + totalMax;
+            document.getElementById('res_perc').innerText = parseFloat(std.percent || 0).toFixed(2) + "%";
+            document.getElementById('resultPlateModal').style.display = 'flex';
+        }
+
+        // --- PRINTING LOGIC (DUAL MODE FIX) ---
+        // 1. Main List Print
+        window.printView = function() {
+            document.body.classList.remove('printing-card');
+            window.print();
+        }
+        
+        // 2. Individual Card Print
+        window.printResultPlate = function() { 
+            document.body.classList.add('printing-card');
+            window.print(); 
+            setTimeout(() => { document.body.classList.remove('printing-card'); }, 1000);
+        }
+
+        window.openAddSubjectModal = function() {
+            document.getElementById('newSubName').value = "";
+            document.getElementById('newSubMarks').value = "100";
+            document.getElementById('subjectModal').style.display = 'flex';
+        }
+
+        window.confirmAddSubject = function() {
+            let name = document.getElementById('newSubName').value;
+            let marks = parseInt(document.getElementById('newSubMarks').value);
+            if (!name) return alert("Enter Name");
+            const data = getCurrentData();
+            if (!data.subjects.includes(name)) {
+                data.subjects.push(name);
+                data.subjectLimits[name] = marks; 
+                data.students.forEach(std => std.marks[name] = 0);
+                syncSubjectsAcrossSections(document.getElementById('classSelector').value, data.subjects, data.subjectLimits);
+                saveToLocal();
+                window.renderTable();
+                document.getElementById('subjectModal').style.display = 'none';
+            }
+        }
+
+        window.renderTable = function () {
+            const thead = document.getElementById('tableHeader');
+            const tbody = document.getElementById('tableBody');
+            const data = getCurrentData();
+            document.getElementById('emptyMsg').style.display = data.students.length === 0 ? 'block' : 'none';
+
+            let sorted = [...data.students].sort((a, b) => (parseFloat(b.percent)||0) - (parseFloat(a.percent)||0));
+            let uP = [...new Set(sorted.map(s => parseFloat(s.percent || 0).toFixed(2)))];
+            let top = [uP[0], uP[1], uP[2]];
+
+            let h = `<th class="no-print"><input type="checkbox" id="selectAllBox" onclick="window.toggleSelectAll()"></th>
+                     <th>Sr</th><th>GR</th><th>Name</th><th>Class</th><th>Div</th>`;
+            data.subjects.forEach((sub, i) => {
+                h += `<th><span contenteditable="true" onblur="window.renameSubject(${i}, this.innerText)">${sub}</span> 
+                      <span class="sub-marks-badge">(${data.subjectLimits[sub]||100})</span>
+                      <button class="no-print" style="color:#ffadad;border:none;background:none;" onclick="window.deleteSubject(${i})">x</button></th>`;
+            });
+            h += `<th class="no-print">Add</th><th>Total</th><th>%</th><th class="no-print">Action</th>`;
+            thead.innerHTML = h;
+
+            tbody.innerHTML = '';
+            data.students.forEach((std, i) => {
+                let row = document.createElement('tr');
+                let p = parseFloat(std.percent || 0).toFixed(2);
+                if (p > 0) {
+                    if (p == top[0]) row.classList.add('rank-1');
+                    else if (p == top[1]) row.classList.add('rank-2');
+                    else if (p == top[2]) row.classList.add('rank-3');
+                }
+
+                let html = `<td class="no-print"><input type="checkbox" class="student-checkbox" value="${std.id}"></td>
+                            <td>${i + 1}</td>
+                            <td>${std.gr}</td>
+                            <td style="text-align:right;font-weight:bold;">${std.name}</td>
+                            <td>${std.class}</td><td>${document.getElementById('sectionSelector').value}</td>`;
+                
+                let tot = 0, max = 0;
+                data.subjects.forEach(sub => {
+                    let m = std.marks[sub] || 0;
+                    tot += parseInt(m); max += parseInt(data.subjectLimits[sub] || 100);
+                    html += `<td><input type="number" class="locked-input" value="${m}" readonly></td>`;
+                });
+
+                html += `<td class="no-print"></td><td id="tot-${std.id}"><b>${tot} / ${max}</b></td>
+                         <td><input type="text" class="locked-input" value="${p}%" readonly></td>
+                         <td class="no-print">
+                             <button class="btn-view" onclick="window.openResultCard(${std.id})"><i class="fas fa-info-circle"></i></button>
+                             <button class="btn-danger" onclick="window.delRow(${std.id})"><i class="fas fa-trash"></i></button>
+                         </td>`;
+                row.innerHTML = html;
+                tbody.appendChild(row);
+            });
+        }
+
+        window.addNewStudentRow = function() {
+            const data = getCurrentData();
+            let ns = { id: Date.now(), gr: "", name: "", class: document.getElementById('classSelector').value, marks: {}, percent: 0 };
+            data.subjects.forEach(s => ns.marks[s] = 0);
+            data.students.push(ns);
+            saveToLocal(); window.renderTable();
+            alert("New row added! Click 'Open Excel View' to edit details.");
+        }
+        window.delRow = function(id) {
+            if(confirm("Delete?")) {
+                const data = getCurrentData();
+                data.students = data.students.filter(s => s.id !== id);
+                saveToLocal(); window.renderTable();
+            }
+        }
+        window.deleteSelected = function() {
+            const chk = document.querySelectorAll('.student-checkbox:checked');
+            if(chk.length === 0) return alert("Select students first");
+            if(confirm(`Delete ${chk.length} students?`)) {
+                let ids = Array.from(chk).map(c => parseInt(c.value));
+                const data = getCurrentData();
+                data.students = data.students.filter(s => !ids.includes(s.id));
+                saveToLocal(); window.renderTable();
+                document.getElementById('selectAllBox').checked = false;
+            }
+        }
+        window.deleteSubject = function(i) {
+            if(confirm("Delete Subject?")) {
+                const currentClassName = document.getElementById('classSelector').value;
+                const data = getCurrentData();
+                let sub = data.subjects[i];
+                data.subjects.splice(i, 1);
+                delete data.subjectLimits[sub];
+                data.students.forEach(s => delete s.marks[sub]);
+                syncSubjectsAcrossSections(currentClassName, data.subjects, data.subjectLimits);
+                saveToLocal(); window.renderTable();
+            }
+        }
+        window.toggleSelectAll = function() {
+            let c = document.getElementById('selectAllBox').checked;
+            document.querySelectorAll('.student-checkbox').forEach(x => x.checked = c);
+        }
+        window.renameSubject = function(i, val) {
+             const currentClassName = document.getElementById('classSelector').value;
+             const data = getCurrentData();
+             let oldName = data.subjects[i];
+             if(oldName !== val && val.trim() !== "") {
+                 data.subjects[i] = val;
+                 data.subjectLimits[val] = data.subjectLimits[oldName];
+                 delete data.subjectLimits[oldName];
+                 data.students.forEach(s => { s.marks[val] = s.marks[oldName]; delete s.marks[oldName]; });
+                 syncSubjectsAcrossSections(currentClassName, data.subjects, data.subjectLimits);
+                 saveToLocal();
+             }
+        }
+        window.switchClass = function() {
+            let t = document.getElementById('classSelector').value + " (" + document.getElementById('sectionSelector').value + ")";
+            document.getElementById('classTitle').innerText = "نتیجہ برائے جماعت: " + t;
+            let year = document.getElementById('yearSelector').value;
+            let sem = document.querySelector('input[name="semester"]:checked').value;
+            let semText = (sem === "First") ? "ششماہی اول" : "ششماہی دوم";
+            document.getElementById('subTitle').innerText = `${year} - ${semText}`;
+            window.renderTable();
+        }
+
+        window.importExcel = function() { document.getElementById('fileInput').click(); }
+        window.handleFile = function(e) {
+            let r = new FileReader();
+            r.onload = function(e) {
+                let wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                let json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                if(json.length) {
+                    const data = getCurrentData();
+                    json.forEach((row, i) => {
+                        let ns = { id: Date.now()+i, gr: row['GR']||"", name: row['Name']||"", class: document.getElementById('classSelector').value, marks: {}, percent: 0 };
+                        let t=0, mx=0;
+                        data.subjects.forEach(s => { 
+                            let v = parseInt(row[s])||0; ns.marks[s] = v; t+=v; mx+=parseInt(data.subjectLimits[s]||100); 
+                        });
+                        ns.percent = mx > 0 ? (t/mx)*100 : 0;
+                        data.students.push(ns);
+                    });
+                    saveToLocal(); window.renderTable();
+                    alert("Import Successful!");
+                }
+            };
+            r.readAsArrayBuffer(e.target.files[0]);
+            document.getElementById('fileInput').value = "";
+        }
+        window.exportExcel = function() {
+            const data = getCurrentData();
+            let arr = data.students.map((s, i) => {
+                let r = { "Sr": i+1, "GR": s.gr, "Name": s.name };
+                data.subjects.forEach(sb => r[sb] = s.marks[sb]);
+                r["Total"] = document.getElementById(`tot-${s.id}`).innerText;
+                r["Percent"] = parseFloat(s.percent).toFixed(2)+"%";
+                return r;
+            });
+            let ws = XLSX.utils.json_to_sheet(arr);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Result");
+            XLSX.writeFile(wb, "Result.xlsx");
+        }
+        window.exportPDF = function() {
+            html2pdf().set({ margin:0.5, filename:'result.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'in',format:'a4',orientation:'landscape'} }).from(document.getElementById('resultContent')).save();
+        }
+        window.printView = function() { 
+            document.body.classList.remove('printing-card');
+            window.print(); 
+        }
+
+        window.openPasteModal = function() {
+            const data = getCurrentData();
+            let cols = [{type:'text',title:'GR',width:80},{type:'text',title:'Name',width:200},{type:'text',title:'Class',width:100},{type:'text',title:'Div',width:50}];
+            data.subjects.forEach(s => cols.push({type:'numeric',title:s,width:60}));
+            let d = data.students.map(s => {
+                let r = [s.gr, s.name, s.class, document.getElementById('sectionSelector').value];
+                data.subjects.forEach(sb => r.push(s.marks[sb]||0));
+                return r;
+            });
+            if(d.length<5) for(let i=0;i<5;i++) { let r=["","","",""]; data.subjects.forEach(_=>r.push("")); d.push(r); }
+            document.getElementById('spreadsheet').innerHTML = '';
+            spreadsheetInstance = jspreadsheet(document.getElementById('spreadsheet'), { data:d, columns:cols, minDimensions:[cols.length,10] });
+            document.getElementById('pasteModal').style.display = 'flex';
+        }
+        window.closePasteModal = function() { document.getElementById('pasteModal').style.display = 'none'; }
+        window.processSpreadsheetData = function() {
+            let rows = spreadsheetInstance.getData();
+            const data = getCurrentData();
+            let nsList = [];
+            rows.forEach((row, i) => {
+                let name = row[1];
+                if(!name) return;
+                let ns = { id: Date.now()+i, gr: row[0], name: name, class: row[2], marks: {}, percent: 0 };
+                let t=0, m=0;
+                data.subjects.forEach((s, idx) => { 
+                    let v = parseInt(row[4+idx])||0; ns.marks[s] = v; t+=v; m+=parseInt(data.subjectLimits[s]||100); 
+                });
+                ns.percent = m > 0 ? (t/m)*100 : 0;
+                nsList.push(ns);
+            });
+            data.students = nsList;
+            saveToLocal(); window.renderTable(); window.closePasteModal();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            initRealtimeSync();
+        });
+
+    </script>
+</body>
+</html>

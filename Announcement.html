@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Announcement System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --indigo: #4c51bf;
+            --white: #ffffff;
+            --gray-100: #f7fafc;
+            --border-color: #c1c1c1;
+            --toolbar-bg: #f3f3f3;
+            --sidebar-width: 280px;
+        }
+
+        /* URDU FONTS SETUP */
+        @font-face { font-family: 'Jameel Noori Nastaleeq'; src: local('Jameel Noori Nastaleeq'); }
+        @font-face { font-family: 'Faiz Lahori Nastaleeq'; src: local('Faiz Lahori Nastaleeq'); }
+        @font-face { font-family: 'Alvi Nastaleeq'; src: local('Alvi Nastaleeq'); }
+
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Jameel Noori Nastaleeq', 'Segoe UI', sans-serif; 
+            margin: 0; background-color: var(--gray-100); color: #333; 
+            height: 100vh; display: flex; flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            background-color: var(--indigo); color: white; padding: 0 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100; height: 60px;
+        }
+        
+        .btn {
+            padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; 
+            transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-size: 0.9rem;
+        }
+        .btn-light { background: rgba(255,255,255,0.2); color: white; }
+        .btn-success { background: #38a169; color: white; }
+        .btn-update { background: #ed8936; color: white; }
+        .btn-save-new { background: #3182ce; color: white; }
+        .btn-download { background: #805ad5; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* MAIN LAYOUT */
+        .main-layout { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width); background: white; border-left: 1px solid #ddd;
+            display: flex; flex-direction: column; overflow-y: auto;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+        }
+        .sidebar-search {
+            padding: 10px; background: #f8f9fa; border-bottom: 1px solid #eee;
+        }
+        .search-input {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;
+        }
+        .sidebar-header {
+            padding: 10px; background: #eee; border-bottom: 1px solid #ddd;
+            font-weight: bold; text-align: center; color: #444; font-size: 0.9rem;
+        }
+        .saved-list { list-style: none; padding: 0; margin: 0; }
+        .saved-item {
+            padding: 10px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer;
+            transition: 0.2s; display: flex; justify-content: space-between; align-items: center;
+        }
+        .saved-item:hover { background: #f0f4ff; }
+        .saved-item.active { background: #e0e7ff; border-right: 4px solid var(--indigo); font-weight: bold; }
+        .item-text { display: flex; flex-direction: column; width: 100%; }
+        .item-ref { font-size: 0.8rem; color: #666; font-family: sans-serif; }
+        .item-title { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+        .del-icon { color: #e53e3e; cursor: pointer; font-size: 0.9rem; padding: 5px; }
+
+        /* WORKSPACE */
+        .workspace {
+            flex: 1; background: #e9ecef; overflow-y: auto; padding: 25px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* --- TOOLBAR --- */
+        .toolbar-container {
+            width: 210mm; background: var(--toolbar-bg); padding: 5px 15px; 
+            border-radius: 4px 4px 0 0; border: 1px solid #ccc; border-bottom: none;
+            display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-start;
+            direction: ltr; position: relative;
+        }
+        
+        .tool-group { display: flex; gap: 2px; padding-right: 8px; border-right: 1px solid #ccc; align-items: center; }
+        .tool-group:last-child { border-right: none; }
+
+        .tool-btn { 
+            padding: 4px 8px; border: 1px solid transparent; background: transparent; 
+            cursor: pointer; border-radius: 2px; height: 30px; font-size: 14px; color: #333;
+        }
+        .tool-btn:hover { background: #dadada; border: 1px solid #adadad; }
+        
+        .tool-select { 
+            padding: 2px; border-radius: 2px; border: 1px solid #ccc; height: 28px; 
+            font-size: 13px; font-family: sans-serif;
+        }
+
+        /* CUSTOM COLOR PALETTE */
+        #color-palette-modal {
+            display: none; position: absolute; top: 40px; left: 250px; 
+            background: white; border: 1px solid #999; padding: 10px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; width: 220px;
+            border-radius: 4px;
+        }
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+        .color-swatch { 
+            width: 30px; height: 30px; cursor: pointer; border: 1px solid #ddd; border-radius: 3px; 
+        }
+        .color-swatch:hover { transform: scale(1.1); border-color: #000; }
+        .palette-footer { text-align: right; border-top: 1px solid #eee; padding-top: 5px; }
+        .btn-ok { background: #3182ce; color: white; padding: 4px 12px; font-size: 12px; border:none; border-radius:3px; cursor:pointer;}
+
+        /* LETTERHEAD IMAGE */
+        #print-letterhead { display: none; }
+
+        /* A4 PAGE */
+        .a4-page {
+            width: 210mm; min-height: 297mm; background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative;
+            /* Screen Padding */
+            padding-top: 2.2in; padding-bottom: 1in; padding-left: 0.6in; padding-right: 0.6in;
+            display: flex; flex-direction: column;
+            border: 1px solid #ccc;
+        }
+
+        /* Header Row */
+        .doc-header-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 15px; font-weight: bold; direction: ltr; padding: 0 5px; font-size: 1.1rem;
+        }
+        .ref-box, .date-box { display: flex; align-items: center; gap: 8px; }
+        
+        .print-only-text { display: none; font-size: 1.1rem; font-weight: bold; color: black; font-family: sans-serif; }
+        .screen-controls { display: flex; gap: 5px; }
+
+        select, input[type="text"], input[type="date"] { 
+            padding: 5px; font-family: sans-serif; font-size: 0.95rem; 
+            border: 1px solid #ccc; background: white; border-radius: 3px;
+        }
+        input[type="date"] { width: 140px; }
+        
+        /* READONLY INPUT STYLE */
+        input[readonly] { background-color: #f0f0f0; color: #555; cursor: not-allowed; }
+
+        /* SUBJECT & EDITOR */
+        #doc-subject {
+            width: 100%; font-size: 1.8rem; font-weight: bold; text-align: center;
+            border-bottom: 1px solid #eee; padding: 8px; margin-bottom: 15px; 
+            outline: none; min-height: 50px; direction: rtl; font-family: 'Jameel Noori Nastaleeq';
+        }
+        #doc-subject:focus { border-bottom: 2px solid var(--indigo); }
+        #doc-subject[placeholder]:empty:before { content: attr(placeholder); color: #aaa; cursor: text; font-size: 1.4rem; }
+
+        #editor {
+            flex-grow: 1; outline: none; font-size: 16pt; line-height: 1.8;
+            direction: rtl; text-align: right; padding: 15px; 
+            border: 1px solid transparent; white-space: pre-wrap;
+        }
+        #editor:hover { border: 1px dashed #e2e8f0; }
+        #editor:focus { border: 1px solid transparent; } 
+
+        .no-print { }
+
+        /* --- PRINT SETTINGS --- */
+        @media print {
+            header, .sidebar, .toolbar-container, .no-print, .screen-controls, #color-palette-modal { display: none !important; }
+            .workspace { background: none; padding: 0; overflow: visible; height: auto; }
+            .main-layout { height: auto; overflow: visible; display: block; }
+            
+            @page { size: A4; margin: 0; }
+            
+            html, body {
+                width: 210mm; height: 297mm;
+                margin: 0 !important; padding: 0 !important;
+                background-color: transparent !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #print-letterhead {
+                display: block !important; position: fixed; top: 0; left: 0;
+                width: 210mm; height: 297mm; z-index: -1000; object-fit: fill; 
+            }
+
+            .a4-page {
+                box-shadow: none; margin: 0; width: 210mm; height: 297mm;
+                background: transparent !important; border: none; 
+                /* Print Margins */
+                padding-top: 2.0in !important; padding-bottom: 1in; padding-left: 0.5in; padding-right: 0.5in;
+            }
+
+            #doc-subject { border: none !important; margin-bottom: 10px; }
+            #editor { border: none; padding: 0; }
+            
+            .print-only-text { display: block !important; }
+            .ref-box label, .date-box label { display: inline-block !important; margin-right: 5px; }
+            input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<img id="print-letterhead" src="letterhead.jpg" alt="Letterhead">
+
+<header class="no-print">
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a href="Dashboard.html" class="btn btn-light"><i class="fas fa-arrow-left"></i> ڈیش بورڈ</a>
+    </div>
+    <div style="display:flex; gap:8px;">
+        <button onclick="downloadAsImage()" class="btn btn-download" title="Save as Image"><i class="fas fa-download"></i> ڈاؤنلوڈ (JPG)</button>
+        <button onclick="saveAnnouncement(false)" class="btn btn-update"><i class="fas fa-edit"></i> اپڈیٹ</button>
+        <button onclick="saveAnnouncement(true)" class="btn btn-save-new"><i class="fas fa-save"></i> نیا محفوظ</button>
+        <button onclick="window.print()" class="btn btn-success"><i class="fas fa-print"></i> پرنٹ</button>
+    </div>
+</header>
+
+<div class="main-layout">
+    
+    <div class="sidebar no-print">
+        <div class="sidebar-header" style="background:#4c51bf;">
+            <button class="btn btn-light" style="width:100%; justify-content:center; border:1px solid white;" onclick="resetForm()">+ نیا اعلان (خالی کریں)</button>
+        </div>
+        <div class="sidebar-search">
+            <input type="text" class="search-input" id="searchBar" placeholder="تلاش کریں (Search)..." oninput="filterSavedList()">
+        </div>
+        <div class="sidebar-header">
+            محفوظ شدہ فائلیں
+            <button onclick="downloadAllData()" style="font-size:0.7rem; float:left; cursor:pointer;">سارا ڈیٹا ڈاؤنلوڈ</button>
+        </div>
+        <ul id="saved-list" class="saved-list">
+            <li style="padding:10px; text-align:center; color:#888;">لوڈ ہو رہا ہے...</li>
+        </ul>
+    </div>
+
+    <div class="workspace">
+        
+        <div class="toolbar-container no-print">
+            <div class="tool-group">
+                <select class="tool-select" style="width:140px;" onchange="format('fontName', this.value)" title="Font Family">
+                    <option value="Jameel Noori Nastaleeq">Jameel Noori</option>
+                    <option value="Faiz Lahori Nastaleeq">Faiz Lahori</option>
+                    <option value="Alvi Nastaleeq">Alvi Nastaleeq</option>
+                    <option value="Arial">Arial</option>
+                </select>
+                <select class="tool-select" style="width:50px;" onchange="format('fontSize', this.value)" title="Font Size">
+                    <option value="2">10</option>
+                    <option value="3" selected>12</option>
+                    <option value="4">14</option>
+                    <option value="5">18</option>
+                    <option value="6">24</option>
+                    <option value="7">36</option>
+                </select>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="format('bold')" title="Bold"><i class="fas fa-bold"></i></button>
+                <button class="tool-btn" onclick="format('italic')" title="Italic"><i class="fas fa-italic"></i></button>
+                <button class="tool-btn" onclick="format('underline')" title="Underline"><i class="fas fa-underline"></i></button>
+                
+                <button class="tool-btn" onclick="toggleColorPalette()" title="Text Color" style="color:red; font-weight:bold; position:relative;">
+                    A <div style="width:100%; height:3px; background:red; position:absolute; bottom:2px; left:0;"></div>
+                </button>
+                
+                <div id="color-palette-modal">
+                    <div class="color-grid">
+                        <div class="color-swatch" style="background:black;" onclick="selectColor('black')"></div>
+                        <div class="color-swatch" style="background:red;" onclick="selectColor('red')"></div>
+                        <div class="color-swatch" style="background:blue;" onclick="selectColor('blue')"></div>
+                        <div class="color-swatch" style="background:green;" onclick="selectColor('green')"></div>
+                        <div class="color-swatch" style="background:orange;" onclick="selectColor('orange')"></div>
+                        <div class="color-swatch" style="background:purple;" onclick="selectColor('purple')"></div>
+                        <div class="color-swatch" style="background:#4c51bf;" onclick="selectColor('#4c51bf')"></div>
+                        <div class="color-swatch" style="background:gray;" onclick="selectColor('gray')"></div>
+                        <div class="color-swatch" style="background:brown;" onclick="selectColor('brown')"></div>
+                        <div class="color-swatch" style="background:teal;" onclick="selectColor('teal')"></div>
+                    </div>
+                    <div class="palette-footer">
+                        <button class="btn-ok" onclick="toggleColorPalette()">OK</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="format('justifyRight')"><i class="fas fa-align-right"></i></button>
+                <button class="tool-btn" onclick="format('justifyCenter')"><i class="fas fa-align-center"></i></button>
+                <button class="tool-btn" onclick="format('justifyLeft')"><i class="fas fa-align-left"></i></button>
+                <button class="tool-btn" onclick="format('justifyFull')"><i class="fas fa-align-justify"></i></button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="insertTable()"><i class="fas fa-table"></i></button>
+                <button class="tool-btn" onclick="format('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+                <button class="tool-btn" onclick="format('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="format('undo')"><i class="fas fa-undo"></i></button>
+                <button class="tool-btn" onclick="format('redo')"><i class="fas fa-redo"></i></button>
+            </div>
+        </div>
+
+        <div class="a4-page" id="capture-area">
+            
+            <div class="doc-header-row">
+                <div class="ref-box">
+                    <label>Ref. No:</label> 
+                    <div class="screen-controls">
+                        <select id="ref-prefix" onchange="generateSmartRef()">
+                            <option value="">Select Type</option>
+                            <option value="JIIU/ME/HK/">JIIU/ME/HK/</option>
+                            <option value="JIIU/ME/S/">JIIU/ME/S/</option>
+                            <option value="JIIU/ME/F/">JIIU/ME/F/</option>
+                            <option value="JIIU/ME/SA/">JIIU/ME/SA/</option>
+                        </select>
+                        <input type="text" id="ref-number" placeholder="001" readonly style="width:60px; text-align:center;">
+                    </div>
+                    <span id="print-ref-display" class="print-only-text"></span>
+                </div>
+
+                <div class="date-box">
+                    <label>Date:</label>
+                    <div class="screen-controls">
+                        <input type="date" id="doc-date" onchange="updateDateDisplay()">
+                    </div>
+                    <span id="print-date-display" class="print-only-text"></span>
+                </div>
+            </div>
+
+            <div id="doc-subject" contenteditable="true" placeholder="عنوان: یہاں لکھیں (یہ فائل کا نام بھی ہوگا)" oninput="saveLocalDraft()"></div>
+
+            <div id="editor" contenteditable="true" oninput="saveLocalDraft()">
+                <p>محترم اساتذہ کرام / طلباء عزیز!</p>
+                <p>یہاں اپنا مضمون تحریر کریں...</p>
+                <br><br>
+                <p>والسلام</p>
+                <p><b>ناظم صاحب</b></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDFNPgeqXZwYBNOSYnSBFkjYkaeXm5GU-k",
+        authDomain: "announcement-355bd.firebaseapp.com",
+        projectId: "announcement-355bd",
+        storageBucket: "announcement-355bd.firebasestorage.app",
+        messagingSenderId: "646377093892",
+        appId: "1:646377093892:web:49af2b48aa6a4bc627ae51",
+        measurementId: "G-9WBLT1E92N"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const annRef = collection(db, "announcements");
+
+    let currentDocId = null;
+    let allSavedDocs = []; // For search & auto-ref logic
+
+    // --- TAB KEY ---
+    document.getElementById('editor').addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            document.execCommand('insertHTML', false, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        }
+    });
+
+    // --- AUTO-SAVE ---
+    window.saveLocalDraft = function() {
+        const data = {
+            subject: document.getElementById('doc-subject').innerHTML,
+            content: document.getElementById('editor').innerHTML,
+            refP: document.getElementById('ref-prefix').value,
+            refN: document.getElementById('ref-number').value,
+            date: document.getElementById('doc-date').value
+        };
+        localStorage.setItem('announcement_draft', JSON.stringify(data));
+    };
+
+    window.loadLocalDraft = function() {
+        const saved = localStorage.getItem('announcement_draft');
+        if (saved && !currentDocId) { 
+            try {
+                const data = JSON.parse(saved);
+                if(data.subject) document.getElementById('doc-subject').innerHTML = data.subject;
+                if(data.content) document.getElementById('editor').innerHTML = data.content;
+                if(data.refP) document.getElementById('ref-prefix').value = data.refP;
+                if(data.refN) document.getElementById('ref-number').value = data.refN;
+                if(data.date) document.getElementById('doc-date').value = data.date;
+                updateRefDisplay(); updateDateDisplay();
+            } catch(e) {}
+        }
+    };
+
+    // --- SMART REFERENCE LOGIC (GAP FILLING) ---
+    window.generateSmartRef = function() {
+        const prefix = document.getElementById('ref-prefix').value;
+        const numField = document.getElementById('ref-number');
+        
+        if(!prefix) { numField.value = ""; return; }
+        
+        // If editing existing doc, keep its number unless user changes prefix
+        // But since we want non-editable, changing prefix acts as "New sequence".
+        
+        // Find used numbers for this prefix
+        const usedNumbers = allSavedDocs
+            .filter(d => d.refP === prefix && d.refN)
+            .map(d => parseInt(d.refN))
+            .sort((a,b) => a - b);
+
+        let nextNum = 1;
+        // Find gap
+        for(let i=0; i < usedNumbers.length; i++) {
+            if(usedNumbers[i] === nextNum) {
+                nextNum++;
+            } else if (usedNumbers[i] > nextNum) {
+                break; // Found gap
+            }
+        }
+        
+        numField.value = String(nextNum).padStart(3, '0');
+        updateRefDisplay();
+    };
+
+    window.updateRefDisplay = function() {
+        const p = document.getElementById('ref-prefix').value;
+        const n = document.getElementById('ref-number').value;
+        document.getElementById('print-ref-display').innerText = p + n;
+        saveLocalDraft(); 
+    }
+
+    window.updateDateDisplay = function() {
+        const d = document.getElementById('doc-date').value;
+        saveLocalDraft();
+        if(d) {
+            const dateObj = new Date(d);
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = monthNames[dateObj.getMonth()];
+            const year = dateObj.getFullYear();
+            document.getElementById('print-date-display').innerText = `${day}-${month}-${year}`;
+        }
+    }
+
+    // --- COLOR & TOOLS ---
+    window.toggleColorPalette = function() {
+        const modal = document.getElementById('color-palette-modal');
+        modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+    }
+    
+    window.selectColor = function(color) {
+        document.execCommand('foreColor', false, color);
+    }
+
+    window.format = function(cmd, val=null) {
+        document.execCommand(cmd, false, val);
+        saveLocalDraft();
+    };
+
+    window.insertTable = function() {
+        let rows = prompt("Rows:", "3");
+        let cols = prompt("Cols:", "3");
+        if(rows && cols) {
+            let html = '<table style="width:100%; border-collapse: collapse; border: 1px solid black; margin:10px 0;">';
+            for(let i=0; i<rows; i++) {
+                html += '<tr>';
+                for(let j=0; j<cols; j++) html += '<td style="border: 1px solid black; padding: 5px; text-align:center;">-</td>';
+                html += '</tr>';
+            }
+            html += '</table><br>';
+            document.execCommand('insertHTML', false, html);
+            saveLocalDraft();
+        }
+    };
+
+    // --- SAVE LOGIC ---
+    window.saveAnnouncement = async function(saveAsNew) {
+        const subjectEl = document.getElementById('doc-subject');
+        const subjectText = subjectEl.innerText.trim();
+        const subjectHTML = subjectEl.innerHTML;
+        const refP = document.getElementById('ref-prefix').value;
+        const refN = document.getElementById('ref-number').value;
+        const fullRef = (refP && refN) ? (refP + refN) : "No-Ref";
+
+        if(!subjectText) return alert("براہ کرم عنوان (Subject) لکھیں!");
+
+        const data = {
+            subject: subjectText,
+            subjectHTML: subjectHTML,
+            fullRef: fullRef, 
+            content: document.getElementById('editor').innerHTML,
+            refP: refP, refN: refN,
+            date: document.getElementById('doc-date').value,
+            timestamp: new Date()
+        };
+
+        try {
+            if(saveAsNew || !currentDocId) {
+                // Check if creating new, we might need to regenerate Ref if it was taken during session
+                // For simplicity, we assume single user or minor conflict
+                const newDoc = await addDoc(annRef, data);
+                currentDocId = newDoc.id;
+                alert("نئی فائل محفوظ ہو گئی!");
+            } else {
+                await updateDoc(doc(db, "announcements", currentDocId), data);
+                alert("اپڈیٹ ہو گیا!");
+            }
+        } catch(e) {
+            alert("Error: " + e.message);
+        }
+    };
+
+    // --- LOAD & SEARCH ---
+    const q = query(annRef, orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+        allSavedDocs = [];
+        snapshot.forEach(doc => allSavedDocs.push({id: doc.id, ...doc.data()}));
+        renderSidebar(allSavedDocs);
+        
+        // If we are in "New" mode, refresh the Smart Ref just in case a new doc was added
+        if(!currentDocId) generateSmartRef(); 
+    });
+
+    window.filterSavedList = function() {
+        const term = document.getElementById('searchBar').value.toLowerCase();
+        const filtered = allSavedDocs.filter(d => 
+            (d.subject && d.subject.toLowerCase().includes(term)) || 
+            (d.fullRef && d.fullRef.toLowerCase().includes(term))
+        );
+        renderSidebar(filtered);
+    }
+
+    function renderSidebar(docs) {
+        const listEl = document.getElementById('saved-list');
+        listEl.innerHTML = '';
+        if(docs.length === 0) {
+            listEl.innerHTML = '<li style="padding:10px; text-align:center;">کوئی ریکارڈ نہیں</li>';
+            return;
+        }
+        docs.forEach(d => {
+            const li = document.createElement('li');
+            li.className = 'saved-item';
+            if(d.id === currentDocId) li.classList.add('active');
+            
+            li.innerHTML = `
+                <div class="item-text" onclick="window.loadDoc('${d.id}')">
+                    <span class="item-ref">${d.fullRef || ''}</span>
+                    <span class="item-title">${d.subject}</span>
+                </div>
+                <i class="fas fa-trash del-icon" onclick="window.deleteDocItem('${d.id}')"></i>
+            `;
+            listEl.appendChild(li);
+        });
+    }
+
+    // --- DOWNLOAD ALL DATA (CSV) ---
+    window.downloadAllData = function() {
+        if(!allSavedDocs.length) return alert("کوئی ڈیٹا نہیں ہے۔");
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Reference,Date,Subject,Content\n";
+        
+        allSavedDocs.forEach(row => {
+            // Clean content for CSV (remove HTML tags simple regex)
+            let cleanContent = row.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            let rowStr = `${row.fullRef},${row.date},"${row.subject}","${cleanContent}"`; 
+            csvContent += rowStr + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "All_Announcements.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    // --- DOWNLOAD AS IMAGE (HTML2CANVAS) ---
+    window.downloadAsImage = function() {
+        const element = document.getElementById('capture-area');
+        const oldRefDisplay = document.getElementById('print-ref-display').style.display;
+        const oldDateDisplay = document.getElementById('print-date-display').style.display;
+        const inputs = element.querySelectorAll('input, select');
+        
+        document.getElementById('print-ref-display').style.display = 'block';
+        document.getElementById('print-date-display').style.display = 'block';
+        inputs.forEach(el => el.style.opacity = '0');
+        
+        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = (document.getElementById('doc-subject').innerText.trim() || 'announcement') + '.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+            
+            document.getElementById('print-ref-display').style.display = oldRefDisplay;
+            document.getElementById('print-date-display').style.display = oldDateDisplay;
+            inputs.forEach(el => el.style.opacity = '1');
+        });
+    }
+
+    window.loadDoc = async function(id) {
+        const docSnap = await getDoc(doc(db, "announcements", id));
+        if (docSnap.exists()) {
+            const d = docSnap.data();
+            currentDocId = id;
+            document.getElementById('doc-subject').innerHTML = d.subjectHTML || d.subject; 
+            document.getElementById('editor').innerHTML = d.content;
+            document.getElementById('ref-prefix').value = d.refP || "";
+            document.getElementById('ref-number').value = d.refN || "";
+            document.getElementById('doc-date').value = d.date || "";
+            
+            updateRefDisplay(); updateDateDisplay();
+            renderSidebar(allSavedDocs);
+            saveLocalDraft();
+        }
+    };
+
+    window.deleteDocItem = async function(id) {
+        if(confirm("حذف کریں؟")) {
+            await deleteDoc(doc(db, "announcements", id));
+            if(currentDocId === id) resetForm();
+        }
+    };
+
+    window.resetForm = function() {
+        currentDocId = null;
+        document.getElementById('doc-subject').innerHTML = "";
+        document.getElementById('editor').innerHTML = "";
+        document.getElementById('ref-prefix').value = "";
+        document.getElementById('ref-number').value = ""; // Will be auto-filled by smart logic
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('doc-date').value = today;
+        
+        updateRefDisplay(); updateDateDisplay();
+        saveLocalDraft();
+        renderSidebar(allSavedDocs);
+        
+        // Trigger smart ref generation if prefix is still selected or reset
+        // Better to reset prefix too
+        document.getElementById('ref-prefix').value = "";
+    };
+
+    // INIT
+    window.onload = function() {
+        if(!document.getElementById('doc-date').value) {
+            document.getElementById('doc-date').value = new Date().toISOString().split('T')[0];
+        }
+        loadLocalDraft(); 
+        updateRefDisplay(); updateDateDisplay();
+    };
+</script>
+
+</body>
+</html>

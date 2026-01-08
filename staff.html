@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>اسٹاف مینجمنٹ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+  :root { --blue: #4c51bf; --bg: #f7fafc; --white: #ffffff; --danger: #e53e3e; }
+  
+  /* URDU FONT SETTING */
+  @font-face {
+    font-family: 'Jameel Noori Nastaleeq Kasheeda';
+    src: local('Jameel Noori Nastaleeq Kasheeda'), local('Jameel Noori Nastaleeq');
+  }
+  
+  body { 
+      font-family: 'Jameel Noori Nastaleeq Kasheeda', 'Segoe UI', sans-serif; 
+      background: var(--bg); 
+      margin: 0; 
+      color: #333; 
+      direction: rtl; /* RIGHT TO LEFT */
+  }
+  
+  .header { background: var(--blue); color: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .title { font-size: 1.4rem; font-weight: bold; }
+  
+  .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+  .card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; }
+  
+  .button { padding: 6px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background: var(--blue); color: white; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 1rem; }
+  .button.secondary { background: #e2e8f0; color: #333; }
+  .button:hover { opacity: 0.9; }
+  
+  .delete-all-btn { background-color: var(--danger); color: white; border: none; border-radius: 6px; padding: 6px 15px; cursor: pointer; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 5px; font-family: inherit; font-size: 1rem; }
+  .delete-all-btn:hover { background-color:#c53030; }
+
+  .input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; width: 100%; box-sizing: border-box; font-family: inherit; text-align: right; }
+  .input:focus { border-color: var(--blue); }
+
+  /* Table Styles */
+  .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .table th { background: #f1f5f9; text-align: right; padding: 12px; border-bottom: 2px solid #e2e8f0; color: #475569; font-weight: bold; }
+  .table td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; }
+  .table tr:hover { background: #f8fafc; }
+
+  /* Modal Styles */
+  .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+  .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+  .form-grid > div { display: flex; flex-direction: column; }
+  .form-grid label { font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #64748b; }
+
+  /* LETTERHEAD IMAGE (Hidden normally, Visible in Print) */
+  #print-letterhead { display: none; }
+
+  .no-print { }
+
+  /* ----------------------------------------------------------- */
+  /* PRINT SETTINGS (FIXED MARGINS REDUCED) */
+  /* ----------------------------------------------------------- */
+  @media print {
+    .no-print, .header, .controls, .modal-backdrop { display: none !important; }
+    
+    @page { size: A4; margin: 0; }
+
+    html, body {
+        width: 210mm; height: 297mm; /* Exact A4 dimensions */
+        margin: 0 !important; padding: 0 !important;
+        background-color: transparent !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        direction: rtl;
+    }
+
+    /* بیک گراؤنڈ تصویر - مکمل A4 پر پھیلی ہوئی */
+    #print-letterhead {
+        display: block !important; 
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 210mm; 
+        height: 297mm; 
+        z-index: -1000;
+        object-fit: fill; /* زبردستی فٹ کریں */
+    }
+
+    .container {
+        width: 100% !important; 
+        max-width: 210mm !important; 
+        margin: 0 !important;
+        position: relative; z-index: 1;
+        box-sizing: border-box; 
+        
+        /* [UPDATED: REDUCED TOP MARGIN] */
+        padding-top: 2.4in !important;  /* پہلے 3.2 تھا، اب 2.4 کر دیا */  
+        padding-bottom: 1in !important; /* نیچے بھی جگہ بڑھا دی */
+        padding-left: 0.4in !important; 
+        padding-right: 0.4in !important; 
+    }
+
+    .card { 
+        box-shadow: none !important; 
+        border: none !important; 
+        padding: 0 !important; 
+        background: transparent !important; 
+        width: 100% !important; 
+    }
+
+    /* ٹیبل ڈیزائن - FULL WIDTH */
+    .table { 
+        width: 100% !important; 
+        border: 2px solid #000; 
+        border-collapse: collapse;
+        table-layout: fixed; 
+        margin: 0 !important;
+    }
+    
+    .table th, .table td {
+        border: 1px solid #000 !important; color: #000 !important;
+        font-size: 15pt !important; /* Large font */
+        font-weight: bold !important;
+        padding: 8px !important;
+        overflow: hidden; word-wrap: break-word; text-align: center;
+        vertical-align: middle;
+    }
+    
+    /* [HIDE SR NO] */
+    .table th:nth-child(1), .table td:nth-child(1) {
+        display: none !important;
+    }
+
+    /* [COLUMN WIDTHS] */
+    .table th:nth-child(2) { width: 15%; } /* درجہ */
+    .table th:nth-child(3) { width: 35%; } /* نام استاذ */
+    .table th:nth-child(4) { width: 30%; } /* مضمون */
+    .table th:nth-child(5) { width: 20%; } /* گھنٹہ */
+
+    h2 { text-align: center; color: #000 !important; text-decoration: underline; margin-bottom: 20px; font-size: 24pt; }
+  }
+</style>
+</head>
+<body>
+
+<img id="print-letterhead" src="letterhead.png" alt="Letterhead">
+
+<header class="header no-print">
+  <div class="title">اسٹاف مینجمنٹ - شعبہ جدید تعلیم</div>
+  <div><a href="Dashboard.html"><button class="button secondary">واپسی <i class="fas fa-arrow-left" style="margin-right:5px;"></i></button></a></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2 style="margin-top:0; color:var(--blue); text-align:center;">فہرست اساتذہ و گھنٹہ جات</h2>
+
+    <div class="controls no-print">
+      <button class="button" id="addBtn"><i class="fas fa-plus"></i> نیا اندراج</button>
+      
+      <button class="button secondary" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-import"></i> امپورٹ (CSV)</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+      
+      <button class="button secondary" id="exportBtn"><i class="fas fa-file-csv"></i> ایکسپورٹ (CSV)</button>
+      <button class="button secondary" id="exportPdf"><i class="fas fa-file-pdf"></i> ایکسپورٹ (PDF)</button>
+      <button class="button secondary" id="printBtn"><i class="fas fa-print"></i> پرنٹ (لیٹر ہیڈ)</button>
+      
+      <button class="button secondary" id="clearBtn"><i class="fas fa-eraser"></i> صاف کریں</button>
+      <button class="delete-all-btn" id="deleteAll"><i class="fas fa-trash"></i> سب حذف کریں</button>
+      
+      <input class="input" id="searchSr" placeholder="تلاش شمار نمبر..." style="min-width:100px; width:auto;">
+      <input class="input" id="searchClass" placeholder="تلاش درجہ..." style="min-width:120px; width:auto;">
+      <input class="input" id="searchTeacher" placeholder="تلاش نام استاذ..." style="min-width:150px; width:auto;">
+      <input class="input" id="searchSubject" placeholder="تلاش مضمون..." style="min-width:120px; width:auto;">
+      <input class="input" id="searchPeriods" placeholder="تلاش گھنٹہ..." style="min-width:100px; width:auto;">
+    </div>
+
+    <div style="overflow:auto">
+      <table class="table" id="dataTable">
+        <thead>
+          <tr>
+            <th>شمار</th>
+            <th>درجہ</th>
+            <th>نام استاذ</th>
+            <th>مضمون</th>
+            <th>گھنٹہ</th>
+            <th class="no-print">عمل</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody">
+            <tr><td colspan="6" style="text-align:center;">ڈیٹا لوڈ ہو رہا ہے...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <h3 id="modalTitle" style="margin-top:0; text-align:center;">اندراج / ترمیم</h3>
+    <input type="hidden" id="editDocId">
+    <div class="form-grid">
+      <div><label>شمار نمبر</label><input id="f_sr" class="input" type="text" placeholder="مثلاً: 101"></div>
+      <div><label>درجہ</label><input id="f_class" class="input" type="text" placeholder="مثلاً: پنجم الف"></div>
+      <div><label>نام استاذ</label><input id="f_teacher" class="input" type="text" placeholder="نام لکھیں"></div>
+      <div><label>مضمون</label><input id="f_subject" class="input" type="text" placeholder="ریاضی وغیرہ"></div>
+      
+      <div>
+          <label>گھنٹہ (منتخب کریں)</label>
+          <input id="f_periods" class="input" list="period_list" placeholder="منتخب کریں">
+          <datalist id="period_list">
+              <option value="الاولی">
+              <option value="الثانیۃ">
+              <option value="الثالثہ">
+              <option value="الرابعۃ">
+              <option value="الخامسۃ">
+              <option value="السادسۃ">
+              <option value="السابعۃ">
+              <option value="الثامنۃ">
+              <option value="التاسعۃ">
+              <option value="العاشرۃ">
+              <option value="المراقبۃ">
+              <option value="فارغ">
+          </datalist>
+      </div>
+    </div>
+    <div style="text-align:left; margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+      <button class="button secondary" id="cancelModal">منسوخ</button>
+      <button class="button" id="saveModal">محفوظ کریں</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, writeBatch, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAP3id6yfzYOg_xIr8EXRzynascW81ZyRE",
+        authDomain: "calendar-74c0a.firebaseapp.com",
+        projectId: "calendar-74c0a",
+        storageBucket: "calendar-74c0a.firebasestorage.app",
+        messagingSenderId: "253739441178",
+        appId: "1:253739441178:web:c99e2c4a9b69591b24c5a3",
+        measurementId: "G-M8N8JK8B8S"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const staffRef = collection(db, "staff_records");
+
+    let allStaff = [];
+    
+    // UPDATED URDU PERIODS (Auto Fill Logic)
+    const VALID_PERIODS = ["الاولی", "الثانیۃ", "الثالثہ", "الرابعۃ", "الخامسۃ", "السادسۃ", "السابعۃ", "الثامنۃ", "التاسعۃ", "العاشرۃ", "المراقبۃ"];
+
+    onSnapshot(staffRef, (snapshot) => {
+        allStaff = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTable();
+    }, (err) => {
+        console.error(err);
+        document.getElementById("dataBody").innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">ایرر: ${err.message}</td></tr>`;
+    });
+
+    function renderTable() {
+        const tbody = document.getElementById("dataBody");
+        const sSr = document.getElementById("searchSr").value.toLowerCase();
+        const sCls = document.getElementById("searchClass").value.toLowerCase();
+        const sTeach = document.getElementById("searchTeacher").value.toLowerCase();
+        const sSub = document.getElementById("searchSubject").value.toLowerCase();
+        const sPer = document.getElementById("searchPeriods").value.toLowerCase();
+
+        tbody.innerHTML = "";
+
+        const filtered = allStaff.filter(item => {
+            return (item.sr || "").toLowerCase().includes(sSr) &&
+                   (item.class || "").toLowerCase().includes(sCls) &&
+                   (item.teacher || "").toLowerCase().includes(sTeach) &&
+                   (item.subject || "").toLowerCase().includes(sSub) && 
+                   (item.periods || "").toLowerCase().includes(sPer);
+        });
+
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی ریکارڈ نہیں ملا۔</td></tr>';
+            return;
+        }
+
+        // Sort: Teacher Name -> Then Period Index
+        filtered.sort((a, b) => {
+            if (a.teacher < b.teacher) return -1;
+            if (a.teacher > b.teacher) return 1;
+            // Sort using new Urdu Period Index
+            return VALID_PERIODS.indexOf(a.periods) - VALID_PERIODS.indexOf(b.periods);
+        });
+
+        filtered.forEach(row => {
+            const bgStyle = (row.class === "فارغ" || row.subject === "فارغ") ? "background:#fff4f4; color:#888;" : "";
+            
+            const tr = document.createElement("tr");
+            tr.style = bgStyle;
+            tr.innerHTML = `
+                <td>${row.sr || '-'}</td>
+                <td>${row.class || '-'}</td>
+                <td>${row.teacher || '-'}</td>
+                <td>${row.subject || '-'}</td>
+                <td>${row.periods || '-'}</td>
+                <td class="no-print">
+                    <button class="button secondary" style="padding:5px 10px;" onclick="window.editRecord('${row.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="button" style="padding:5px 10px; background:var(--danger);" onclick="window.deleteRecord('${row.id}')"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    ['searchSr', 'searchClass', 'searchTeacher', 'searchSubject', 'searchPeriods'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderTable);
+    });
+    
+    document.getElementById("clearBtn").addEventListener("click", () => {
+        ['searchSr', 'searchClass', 'searchTeacher', 'searchSubject', 'searchPeriods'].forEach(id => document.getElementById(id).value = "");
+        renderTable();
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => {
+        window.print();
+    });
+
+    const modal = document.getElementById("modal");
+    
+    document.getElementById("addBtn").addEventListener("click", () => {
+        document.getElementById("editDocId").value = "";
+        ['f_class', 'f_teacher', 'f_subject', 'f_periods'].forEach(id => document.getElementById(id).value = "");
+        
+        // SET DEFAULT SR NO TO 1
+        document.getElementById("f_sr").value = "1";
+        
+        document.getElementById("modalTitle").innerText = "نیا اندراج";
+        modal.style.display = "flex";
+    });
+
+    document.getElementById("cancelModal").addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    document.getElementById("saveModal").addEventListener("click", async () => {
+        const id = document.getElementById("editDocId").value;
+        let pVal = document.getElementById("f_periods").value.trim();
+        const teacherName = document.getElementById("f_teacher").value.trim();
+        const srNo = document.getElementById("f_sr").value.trim();
+
+        if(!VALID_PERIODS.includes(pVal) && pVal !== "فارغ") return alert("غلط گھنٹہ! براہ کرم لسٹ سے منتخب کریں۔");
+        if(!teacherName) return alert("نام استاذ ضروری ہے!");
+
+        const data = {
+            sr: srNo,
+            class: document.getElementById("f_class").value,
+            teacher: teacherName,
+            subject: document.getElementById("f_subject").value,
+            periods: pVal
+        };
+
+        modal.style.display = "none"; 
+
+        try {
+            if(id) await updateDoc(doc(db, "staff_records", id), data);
+            else await addDoc(staffRef, data);
+            await checkAndFillEmptyPeriods(teacherName, srNo);
+        } catch(e) {
+            alert("ایرر: " + e.message);
+        }
+    });
+
+    async function checkAndFillEmptyPeriods(teacherName, srNo) {
+        const q = query(staffRef, where("teacher", "==", teacherName));
+        const querySnapshot = await getDocs(q);
+        const existingPeriods = [];
+        querySnapshot.forEach((doc) => { if(doc.data().periods) existingPeriods.push(doc.data().periods); });
+
+        const missingPeriods = VALID_PERIODS.filter(p => !existingPeriods.includes(p));
+
+        if(missingPeriods.length > 0) {
+            const batch = writeBatch(db);
+            missingPeriods.forEach(p => {
+                const newRef = doc(collection(db, "staff_records"));
+                batch.set(newRef, { sr: srNo, teacher: teacherName, class: "فارغ", subject: "فارغ", periods: p });
+            });
+            await batch.commit();
+        }
+    }
+
+    window.editRecord = (id) => {
+        const rec = allStaff.find(r => r.id === id);
+        if(!rec) return;
+        document.getElementById("editDocId").value = id;
+        document.getElementById("f_sr").value = rec.sr || "";
+        document.getElementById("f_class").value = rec.class || "";
+        document.getElementById("f_teacher").value = rec.teacher || "";
+        document.getElementById("f_subject").value = rec.subject || "";
+        document.getElementById("f_periods").value = rec.periods || "";
+        document.getElementById("modalTitle").innerText = "ترمیم ریکارڈ";
+        modal.style.display = "flex";
+    };
+
+    window.deleteRecord = async (id) => {
+        if(confirm("کیا آپ واقعی حذف کرنا چاہتے ہیں؟")) {
+            await deleteDoc(doc(db, "staff_records", id));
+        }
+    };
+
+    document.getElementById("deleteAll").addEventListener("click", async () => {
+        if(confirm("انتباہ: یہ تمام ریکارڈز کو مستقل طور پر حذف کر دے گا!")) {
+            const batch = writeBatch(db);
+            allStaff.forEach(docSnap => { batch.delete(doc(db, "staff_records", docSnap.id)); });
+            await batch.commit();
+            alert("تمام ریکارڈز حذف ہو گئے!");
+        }
+    });
+
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const text = event.target.result;
+            const rows = text.split('\n').map(row => row.split(',')); 
+            let start = 0; if(rows[0][0].includes('Sr') || rows[0][0].includes('شمار')) start = 1;
+            let count = 0;
+            for(let i=start; i<rows.length; i++) {
+                const cols = rows[i];
+                if(cols.length < 3) continue;
+                let p = cols[4]?.trim();
+                // Check against new Urdu Periods
+                if(!VALID_PERIODS.includes(p)) p = "فارغ";
+                await addDoc(staffRef, { sr: cols[0]?.trim(), class: cols[1]?.trim(), teacher: cols[2]?.trim(), subject: cols[3]?.trim(), periods: p });
+                count++;
+            }
+            alert(`ریکارڈز امپورٹ ہو گئے: ${count}`);
+        };
+        reader.readAsText(file);
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Sr No,Class,Teacher,Subject,Periods\n";
+        allStaff.forEach(row => { csvContent += `${row.sr},${row.class},${row.teacher},${row.subject},"${row.periods}"\n`; });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "staff_records.csv");
+        document.body.appendChild(link);
+        link.click();
+    });
+
+    document.getElementById("exportPdf").addEventListener("click", () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ filters: ["ASCII"] }); 
+        doc.setFont("helvetica"); 
+        doc.text("Staff & Periods List", 190, 15, {align: "right"});
+        
+        const tableColumn = ["Period", "Subject", "Teacher", "Class", "Sr"];
+        const tableRows = [];
+
+        allStaff.forEach(row => {
+            const rowData = [row.sr, row.class, row.teacher, row.subject, row.periods];
+            tableRows.push(rowData);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+            styles: { halign: 'right' }
+        });
+
+        doc.save("staff_list.pdf");
+    });
+
+    // Auto-filter
+    const urlParams = new URLSearchParams(window.location.search);
+    const classFilter = urlParams.get("class");
+    if (classFilter) {
+        document.getElementById("searchClass").value = classFilter;
+    }
+</script>
+</body>
+</html>

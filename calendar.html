@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institutional Program Calendar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4c51bf">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --indigo: #4c51bf;
+            --indigo-dark: #3c366b;
+            --white: #ffffff;
+            --gray-100: #f7fafc;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --warning: #ed8936;
+        }
+
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq Kasheeda';
+            src: local('Jameel Noori Nastaleeq Kasheeda'), local('Jameel Noori Nastaleeq');
+        }
+
+        .urdu-text { font-family: 'Jameel Noori Nastaleeq Kasheeda', 'Noto Nastaliq Urdu', serif; direction: rtl; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background-color: var(--gray-100); color: #333; }
+
+        header {
+            background-color: var(--indigo); color: white; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-title { font-size: 1.2rem; font-weight: bold; display:flex; align-items:center; gap:10px; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .section-box { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-top: 1.5rem; }
+        .btn { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-primary { background: var(--indigo); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-dark { background: #2d3748; color: white; }
+        .btn-light { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); }
+        .btn:hover { opacity: 0.8; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; background: #cbd5e0; padding: 10px; border-radius: 8px; }
+        .calendar-day { background: white; min-height: 120px; padding: 8px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .calendar-day:hover { background-color: #f0f4ff; }
+        .calendar-day.header { background: var(--indigo-dark); color: white; min-height: auto; text-align: center; font-weight: bold; padding: 10px; display: block; }
+        
+        .date-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .greg-date { font-weight: bold; font-size: 1.2rem; color: #2d3748; }
+        .hijri-date { font-size: 0.9rem; color: #718096; font-weight: bold; background: #edf2f7; padding: 2px 6px; border-radius: 4px; }
+        
+        .event-tag { background: #c3dafe; color: #2c5282; font-size: 0.75rem; padding: 4px; margin-top: 5px; border-radius: 3px; border-left: 4px solid var(--indigo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .month-label-container { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .main-date { font-size: 1.5rem; font-weight: bold; color: var(--indigo-dark); }
+        .sub-date { font-size: 1.1rem; color: #4a5568; margin-top: -5px; }
+
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 2rem; border-radius: 8px; width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        /* Readonly styling */
+        input:disabled, textarea:disabled { background-color: #e2e8f0; color: #718096; cursor: not-allowed; }
+        
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #4a5568; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { background: #f8fafc; color: #2d3748; }
+        .hidden { display: none !important; }
+
+        @media print {
+            header, .calendar-section, .no-print, .btn, .modal-bg { display: none !important; }
+            body { background-color: white; color: black; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+            #program-list-section { display: block !important; box-shadow: none; border: none; margin-top: 0; }
+            table { border: 1px solid #000; width: 100%; }
+            th { background-color: #eee !important; color: black !important; border: 1px solid #000; }
+            td { border: 1px solid #000; color: black; }
+        }
+        @media (max-width: 768px) { .calendar-grid { grid-template-columns: repeat(1, 1fr); } .calendar-day { min-height: auto; } }
+    </style>
+</head>
+<body>
+
+    <header class="no-print">
+        <div class="header-title">
+            <a href="dashboard.html" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <span style="margin-left:10px;">📅 Planner</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span id="user-display" style="font-size:0.9rem; font-weight:normal;"></span>
+            <button class="btn btn-primary" onclick="resetToToday()">Today</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="section-box calendar-section">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+                <button class="btn btn-primary" onclick="changeMonth(-1)">Previous</button>
+                <div class="month-label-container">
+                    <div id="month-year-greg" class="main-date"></div>
+                    <div id="month-year-hijri" class="sub-date urdu-text"></div>
+                </div>
+                <button class="btn btn-primary" onclick="changeMonth(1)">Next</button>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div id="program-list-section" class="section-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--indigo); padding-bottom: 10px; margin-bottom:10px;">
+                <h3 style="color: var(--indigo-dark); margin:0;">Program List</h3>
+                <button class="btn btn-dark no-print" onclick="window.print()"><i class="fas fa-print"></i> Print List</button>
+            </div>
+            <table id="fixed-list-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Program Title</th>
+                        <th>Department</th>
+                        <th>Booked By</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="fixed-record-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="booking-modal" class="modal-bg">
+        <div class="modal-content">
+            <h3 id="modal-date-text" style="margin-top:0; color: var(--indigo);">Program Details</h3>
+            <div id="readonly-msg" style="display:none; background:#fed7d7; color:#c53030; padding:10px; border-radius:5px; margin-bottom:10px; font-size:0.9rem;">
+                <i class="fas fa-lock"></i> You cannot edit this event (Booked by another user).
+            </div>
+
+            <input type="hidden" id="modal-date-val">
+            
+            <label>Time:</label>
+            <input type="time" id="prog-time">
+
+            <label>Program Title:</label>
+            <input type="text" id="prog-title" placeholder="Title...">
+            
+            <label>Department:</label>
+            <input type="text" id="prog-dept" placeholder="Dept Name...">
+
+            <label>Booked By:</label>
+            <input type="text" id="prog-owner" placeholder="Your name..." readonly style="background:#f3f3f3;">
+            
+            <label>Notes (Optional):</label>
+            <textarea id="prog-note" placeholder="Details..."></textarea>
+            
+            <div style="display:flex; gap:10px; margin-top: 20px; justify-content: flex-end;">
+                <button class="btn" style="background:#e2e8f0; color:#333;" onclick="closeModal()">Cancel</button>
+                <button id="delete-btn" class="btn btn-danger hidden" onclick="deleteBooking()">Delete</button>
+                <button id="save-btn" class="btn btn-success" onclick="saveBooking()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // *** FIREBASE CONFIGURATION ***
+        const firebaseConfig = {
+            apiKey: "AIzaSyAP3id6yfzYOg_xIr8EXRzynascW81ZyRE",
+            authDomain: "calendar-74c0a.firebaseapp.com",
+            projectId: "calendar-74c0a",
+            storageBucket: "calendar-74c0a.firebasestorage.app",
+            messagingSenderId: "253739441178",
+            appId: "1:253739441178:web:c99e2c4a9b69591b24c5a3",
+            measurementId: "G-M8N8JK8B8S"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const calendarRef = collection(db, "calendar_events");
+
+        // --- AUTH CHECK ---
+        const session = localStorage.getItem('exam_user');
+        const currentUser = session ? JSON.parse(session) : null;
+
+        if (!currentUser) {
+            // If no user is logged in (e.g. accessed directly without dashboard), redirect or warn
+            // alert("Please login via Dashboard first.");
+            // window.location.href = "index.html"; 
+            // Keeping it open but limited functionality just in case
+            document.getElementById('user-display').innerText = "Guest Mode";
+        } else {
+            document.getElementById('user-display').innerText = `User: ${currentUser.firstName}`;
+        }
+
+        let programs = {};
+        window.viewDate = new Date();
+
+        // REALTIME LISTENER
+        onSnapshot(calendarRef, (snapshot) => {
+            programs = {};
+            snapshot.docs.forEach(doc => { programs[doc.id] = doc.data(); });
+            window.renderCalendar();
+        }, (error) => {
+            console.error("Data Load Error:", error);
+        });
+
+        window.renderCalendar = () => {
+            const grid = document.getElementById('calendar-grid');
+            const labelGreg = document.getElementById('month-year-greg');
+            const labelHijri = document.getElementById('month-year-hijri');
+            grid.innerHTML = '';
+            
+            const year = window.viewDate.getFullYear();
+            const month = window.viewDate.getMonth();
+
+            labelGreg.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(window.viewDate);
+
+            const startOfMonth = new Date(year, month, 1);
+            const endOfMonth = new Date(year, month + 1, 0);
+            const hMonthFmt = new Intl.DateTimeFormat('ur-PK-u-ca-islamic-civil', { month: 'long' });
+            const hYearFmt = new Intl.DateTimeFormat('en-US-u-ca-islamic-civil', { year: 'numeric' });
+            const m1 = hMonthFmt.format(startOfMonth);
+            const m2 = hMonthFmt.format(endOfMonth);
+            const hy = hYearFmt.format(endOfMonth).split(' ')[0];
+            labelHijri.innerText = (m1 === m2) ? `/ ${m1} ${hy}` : `/ ${m1} - ${m2} ${hy}`;
+
+            ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => grid.innerHTML += `<div class="calendar-day header">${d}</div>`);
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for(let i=0; i<firstDayIndex; i++) grid.innerHTML += `<div class="calendar-day" style="background:#f7fafc; cursor:default;"></div>`;
+
+            const dayFmt = new Intl.DateTimeFormat('en-US-u-ca-islamic-civil', { day: 'numeric' });
+            for(let d=1; d<=daysInMonth; d++) {
+                const currentObj = new Date(year, month, d);
+                const dKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const hDay = dayFmt.format(currentObj); 
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                
+                let cellContent = `<div class="date-top"><span class="greg-date">${d}</span><span class="hijri-date">${hDay}</span></div>`;
+                if (programs[dKey]) {
+                    const p = programs[dKey];
+                    const timeDisplay = p.time ? `<span style="font-size:0.7rem; color:#444;">⏰ ${p.time}</span>` : '';
+                    cellContent += `<div class="event-tag" title="${p.title}">${timeDisplay} ${p.title}</div><small style="color:#718096; font-size:0.7rem;">${p.owner}</small>`;
+                }
+                dayEl.innerHTML = cellContent;
+                dayEl.onclick = () => openModal(dKey);
+                grid.appendChild(dayEl);
+            }
+            renderScheduleList();
+        };
+
+        window.changeMonth = (n) => { window.viewDate.setMonth(window.viewDate.getMonth() + n); window.renderCalendar(); };
+        window.resetToToday = () => { window.viewDate = new Date(); window.renderCalendar(); };
+
+        // --- MODAL & SECURITY LOGIC ---
+        window.openModal = (dateKey) => {
+            const p = programs[dateKey];
+            document.getElementById('modal-date-val').value = dateKey;
+            document.getElementById('modal-date-text').innerText = `Date: ${dateKey}`;
+            
+            const inputs = ['prog-time', 'prog-title', 'prog-dept', 'prog-note'];
+            
+            // Populate fields
+            document.getElementById('prog-title').value = p ? p.title : '';
+            document.getElementById('prog-time').value = p ? (p.time || '') : '';
+            document.getElementById('prog-dept').value = p ? (p.dept || '') : '';
+            document.getElementById('prog-note').value = p ? p.note : '';
+            
+            // Handle Owner Field
+            if(p) {
+                document.getElementById('prog-owner').value = p.owner;
+            } else {
+                // New Event: Auto-fill current user name
+                document.getElementById('prog-owner').value = currentUser ? (currentUser.firstName + " " + currentUser.lastName) : "";
+            }
+
+            // --- SECURITY CHECK ---
+            const saveBtn = document.getElementById('save-btn');
+            const delBtn = document.getElementById('delete-btn');
+            const warnMsg = document.getElementById('readonly-msg');
+
+            // Logic: 
+            // 1. If it's a NEW event (p is undefined) -> Allow Edit
+            // 2. If existing event -> Check if currentUser ID matches creatorId
+            // 3. (Fallback) If old data has no creatorId, assume Locked or Allow Admin (Here strictly locked for non-owners)
+
+            let isEditable = false;
+
+            if (!p) {
+                // New Event
+                isEditable = true;
+                delBtn.classList.add('hidden'); // Can't delete new
+            } else {
+                // Existing Event
+                if (currentUser && p.creatorId === currentUser.userid) {
+                    isEditable = true; // Owner match
+                    delBtn.classList.remove('hidden');
+                } else if (currentUser && currentUser.isAdmin) {
+                    isEditable = true; // Admin override (optional, included for safety)
+                    delBtn.classList.remove('hidden');
+                } else {
+                    isEditable = false; // Not owner
+                    delBtn.classList.add('hidden');
+                }
+            }
+
+            if (isEditable) {
+                // Enable Inputs & Buttons
+                inputs.forEach(id => document.getElementById(id).disabled = false);
+                saveBtn.style.display = 'inline-block';
+                warnMsg.style.display = 'none';
+            } else {
+                // Disable Inputs & Buttons (Read Only)
+                inputs.forEach(id => document.getElementById(id).disabled = true);
+                saveBtn.style.display = 'none';
+                warnMsg.style.display = 'block';
+            }
+
+            document.getElementById('booking-modal').style.display='flex';
+        };
+
+        window.closeModal = () => { document.getElementById('booking-modal').style.display='none'; };
+
+        window.saveBooking = async () => {
+            if (!currentUser) return alert("You must be logged in to save.");
+
+            const d = document.getElementById('modal-date-val').value;
+            const t = document.getElementById('prog-title').value.trim();
+            const o = document.getElementById('prog-owner').value.trim();
+            const n = document.getElementById('prog-note').value.trim();
+            const time = document.getElementById('prog-time').value;
+            const dept = document.getElementById('prog-dept').value.trim();
+
+            if (!t) return alert("Title is required!");
+
+            window.closeModal();
+
+            try {
+                // Saving creatorId is crucial for the security logic
+                await setDoc(doc(db, "calendar_events", d), { 
+                    title: t, 
+                    owner: o, 
+                    note: n, 
+                    date: d,
+                    time: time,
+                    dept: dept,
+                    creatorId: currentUser.userid // The Lock Key
+                });
+            } catch(e) {
+                alert("Error saving data: " + e.message);
+            }
+        };
+
+        window.deleteBooking = async () => {
+            if (!confirm("Delete this program?")) return;
+            const d = document.getElementById('modal-date-val').value;
+            window.closeModal(); 
+            try { await deleteDoc(doc(db, "calendar_events", d)); } catch(e) { alert("Error: " + e.message); }
+        };
+
+        window.renderScheduleList = () => {
+            const list = document.getElementById('fixed-record-list');
+            list.innerHTML = '';
+            const sortedKeys = Object.keys(programs).sort();
+            if(sortedKeys.length === 0) { list.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#718096;">No programs scheduled.</td></tr>'; return; }
+            
+            sortedKeys.forEach(k => {
+                const p = programs[k];
+                list.innerHTML += `<tr>
+                    <td><strong>${k}</strong></td>
+                    <td>${p.time || '-'}</td>
+                    <td>${p.title}</td>
+                    <td>${p.dept || '-'}</td>
+                    <td>${p.owner}</td>
+                    <td>${p.note}</td>
+                </tr>`;
+            });
+        };
+
+        window.renderCalendar();
+    </script>
+</body>
+</html>

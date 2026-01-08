@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urdu Exam Manager Pro</title>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("qAW0tqEYkXBdwL6j4"); // آپ کی Public Key
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f3f4f6; --white: #ffffff; --success: #27ae60; --warning: #f39c12; --danger: #c0392b; --border-radius: 10px; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); --font-ur: 'Faiz Lahori Nastaleeq', 'Noto Nastaliq Urdu', serif; --font-en: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-en); }
+        body { background-color: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .hidden { display: none !important; }
+        .urdu-text { font-family: var(--font-ur); direction: rtl; text-align: right; }
+        
+        /* Main Layout */
+        #dashboard-screen, #report-screen { display: flex; flex-direction: column; height: 100%; }
+        
+        /* New Layout for Sidebar */
+        .main-body-wrapper { display: flex; flex: 1; overflow: hidden; }
+        .table-container { flex: 3; overflow-y: auto; padding: 20px; }
+        .summary-sidebar { flex: 1; background: white; border-left: 1px solid #e5e7eb; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; max-width: 300px; }
+
+        header { background: var(--white); padding: 15px 25px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .back-link { text-decoration: none; color: #666; font-size: 0.95rem; display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer;}
+        .back-link:hover { color: var(--accent); }
+        
+        .toolbar { padding: 15px 25px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .search-wrapper { flex-grow: 1; max-width: 300px; position: relative; }
+        .search-wrapper i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .search-wrapper input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        
+        /* COLORFUL FILTER BUTTONS STYLE */
+        .filter-group { display: flex; gap: 8px; align-items: center; margin-right: 15px; }
+        
+        .filter-btn { 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            opacity: 0.6; /* Dim by default */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        
+        /* Active State - Fully Bright & Slightly Larger */
+        .filter-btn.active { 
+            opacity: 1; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+            transform: scale(1.03); 
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Specific Colors matching the image */
+        #filter-pending { background-color: #e74c3c; } /* Red */
+        #filter-submitted { background-color: #27ae60; } /* Green */
+        #filter-all { background-color: #7f8c8d; } /* Gray */
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        th { background: var(--primary); color: white; padding: 15px; text-align: left; position: sticky; top: 0; z-index: 10; font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        
+        /* Log Cards */
+        .log-wrapper { display: flex; flex-direction: column; gap: 8px; }
+        .log-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .log-info h4 { font-size: 1rem; color: var(--primary); margin-bottom: 2px; }
+        .log-meta { font-size: 0.8rem; color: #64748b; }
+        
+        /* Status Badges */
+        .status-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-received { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; } 
+        .status-sent { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
+        .status-returned { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; } 
+        .status-entered { background: #ffedd5; color: #c2410c; border: 1px solid #fdba74; } 
+        .status-finalized { background: #dcfce7; color: #15803d; border: 1px solid #86efac; } 
+
+        .log-actions { display: flex; gap: 5px; }
+        .icon-btn { padding: 5px; border-radius: 4px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; color: #64748b; }
+        .icon-btn:hover { background: #f1f5f9; color: var(--accent); }
+        .add-entry-btn { background: #eff6ff; color: var(--accent); border: 1px dashed var(--accent); width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; margin-top: 5px; }
+        .total-badge { font-size: 1.1rem; font-weight: bold; color: var(--primary); background: #f1f5f9; padding: 5px 10px; border-radius: 6px; }
+        
+        /* Summary Cards */
+        .sum-card { padding: 12px 15px; border-radius: 8px; text-align: left; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .sum-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .sum-number { font-size: 1.4rem; font-weight: bold; }
+        .sum-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 12px; animation: scaleUp 0.2s ease; max-height: 90vh; overflow-y: auto; }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+        .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+        .app-input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 12px; outline: none; }
+        
+        /* Buttons */
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; color: white; }
+        .btn-add { background: #2c3e50; } 
+        .btn-import { background: #16a34a; } 
+        .btn-export { background: #3498db; } 
+        .btn-print { background: #8b5cf6; } 
+        .btn-report { background: #2c3e50; border: 1px solid white; } 
+        
+        .btn-primary { background: var(--primary); }
+        .btn-secondary { background: #95a5a6; }
+        .btn-danger { background-color: var(--danger); }
+        
+        .duplicate-highlight { background-color: #fff7ed !important; border-left: 4px solid var(--warning); }
+        input[type="file"] { display: none; }
+
+        /* Radio Group Style */
+        .radio-group { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .radio-option { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; padding: 4px 0; }
+        .radio-option input { accent-color: var(--primary); transform: scale(1.2); cursor: pointer; }
+        
+        /* Report Screen */
+        .report-layout { display: flex; gap: 20px; padding: 20px; height: 100%; background: white; }
+        .report-left { flex: 3; overflow-y: auto; } 
+        .report-right { flex: 1; overflow-y: auto; } 
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9rem; }
+        .report-table th, .report-table td { border: 1px solid #ccc; padding: 8px; text-align: right; }
+        .report-table th { background-color: #f0f0f0; color: black; font-weight: bold; }
+        
+        /* Print Styles */
+        @media print {
+            header, .toolbar, .add-entry-btn, .icon-btn, .modal-overlay, .btn, .delete-btn-cell, .summary-sidebar { display: none !important; }
+            body, #dashboard-screen, .main-body-wrapper { height: auto; overflow: visible; background: white; display: block; }
+            #dashboard-screen:not(.printing-dashboard) { display: none; }
+            #report-screen { display: flex !important; height: auto; }
+            .report-layout { display: flex; flex-direction: row; padding: 0; gap: 10px; }
+            .report-left { flex: 7; } .report-right { flex: 3; }
+            .report-table th, .report-table td { border: 1px solid black !important; font-size: 10pt; }
+            .urdu-text, td, th { font-family: 'Noto Nastaliq Urdu', serif !important; }
+            .table-container { padding: 0; }
+            table { border: 1px solid black; } th, td { border: 1px solid black !important; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="dashboard-screen">
+        <header>
+            <div class="brand"><i class="fas fa-shapes"></i> Exam Manager Pro</div>
+            <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </header>
+        
+        <div class="toolbar">
+            <div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="search-input" placeholder="Search Teachers..."></div>
+            
+            <div class="filter-group">
+                <button class="filter-btn" onclick="setFilter('Pending')" id="filter-pending">
+                    <i class="fas fa-clock"></i> Pending
+                </button>
+                <button class="filter-btn" onclick="setFilter('Submitted')" id="filter-submitted">
+                    <i class="fas fa-check-circle"></i> Submitted
+                </button>
+                <button class="filter-btn active" onclick="setFilter('All')" id="filter-all">
+                    <i class="fas fa-list"></i> All
+                </button>
+            </div>
+
+            <button onclick="openTeacherModal()" class="btn btn-add btn-restricted"><i class="fas fa-plus"></i> Add Teacher</button>
+            
+            <button onclick="document.getElementById('excel-import').click()" class="btn btn-import btn-restricted"><i class="fas fa-file-excel"></i> Import Excel</button>
+            <input type="file" id="excel-import" accept=".xlsx, .xls">
+            
+            <button id="btnExport" class="btn btn-export btn-restricted"><i class="fas fa-download"></i> Export</button>
+            
+            <button onclick="window.print()" class="btn btn-print"><i class="fas fa-print"></i> Print Dashboard</button>
+
+            <button onclick="showFinalReport()" class="btn btn-report"><i class="fas fa-file-alt"></i> Final Report / رپورٹ کارڈ</button>
+        </div>
+        
+        <div class="main-body-wrapper">
+            <div class="table-container">
+                <table>
+                    <thead><tr><th width="5%">S.No</th><th width="20%">Teacher Name (Urdu)</th><th width="40%">Paper Entries (Log)</th><th width="10%">Total Papers</th><th width="10%">Total Amount</th><th width="15%" class="delete-btn-cell">Action</th></tr></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            
+            <div class="summary-sidebar">
+                <h3 style="color:var(--primary); text-align:center; border-bottom:2px solid #ddd; padding-bottom:10px;">Work Progress</h3>
+                
+                <div class="sum-card" style="background:#f1f5f9;">
+                    <div class="sum-label"><i class="fas fa-arrow-down"></i> Received / وصول</div>
+                    <div class="sum-number" style="color:#475569;" id="sum-received">0</div>
+                </div>
+
+                <div class="sum-card" style="background:#e0f2fe;">
+                    <div class="sum-label"><i class="fas fa-paper-plane"></i> Sent / جاری</div>
+                    <div class="sum-number" style="color:#0369a1;" id="sum-sent">0</div>
+                </div>
+
+                <div class="sum-card" style="background:#f3e8ff;">
+                    <div class="sum-label"><i class="fas fa-undo"></i> Returned / واپسی</div>
+                    <div class="sum-number" style="color:#7e22ce;" id="sum-returned">0</div>
+                </div>
+
+                <div class="sum-card" style="background:#ffedd5;">
+                    <div class="sum-label"><i class="fas fa-keyboard"></i> Entered / اندراج</div>
+                    <div class="sum-number" style="color:#c2410c;" id="sum-entered">0</div>
+                </div>
+
+                <div class="sum-card" style="background:#dcfce7;">
+                    <div class="sum-label"><i class="fas fa-check-circle"></i> Finalized / مکمل</div>
+                    <div class="sum-number" style="color:#15803d;" id="sum-finalized">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-screen" class="hidden">
+        <header>
+            <div class="brand"><i class="fas fa-print"></i> Final Checking Report</div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="window.print()" class="btn btn-primary" style="background: #5b21b6;"><i class="fas fa-print"></i> Print Report</button>
+                <button onclick="closeFinalReport()" class="btn btn-secondary">Close / بند کریں</button>
+            </div>
+        </header>
+        
+        <div class="report-layout">
+            <div class="report-left">
+                <h3 style="text-align:center; margin-bottom:10px;">Detailed Statement</h3>
+                <table class="report-table">
+                    <thead>
+                        <tr><th>Teacher / نام ممتحن</th><th>Paper / پرچہ</th><th>Qty / تعداد</th><th>Given / تاریخ اجرا</th><th>Status / مرحلہ</th><th>Rate</th><th>Total</th></tr>
+                    </thead>
+                    <tbody id="report-detailed-body"></tbody>
+                </table>
+            </div>
+            <div class="report-right">
+                <h3 style="text-align:center; margin-bottom:10px;">Summary / خلاصہ</h3>
+                <table class="report-table">
+                    <thead><tr><th>Teacher / نام</th><th>Total Papers / کل پرچے</th><th>Total Amount / کل رقم</th></tr></thead>
+                    <tbody id="report-summary-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header" id="teacher-modal-title">Add New Teacher</div>
+            <input type="hidden" id="teacher-id-editing">
+            <label>Teacher Name (Urdu)</label>
+            <input type="text" id="new-teacher-name" class="app-input urdu-text" placeholder="نام استاد">
+            
+            <label>Teacher Email (for Notification)</label>
+            <input type="email" id="new-teacher-email" class="app-input" placeholder="email@gmail.com">
+
+            <div class="modal-footer"><button id="btnCancelTeacher" class="btn btn-secondary">Cancel</button><button id="btnSaveTeacher" class="btn btn-primary">Save Teacher</button></div>
+        </div>
+    </div>
+
+    <div id="entry-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header" id="entry-modal-title">Add Paper Entry</div>
+            <input type="hidden" id="entry-teacher-id"><input type="hidden" id="entry-id-editing">
+            
+            <label>Paper Name</label><input type="text" id="entry-name" class="app-input urdu-text" placeholder="پرچہ کا نام">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>Quantity</label><input type="number" id="entry-qty" class="app-input"></div>
+                <div><label>Given Date</label><input type="date" id="entry-given" class="app-input"></div>
+            </div>
+            
+            <label style="color:#c0392b; font-weight:bold;">Due Date (Triggers Email):</label>
+            <input type="date" id="entry-due" class="app-input" style="border:1px solid #c0392b;">
+
+            <label style="font-weight:bold; color:var(--primary);">Current Status / موجودہ مرحلہ:</label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="entryStatus" value="Received" checked>
+                    <span>Paper Received / پرچہ وصول ہوا</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="entryStatus" value="Sent">
+                    <span>Sent for Checking / چیکنگ کے لیے گیا</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="entryStatus" value="Returned">
+                    <span>Checked & Returned / چیک ہوکر واپس آیا</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="entryStatus" value="Entered">
+                    <span>Marks Entered / نمبرات چڑھ گئے</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="entryStatus" value="Finalized">
+                    <span>Result Finalized / نتیجہ مکمل</span>
+                </label>
+            </div>
+
+            <div class="modal-footer"><button id="btnCancelEntry" class="btn btn-secondary">Cancel</button><button id="btnSaveEntry" class="btn btn-primary">Save & Email</button></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // EMAILJS CONFIG
+        const EMAIL_SERVICE = "modern_education-06";
+        const EMAIL_TEMPLATE = "template_kvu2fue";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDf1R8Tlinug3KZTtDkLp7kvXiqJFnWso",
+            authDomain: "exam-system-fa393.firebaseapp.com",
+            projectId: "exam-system-fa393",
+            storageBucket: "exam-system-fa393.firebasestorage.app",
+            messagingSenderId: "640248740140",
+            appId: "1:640248740140:web:8dd2fd461051e3cd8fd489",
+            measurementId: "G-Y34TY4L3ME"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const teachersRef = collection(db, "teachers");
+
+        // --- AUTH & PERMISSION CHECK ---
+        const session = localStorage.getItem('exam_user');
+        if (!session) {
+            window.location.href = 'dashboard.html';
+        }
+
+        const user = JSON.parse(session);
+        const isReadOnly = user.role === 'individual';
+
+        // Apply Permissions Logic
+        function applyPermissions() {
+            if (isReadOnly) {
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .delete-btn-cell, .icon-btn, .add-entry-btn, 
+                    .btn-restricted, button[onclick*="import"], input[type="file"] { 
+                        display: none !important; 
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        applyPermissions();
+
+        let teachers = [];
+        let activeFilter = 'All'; // 'Pending', 'Submitted', 'All'
+
+        onSnapshot(teachersRef, (snapshot) => {
+            teachers = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            renderDashboard();
+        });
+
+        // --- GLOBAL FILTER FUNCTION ---
+        window.setFilter = (filter) => {
+            activeFilter = filter;
+            // Update buttons visual state
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('filter-' + filter.toLowerCase()).classList.add('active');
+            renderDashboard();
+        }
+
+        // --- UI FUNCTIONS ---
+        const openModal = (id) => document.getElementById(id).style.display = 'flex';
+        const closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        // Add/Edit Teacher Modal Function
+        window.openTeacherModal = (id = null) => {
+            document.getElementById('teacher-id-editing').value = id || "";
+            if(id) {
+                const t = teachers.find(x => x.id === id);
+                document.getElementById('new-teacher-name').value = t.name;
+                document.getElementById('new-teacher-email').value = t.email || ""; 
+                document.getElementById('teacher-modal-title').innerText = "Edit Teacher Name";
+                document.getElementById('btnSaveTeacher').innerText = "Update Name";
+            } else {
+                document.getElementById('new-teacher-name').value = '';
+                document.getElementById('new-teacher-email').value = ''; 
+                document.getElementById('teacher-modal-title').innerText = "Add New Teacher";
+                document.getElementById('btnSaveTeacher').innerText = "Save Teacher";
+            }
+            openModal('teacher-modal');
+        };
+
+        document.getElementById('btnCancelTeacher').addEventListener('click', () => closeModal('teacher-modal'));
+        
+        document.getElementById('btnSaveTeacher').addEventListener('click', async () => {
+            const name = document.getElementById('new-teacher-name').value;
+            const email = document.getElementById('new-teacher-email').value; 
+            const id = document.getElementById('teacher-id-editing').value;
+            
+            if(!name) return alert("Name required");
+            
+            const data = { name: name, email: email };
+
+            if(id) {
+                await updateDoc(doc(db, "teachers", id), data);
+            } else {
+                await addDoc(teachersRef, { ...data, entries: [] });
+            }
+            closeModal('teacher-modal');
+        });
+
+        window.openEntryModal = (tId, eId = null) => {
+            document.getElementById('entry-teacher-id').value = tId;
+            
+            // Default Status
+            let currentStatus = "Received";
+
+            if(eId != null) {
+                const t = teachers.find(x => x.id === tId);
+                const e = t.entries[eId];
+                document.getElementById('entry-modal-title').innerText = "Edit Entry";
+                document.getElementById('entry-id-editing').value = eId;
+                document.getElementById('entry-name').value = e.paper;
+                document.getElementById('entry-qty').value = e.qty;
+                document.getElementById('entry-given').value = e.given;
+                document.getElementById('entry-due').value = e.dueDate || "";
+                
+                // Determine Status from data (Fallback for old data)
+                currentStatus = e.status || (e.subDate ? "Returned" : "Received");
+            } else {
+                document.getElementById('entry-modal-title').innerText = "Add Entry";
+                document.getElementById('entry-id-editing').value = "";
+                document.getElementById('entry-name').value = "";
+                document.getElementById('entry-qty').value = "";
+                document.getElementById('entry-given').valueAsDate = new Date();
+                document.getElementById('entry-due').value = "";
+            }
+            
+            // Set Radio Button
+            const radios = document.getElementsByName('entryStatus');
+            for(const r of radios) {
+                if(r.value === currentStatus) r.checked = true;
+            }
+
+            openModal('entry-modal');
+        };
+        document.getElementById('btnCancelEntry').addEventListener('click', () => closeModal('entry-modal'));
+        
+        document.getElementById('btnSaveEntry').addEventListener('click', async () => {
+            const tId = document.getElementById('entry-teacher-id').value;
+            const eId = document.getElementById('entry-id-editing').value;
+            const name = document.getElementById('entry-name').value;
+            const qty = parseInt(document.getElementById('entry-qty').value) || 0;
+            const given = document.getElementById('entry-given').value;
+            const due = document.getElementById('entry-due').value;
+            
+            // Get selected status
+            const status = document.querySelector('input[name="entryStatus"]:checked').value;
+
+            const teacher = teachers.find(t => t.id === tId);
+            const entries = [...teacher.entries];
+
+            // Maintain subDate for old report logic
+            const isCompleted = ["Returned", "Entered", "Finalized"].includes(status);
+            const subDate = isCompleted ? (new Date().toISOString().split('T')[0]) : null;
+
+            const entryData = { paper: name, qty, given, dueDate: due, status: status, subDate: subDate };
+
+            if(eId !== "") {
+                if(entries[eId].subDate && isCompleted) entryData.subDate = entries[eId].subDate;
+                entries[eId] = entryData;
+            } else {
+                entries.push(entryData);
+                // SEND EMAIL ONLY ON NEW ENTRY
+                if(teacher.email && due) {
+                    const params = {
+                        to_name: teacher.name,
+                        to_email: teacher.email,
+                        paper_name: name,
+                        qty: qty,
+                        due_date: due
+                    };
+                    emailjs.send(EMAIL_SERVICE, EMAIL_TEMPLATE, params)
+                        .then(() => alert("Entry Saved & Email Sent to Teacher!"))
+                        .catch(err => alert("Saved, but Email failed: " + JSON.stringify(err)));
+                }
+            }
+            
+            await updateDoc(doc(db, "teachers", tId), { entries });
+            closeModal('entry-modal');
+        });
+
+        window.deleteTeacher = async (id) => {
+            if(confirm("Delete teacher?")) await deleteDoc(doc(db, "teachers", id));
+        };
+
+        window.deleteEntry = async (tId, eId) => {
+            if(confirm("Delete entry?")) {
+                const teacher = teachers.find(t => t.id === tId);
+                const entries = teacher.entries.filter((_, idx) => idx != eId);
+                await updateDoc(doc(db, "teachers", tId), { entries });
+            }
+        };
+
+        // --- REPORT FUNCTIONS ---
+        window.showFinalReport = () => {
+            const detailedBody = document.getElementById('report-detailed-body');
+            const summaryBody = document.getElementById('report-summary-body');
+            detailedBody.innerHTML = '';
+            summaryBody.innerHTML = '';
+
+            teachers.forEach(t => {
+                let teacherTotalAmt = 0;
+                let teacherTotalPapers = 0;
+                
+                if(t.entries && t.entries.length > 0) {
+                    t.entries.forEach(e => {
+                        const qty = parseInt(e.qty) || 0;
+                        const total = qty * 8;
+                        teacherTotalAmt += total;
+                        teacherTotalPapers += qty;
+                        
+                        // Status fallback
+                        const currentStatus = e.status || (e.subDate ? "Returned" : "Received");
+                        
+                        const row = `<tr>
+                            <td class="urdu-text">${t.name}</td>
+                            <td class="urdu-text">${e.paper}</td>
+                            <td>${qty}</td>
+                            <td>${e.given}</td>
+                            <td>${currentStatus}</td>
+                            <td>8</td>
+                            <td>${total}</td>
+                        </tr>`;
+                        detailedBody.innerHTML += row;
+                    });
+                } else {
+                     const row = `<tr>
+                            <td class="urdu-text">${t.name}</td>
+                            <td>-</td><td>0</td><td>-</td><td>-</td><td>8</td><td>0</td>
+                        </tr>`;
+                        detailedBody.innerHTML += row;
+                }
+
+                // Summary Row
+                const sumRow = `<tr>
+                    <td class="urdu-text" style="font-weight:bold;">${t.name}</td>
+                    <td style="font-weight:bold;">${teacherTotalPapers}</td> <td style="font-weight:bold;">${teacherTotalAmt}</td>
+                </tr>`;
+                summaryBody.innerHTML += sumRow;
+            });
+
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('report-screen').classList.remove('hidden');
+        };
+
+        window.closeFinalReport = () => {
+            document.getElementById('report-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+        };
+
+        // --- RENDER MAIN DASHBOARD ---
+        function renderDashboard() {
+            const tbody = document.getElementById('table-body');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            tbody.innerHTML = '';
+            
+            // Status Counters for Sidebar
+            let stats = {
+                Received: 0,
+                Sent: 0,
+                Returned: 0,
+                Entered: 0,
+                Finalized: 0
+            };
+
+            const nameMap = {};
+            teachers.forEach(t => { const n = t.name.trim().toLowerCase(); nameMap[n] = (nameMap[n] || 0) + 1; });
+
+            teachers.forEach((t, idx) => {
+                if(search && !t.name.toLowerCase().includes(search)) return;
+                
+                let visibleEntries = [];
+                let totalPapers = 0;
+
+                // Process Entries for this teacher
+                t.entries.forEach((e, i) => {
+                    // Determine Status
+                    let s = e.status || (e.subDate ? "Returned" : "Received");
+                    
+                    // Count Stats
+                    if(stats[s] !== undefined) stats[s]++;
+                    else stats["Received"]++;
+
+                    // --- FILTER LOGIC ---
+                    let showEntry = false;
+                    if (activeFilter === 'All') {
+                        showEntry = true;
+                    } else if (activeFilter === 'Pending') {
+                        if (s === "Received" || s === "Sent") showEntry = true;
+                    } else if (activeFilter === 'Submitted') {
+                        if (s === "Returned" || s === "Entered" || s === "Finalized") showEntry = true;
+                    }
+
+                    if(showEntry) {
+                        visibleEntries.push({ data: e, index: i, status: s });
+                        totalPapers += parseInt(e.qty || 0);
+                    }
+                });
+
+                // If filter is active and no entries match, skip this teacher row
+                if(visibleEntries.length === 0 && activeFilter !== 'All') return;
+
+                const totalAmount = totalPapers * 8;
+                
+                let logsHtml = `<div class="log-wrapper">`;
+                visibleEntries.forEach((item) => {
+                    const e = item.data;
+                    const i = item.index;
+                    const s = item.status;
+
+                    // UI Class for Status Badge
+                    let badgeClass = "status-" + s.toLowerCase().split(' ')[0]; // simple class mapping
+
+                    logsHtml += `
+                    <div class="log-card">
+                        <div class="log-info"><h4 class="urdu-text">${e.paper} <span style="font-size:0.8em; color:#888;">(${e.qty})</span></h4><div class="log-meta">Given: ${e.given} <span class="status-badge ${badgeClass}">${s}</span></div></div>
+                        <div class="log-actions">
+                            <button class="icon-btn" onclick="openEntryModal('${t.id}', ${i})"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" style="color:red" onclick="deleteEntry('${t.id}', ${i})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                });
+                logsHtml += `</div><button class="add-entry-btn" onclick="openEntryModal('${t.id}')">+ Add Entry</button>`;
+
+                const isDup = nameMap[t.name.trim().toLowerCase()] > 1;
+                const rowClass = isDup ? 'duplicate-highlight' : '';
+
+                const tr = document.createElement('tr');
+                tr.className = rowClass;
+                tr.innerHTML = `<td>${idx + 1}</td><td class="urdu-text" style="font-size:1.1rem; font-weight:bold;">${t.name}<br><small style="font-size:0.8rem; color:#666">${t.email || ''}</small></td><td>${logsHtml}</td><td><span class="total-badge">${totalPapers}</span></td><td style="color:var(--success); font-weight:bold;">₹ ${totalAmount}</td>
+                <td class="delete-btn-cell">
+                    <button class="btn btn-primary" style="background:#3498db; margin-right:5px; padding:8px;" onclick="openTeacherModal('${t.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger" style="padding:8px;" onclick="deleteTeacher('${t.id}')"><i class="fas fa-trash"></i></button>
+                </td>`;
+                tbody.appendChild(tr);
+            });
+
+            // Update Summary Stats in Sidebar (Always show total stats, regardless of filter)
+            document.getElementById('sum-received').innerText = stats.Received;
+            document.getElementById('sum-sent').innerText = stats.Sent;
+            document.getElementById('sum-returned').innerText = stats.Returned;
+            document.getElementById('sum-entered').innerText = stats.Entered;
+            document.getElementById('sum-finalized').innerText = stats.Finalized;
+        }
+        
+        document.getElementById('search-input').addEventListener('keyup', renderDashboard);
+        
+        document.getElementById('btnExport').addEventListener('click', () => {
+            let flatData = [];
+            teachers.forEach(t => {
+                if(t.entries.length === 0) flatData.push({ "Teacher": t.name, "Paper": "-", "Qty": 0, "Amount": 0 });
+                else t.entries.forEach(e => flatData.push({ "Teacher": t.name, "Paper": e.paper, "Qty": e.qty, "Given": e.given, "Status": e.status || "Received", "Rate": 8, "Total": e.qty * 8 }));
+            });
+            const ws = XLSX.utils.json_to_sheet(flatData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Report");
+            XLSX.writeFile(wb, "Exam_Report.xlsx");
+        });
+
+        document.getElementById('excel-import').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                for (const row of json) {
+                    if(row.Teacher) {
+                        const entries = [];
+                        if(row.Paper) {
+                            entries.push({
+                                paper: row.Paper,
+                                qty: row.Qty || 0,
+                                given: row.Given || new Date().toISOString().split('T')[0],
+                                status: "Received",
+                                subDate: null
+                            });
+                        }
+                        await addDoc(teachersRef, { name: row.Teacher, entries: entries });
+                    }
+                }
+                alert("Imported Successfully!");
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+    </script>
+</body>
+</html>
